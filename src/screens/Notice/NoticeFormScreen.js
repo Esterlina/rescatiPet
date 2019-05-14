@@ -40,7 +40,7 @@ renderImage(image) {
         <View style={styles.container}>
           <Header {...this.props} stack='true'/> 
           <View style={styles.noticesTitle}>
-            <Text style={styles.title}>Publicar Aviso</Text>
+            <Text style={styles.title}>Publicar Avisos</Text>
             <Text style={styles.text}>{this.props.navigation.getParam('type')}</Text>
           </View>
           <ScrollView>
