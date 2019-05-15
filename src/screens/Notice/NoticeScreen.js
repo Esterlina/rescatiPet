@@ -89,15 +89,12 @@ const styles = StyleSheet.create({
       paddingHorizontal:10,
       alignItems: 'center',
       flexDirection: 'row',
-      
-      //backgroundColor:'red',
       height: height*0.32
     },
     notice:{
-      //backgroundColor:'green',
       borderWidth: 1.3,
-    borderColor: '#d6d7da',
-    borderRadius: 4,
+      borderColor: '#d6d7da',
+      borderRadius: 4,
       marginHorizontal:10,
       paddingHorizontal:4,
       paddingVertical:4,
