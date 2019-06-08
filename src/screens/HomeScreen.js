@@ -20,9 +20,8 @@ static navigationOptions = {
     return(
         <View style={styles.container}>
           <Header {...this.props}/> 
-          <Text style={styles.welcome}>Welcome lalita estoy aki to React Native!</Text>
+          <Text style={styles.welcome}>Welcome to React Native!</Text>
           <Text style={styles.instructions}>To get started, edit App.js</Text>
-          <Text style={styles.instructions}>perro</Text>
       </View>
     );
     

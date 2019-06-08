@@ -30,6 +30,10 @@ build/
 local.properties
 *.iml
 
+# keys
+#
+src/keys.js
+
 # node.js
 #
 node_modules/
