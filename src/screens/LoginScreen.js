@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text,TouchableOpacity,Image, ImageBackground,Dimensions, Button,TextInput } from 'react-native';
+import { View, StyleSheet, Text,TouchableOpacity,Image, ImageBackground,Dimensions,KeyboardAvoidingView, Button,TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {Fonts} from '../utils/Fonts';
 const {height, width} = Dimensions.get('window');
@@ -22,13 +22,20 @@ export default class LoginScreen extends React.Component {
       style={styles.container}
       source={require('../icons/fondo.png')}
       >
-        <Image
+           <KeyboardAvoidingView
+                    behavior="position"
+            >
+      <View style={{alignItems:'center'}}>
+          <Image
             source={require('../icons/rescatipeticon.png')}
         />
         <Image
           style={styles.iconLogin} 
           source={require('../icons/RescatiPet1.png')}
         />
+      </View>
+       
+   
       <View style={styles.formLogin}>
         <View style={styles.labelLogin}>
           <View style={styles.iconLabel}>
@@ -67,9 +74,8 @@ export default class LoginScreen extends React.Component {
           >
           <Text style={styles.text}> Registrarme </Text>
       </TouchableOpacity>
-
       </View>
-      
+      </KeyboardAvoidingView>
       </ImageBackground>
     );
   }

@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text,View,Image} from 'react-native';
+import { StyleSheet, Text,View,Image, Dimensions,TouchableOpacity,KeyboardAvoidingView} from 'react-native';
 import Header from '../components/Header';
 
-
-
+const {width,height} = Dimensions.get('window');
 export default class SearchScreen extends React.Component {
+ 
     static navigationOptions = {
         tabBarIcon:({tintColor}) => (
           <Image
@@ -14,14 +14,15 @@ export default class SearchScreen extends React.Component {
           </Image>
         )
     }
-
   render(){ 
     
     return(
+      
         <View style={styles.container}>
           <Header {...this.props} namePage="Mis cursos"/> 
-          <Text style={styles.instructions}>Modulo busqueda</Text>
+          <Text style={styles.instructions}>Modulo busquedas</Text>           
       </View>
+      
     );
     
   }
@@ -42,4 +43,12 @@ const styles = StyleSheet.create({
       color: '#333333',
       marginBottom: 5,
     },
+    map:{
+      width:width,
+      height: height*0.3,
+      backgroundColor:'red',
+      marginVertical:10,
+      marginBottom:100,
+      paddingHorizontal:5,
+  }
   });
