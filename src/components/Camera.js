@@ -68,21 +68,28 @@ renderImage(image) {
             } 
           </ScrollView>
         </View>
-        <TouchableOpacity style={styles.buttonLitle}
-          onPress={this.pickMultiple.bind(this)}>
-          <View style={{flexDirection:'row'}}>
-            <Icon name="images" size={20} color="gray" style={{marginRight:5}} regular/>
-            <Text style={styles.text}>Seleccionar imagen(s) desde galeria</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonLitle}
-           onPress={() => this.pickSingleWithCamera(false)}>
-          <View style={{flexDirection:'row'}}>
-            <Icon name="camera-retro" size={20} color="gray" style={{marginRight:5}} regular/>
-            <Text style={styles.text}>Tomar foto desde camara</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+        <View>
+        {this.props.images.length > 0 ? 
+          <View></View>:
+          <View>
+            <TouchableOpacity style={styles.buttonLitle}
+              onPress={this.pickMultiple.bind(this)}>
+              <View style={{flexDirection:'row'}}>
+                <Icon name="images" size={20} color="gray" style={{marginRight:5}} regular/>
+                <Text style={styles.text}>Seleccionar imagen(s) desde galeria</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.buttonLitle}
+              onPress={() => this.pickSingleWithCamera(false)}>
+              <View style={{flexDirection:'row'}}>
+                <Icon name="camera-retro" size={20} color="gray" style={{marginRight:5}} regular/>
+                <Text style={styles.text}>Tomar foto desde camara</Text>
+              </View>
+            </TouchableOpacity>
+          </View>  
+        }
+      </View>      
+    </View>
     );
   }
 }

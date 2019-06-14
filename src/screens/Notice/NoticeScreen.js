@@ -123,5 +123,6 @@ const styles = StyleSheet.create({
       fontSize: 14,
       color: 'gray',
       fontFamily: Fonts.OpenSans
-    }
+    },
+
   });
