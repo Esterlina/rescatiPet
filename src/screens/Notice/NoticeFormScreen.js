@@ -41,6 +41,84 @@ updateImages(images){
 updateLocation(marker,address){
   this.setState({marker:marker,address:address,map:false}, () =>{this.locationRef.setAddressText(this.state.address);})
 }
+renderMoreInformation() {
+  return(
+    <View style={styles.moreInformation}>
+      <Text style={styles.textWhite}>AGREGA MÁS CARACTERISTICAS</Text>
+      <View style={styles.pickersInfo}>
+        <View style={[styles.pickerContainer,{backgroundColor:'white'}]}>
+          <Picker
+            selectedValue={this.state.breed}
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) =>
+              this.setState({breed: itemValue})
+            }>
+            <Picker.Item color= "#a0a0a0" label="Raza" value="0" />
+            { this.state.breedList.map( breed => (<Picker.Item key={breed.id} color="gray" label={breed.name} value={breed.id} />) ) }
+          </Picker>
+        </View>
+        <View style={[styles.pickerContainer,{backgroundColor:'white'}]}>
+          <Picker
+            selectedValue={this.state.age}
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) =>
+              this.setState({age: itemValue})
+            }>
+              <Picker.Item color= "#a0a0a0" label="Edad" value="0" />
+            { this.state.ageList.map( age => (<Picker.Item key={age.id} color="gray" label={age.name} value={age.id} />) ) }              
+          </Picker>
+        </View>
+      </View>
+      <View style={styles.pickersInfo}>
+        <View style={[styles.pickerContainer,{backgroundColor:'white'}]}>
+          <Picker
+            selectedValue={this.state.size}
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) =>
+              this.setState({size: itemValue})
+            }>
+            <Picker.Item color= "#a0a0a0" label="Tamaño" value="" />
+            <Picker.Item color="gray" label="Pequeño" value="Pequeño" />
+            <Picker.Item color="gray" label="Mediano" value="Mediano" />
+            <Picker.Item color="gray" label="Grande" value="Grande" />
+          </Picker>
+        </View>
+        <View style={[styles.pickerContainer,{backgroundColor:'white'}]}>
+          <Picker
+            selectedValue={this.state.color}
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) =>
+              this.setState({color: itemValue})
+            }>
+              <Picker.Item color= "#a0a0a0" label="Color" value="0" />
+            { this.state.colorList.map( color => (<Picker.Item key={color.id} color="gray" label={color.name} value={color.id} />) ) }              
+          </Picker>
+        </View>
+      </View>
+      <Text style={[styles.textWhite,{fontFamily: Fonts.OpenSansSemiBold}]}>Marque los accesorios presentes:</Text>
+      <View style={styles.pickersInfo}>
+        <CheckBox
+          title='Collar y/o correa'
+          checked={this.state.collar}
+          onPress={() => this.setState({collar: !this.state.collar})}
+          textStyle = {[styles.text,{fontWeight:'400', marginLeft:0}]}
+          checkedColor = '#66D2C5'
+          fontFamily = {Fonts.OpenSansSemiBold}
+          containerStyle = {styles.checkbox}
+        />
+        <CheckBox
+          title='Chaleco/ropa'
+          checked={this.state.clothes}
+          onPress={() => this.setState({clothes: !this.state.clothes})}
+          textStyle = {[styles.text,{fontWeight:'400', marginLeft:0}]}
+          checkedColor = '#66D2C5'
+          fontFamily = {Fonts.OpenSansSemiBold}
+          containerStyle = {styles.checkbox}
+        />
+      </View>      
+    </View>
+  ) 
+}
   render(){ 
     return(
       <ScrollView style={styles.container}>
@@ -175,80 +253,7 @@ updateLocation(marker,address){
                 </Picker>
               </View>
             </View>
-            <View style={styles.moreInformation}>
-              <Text style={styles.textWhite}>AGREGA MÁS CARACTERISTICAS</Text>
-              <View style={styles.pickersInfo}>
-                <View style={[styles.pickerContainer,{backgroundColor:'white'}]}>
-                  <Picker
-                    selectedValue={this.state.breed}
-                    style={styles.picker}
-                    onValueChange={(itemValue, itemIndex) =>
-                      this.setState({breed: itemValue})
-                    }>
-                    <Picker.Item color= "#a0a0a0" label="Raza" value="0" />
-                    { this.state.breedList.map( breed => (<Picker.Item key={breed.id} color="gray" label={breed.name} value={breed.id} />) ) }
-                  </Picker>
-                </View>
-                <View style={[styles.pickerContainer,{backgroundColor:'white'}]}>
-                  <Picker
-                    selectedValue={this.state.age}
-                    style={styles.picker}
-                    onValueChange={(itemValue, itemIndex) =>
-                      this.setState({age: itemValue})
-                    }>
-                     <Picker.Item color= "#a0a0a0" label="Edad" value="0" />
-                    { this.state.ageList.map( age => (<Picker.Item key={age.id} color="gray" label={age.name} value={age.id} />) ) }              
-                  </Picker>
-                </View>
-              </View>
-              <View style={styles.pickersInfo}>
-                <View style={[styles.pickerContainer,{backgroundColor:'white'}]}>
-                  <Picker
-                    selectedValue={this.state.size}
-                    style={styles.picker}
-                    onValueChange={(itemValue, itemIndex) =>
-                      this.setState({size: itemValue})
-                    }>
-                    <Picker.Item color= "#a0a0a0" label="Tamaño" value="" />
-                    <Picker.Item color="gray" label="Pequeño" value="Pequeño" />
-                    <Picker.Item color="gray" label="Mediano" value="Mediano" />
-                    <Picker.Item color="gray" label="Grande" value="Grande" />
-                  </Picker>
-                </View>
-                <View style={[styles.pickerContainer,{backgroundColor:'white'}]}>
-                  <Picker
-                    selectedValue={this.state.color}
-                    style={styles.picker}
-                    onValueChange={(itemValue, itemIndex) =>
-                      this.setState({color: itemValue})
-                    }>
-                     <Picker.Item color= "#a0a0a0" label="Color" value="0" />
-                    { this.state.colorList.map( color => (<Picker.Item key={color.id} color="gray" label={color.name} value={color.id} />) ) }              
-                  </Picker>
-                </View>
-              </View>
-              <Text style={[styles.textWhite,{fontFamily: Fonts.OpenSansSemiBold}]}>Marque los accesorios presentes:</Text>
-              <View style={styles.pickersInfo}>
-                <CheckBox
-                  title='Collar y/o correa'
-                  checked={this.state.collar}
-                  onPress={() => this.setState({collar: !this.state.collar})}
-                  textStyle = {[styles.text,{fontWeight:'400', marginLeft:0}]}
-                  checkedColor = '#66D2C5'
-                  fontFamily = {Fonts.OpenSansSemiBold}
-                  containerStyle = {styles.checkbox}
-                />
-                <CheckBox
-                  title='Chaleco/ropa'
-                  checked={this.state.clothes}
-                  onPress={() => this.setState({clothes: !this.state.clothes})}
-                  textStyle = {[styles.text,{fontWeight:'400', marginLeft:0}]}
-                  checkedColor = '#66D2C5'
-                  fontFamily = {Fonts.OpenSansSemiBold}
-                  containerStyle = {styles.checkbox}
-                />
-              </View>      
-            </View>
+            {this.renderMoreInformation()}
             <TextInput
               style = {styles.inputArea}
               placeholder = {'Agregue una descripción ...'}
