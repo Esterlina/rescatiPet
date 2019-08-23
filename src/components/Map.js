@@ -54,6 +54,9 @@ export default class Map extends Component{
             marker = this.state.marker
             address = this.state.address
             this.props.update(marker,address);    
+            console.log("IMPRIMIRE LA RESPUESTA JSON************************");
+            console.log(json);
+            console.log("TERMINE DE IMPRIMIR LA RESPUESTA JSON************************");
 		})
 		.catch(error => console.warn(error));
   }

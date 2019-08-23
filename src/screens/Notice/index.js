@@ -1,10 +1,10 @@
 import { createStackNavigator } from 'react-navigation'
 
-import Notice from './NoticeScreen';
+import Notices from './NoticesScreen';
 import Form from './NoticeFormScreen';
 
 export default createStackNavigator({
-    Notice,
+    Notices,
     Form
 },
 {

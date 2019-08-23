@@ -97,7 +97,7 @@ renderImage(image) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#F5FCFF',
+      backgroundColor: 'white',
     },
     text:{
       fontSize: 14,

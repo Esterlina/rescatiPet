@@ -5,10 +5,15 @@ import {Fonts} from '../../utils/Fonts';
 import Header from '../../components/Header';
 const {height, width} = Dimensions.get('window');
 
-export default class NoticeScreen extends React.Component {
+export default class NoticesScreen extends React.Component {
   openFormNotice(type_notice){
     //this.props.navigation.navigate('Form');  
-    this.props.navigation.navigate('Form', { type: type_notice})
+    console.log(type_notice);
+    if(type_notice == 'SOS'){
+      this.props.navigation.navigate('Form', { type: type_notice, info: false})
+    }else{
+      this.props.navigation.navigate('Form', { type: type_notice, info: true})
+    }
   }
   openForo(){
     this.props.navigation.navigate('Login')
@@ -23,7 +28,7 @@ export default class NoticeScreen extends React.Component {
             <Text style={styles.text}>¿Qué tipo de aviso deseas realizar?</Text>
           </View>
           <View style={[styles.notices,{marginTop:10}]}>
-          <TouchableOpacity onPress={() => this.openFormNotice('busqueda')}>
+          <TouchableOpacity onPress={() => this.openFormNotice('Busqueda')}>
                 <View style={styles.notice}>
                   <Image
                     style={styles.noticeIcon} 
@@ -32,7 +37,7 @@ export default class NoticeScreen extends React.Component {
                   <Text style={[styles.noticeTitle,{color:'#ffd492'}]}>Aviso de Búsqueda</Text>
                 </View>
               </TouchableOpacity>   
-              <TouchableOpacity onPress={() => this.openFormNotice('emergencia')}>
+              <TouchableOpacity onPress={() => this.openFormNotice('SOS')}>
                 <View style={styles.notice}>
                   <Image
                     style={styles.noticeIcon} 
@@ -44,7 +49,7 @@ export default class NoticeScreen extends React.Component {
               
           </View>
           <View style={styles.notices}>
-          <TouchableOpacity onPress={() => this.openFormNotice('hallazgo')}>
+          <TouchableOpacity onPress={() => this.openFormNotice('Hallazgo')}>
                 <View style={styles.notice}>
                 <Image
                     style={styles.noticeIcon}
