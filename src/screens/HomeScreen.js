@@ -33,7 +33,6 @@ componentDidMount() {
       notices: responseJson['notices'],
     },() => this.setState({loading: false}))
   })
-
   .catch((error) => {
     console.log(error)
   });

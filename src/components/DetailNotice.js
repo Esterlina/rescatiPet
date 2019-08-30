@@ -10,7 +10,10 @@ import Helpers from '../../lib/helpers'
 import _ from 'lodash';
 import Moment from 'moment';
 import 'moment/locale/es'
-
+import Share from 'react-native-share';
+import RNFetchBlob from 'react-native-fetch-blob';
+const fs = RNFetchBlob.fs;
+let imagePath = null;
 const {height, width} = Dimensions.get('window');
 
 YellowBox.ignoreWarnings(['Setting a timer']);
@@ -28,6 +31,7 @@ export default class DetailNotice extends React.Component {
     this.isMounted = true;
     this.state = {
       images: [],
+      images_base64:[],
       loading: true,
     };
 }
@@ -58,6 +62,57 @@ _renderItem = ( {item, index} ) => {
     </View>
   );
 }
+
+urlToBase64(url) { 
+  return new Promise(resolve => {
+    console.log("ESTOY DENTRO DEL AWAIT")
+    RNFetchBlob.config({
+      fileCache: true
+    })
+      .fetch("GET", url)
+      .then(resp => {
+        imagePath = resp.path();
+        return resp.readFile("base64");
+      })
+      .then(base64Data => {
+        console.log(base64Data);
+        let base64 = "data:image/jpeg;base64,"+base64Data
+        this.setState({images_base64:this.state.images_base64.concat([base64])}) 
+        fs.unlink(imagePath);
+        resolve(this.state.images_base64.length);
+      });  
+  });
+}
+
+async share() {
+  if(this.state.images_base64.length > 0){
+    this.shareToSocial()
+  }else{
+    for (i=0; i < this.state.images.length ; i++){
+      const largo  = await this.urlToBase64(this.state.images[i])
+      if(this.state.images_base64.length == this.state.images.length){
+          this.shareToSocial()
+      }
+    }
+  }
+}
+async shareToSocial(){
+  const notice = this.props.navigation.getParam('notice')
+  const shareOptions = {
+    title: 'Share file',
+    message: notice.share,
+    urls: this.state.images_base64,
+    failOnCancel: true,
+  };
+  try {
+    const ShareResponse = await Share.open(shareOptions);
+    setResult(JSON.stringify(ShareResponse, null, 2));
+  } catch (error) {
+    console.log('Error =>', error);
+    setResult('error: '.concat(getErrorString(error)));
+  }
+}
+
   render(){ 
     Moment.locale('es')
     const notice = this.props.navigation.getParam('notice')
@@ -72,7 +127,7 @@ _renderItem = ( {item, index} ) => {
             size={40}
                 rounded
                 icon={{name: 'user', type: 'font-awesome'}}
-                containerStyle={{ borderWidth: 1,borderColor: '#66D2C5',}}
+                containerStyle={{ borderWidth: 1,borderColor: '#66D2C5'}}
             />
             <View style={{marginHorizontal: 10}}>
               <View style={{flexDirection:'row'}}>
@@ -189,12 +244,10 @@ _renderItem = ( {item, index} ) => {
               <Icon name="hands-helping" size={18} color='#929292' regular/> 
               <Text style={{color:'#929292'}}>match</Text>
             </TouchableOpacity> 
-            <TouchableOpacity style={styles.socialButton}>
+            <TouchableOpacity style={styles.socialButton} onPress={() => this.share()}>
               <Icon name="share-square" size={18} color='#929292' regular/> 
               <Text style={{color:'#929292'}}>compartir</Text>
             </TouchableOpacity> 
-            
-           
           </View>
         </View>
       </ScrollView>

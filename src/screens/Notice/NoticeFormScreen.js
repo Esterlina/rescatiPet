@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet,Switch, Text,View, Dimensions,TouchableOpacity, ScrollView,TextInput,Picker} from 'react-native';
+import { StyleSheet,Switch, Text,View, Dimensions,TouchableOpacity, ScrollView,TextInput,Picker,ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Fonts} from '../../utils/Fonts';
 import Header from '../../components/Header';
@@ -50,7 +50,9 @@ export default class NoticeFormScreen extends React.Component {
       notice:'',
       token:'',
       modalColors: false,
-      colors:[]
+      colors:[],
+      modalSend:false,
+      loading: false,
     };
 }
 componentDidMount(){
@@ -88,6 +90,8 @@ getRaceBySpecie(){
 }
 
 uploadImages = async (uri,name)=> {
+  console.log("ESTOY SUBIENDO LA FOTO " + name);
+  console.log(uri)
   const response = await fetch(uri);
   const blob = await response.blob();
   var ref = firebase.storage().ref().child(this.state.notice.img_dir + name);
@@ -127,6 +131,7 @@ async firebaseToken() {
   }
 }
 sendNotice(){
+  this.setState({modalSend:true,loading:true})
   fetch(API + 'notices', {
   method: 'POST',
   headers: {
@@ -161,11 +166,10 @@ sendNotice(){
         this.uploadImages(item.uri,"image_" + i + ".jpg")
       )
     });
-
-    console.log(this.state.notice.img_dir);
-  })
-  .then(  this.props.navigation.navigate('Home'))
-  .catch((error) =>{
+  console.log(this.state.notice.img_dir);
+  console.log(this.state.notice)
+  this.setState({loading:false})
+  }).catch((error) =>{
     console.error(error);
   });
 }
@@ -288,8 +292,34 @@ renderMoreInformation() {
     const type = this.props.navigation.getParam('type');
     return(
       <ScrollView style={[styles.container]}>
-        <Modal visible={this.state.map}
+        <Modal isVisible={this.state.modalSend} style={{margin:20}}>
+          
+            <View style={{backgroundColor:'white',height:height*0.25,borderRadius:8}}>
+              <View style={styles.headerModal}>
+                <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>{this.state.loading? "Publicando aviso...": "Aviso publicado"}</Text>
+              </View>
+              {this.state.loading?
+                <View style={{alignSelf:'center'}}>
+                  <Text style={{textAlign:'center',fontSize:16}}>Estamos publicando tu aviso.</Text>
+                  <Text style={{textAlign:'center',fontSize:14,marginBottom:30}}>Por favor, espera unos segundos.</Text>
+                  <ActivityIndicator size="large" color="#66D2C5" />
+                </View>
+              :
+              <View style={{marginBottom:30,alignSelf:'center'}}>
+                <Text style={{textAlign:'center',fontSize:16}}>¡Enhora buena!</Text>
+                <Text style={{textAlign:'center',fontSize:14}}>Tu aviso ha sido publicado con exito.</Text>
+                <Text style={{textAlign:'center',fontSize:14}}>Ya puedes ir a hecharle un vistazo.</Text>
+                <TouchableOpacity style={[styles.buttonLitle,{width:width*0.3,alignSelf:'center'}]}
+                  onPress={() =>this.setState({modalSend:false } ,()=>{this.props.navigation.navigate('DetailNotice', { notice: this.state.notice})}) }>
+                  <Text style={{fontSize:16,textAlign:'center'}}>Aceptar</Text>
+                </TouchableOpacity>
+              </View>
+              }
+            </View>
+        </Modal>
+        <Modal isVisible={this.state.map} style={{margin:0}}
             onRequestClose={()=>console.log("cerrando")}> 
+            <View style={{width:width,height:height}}>
             <Map marker={this.state.marker} update = {this.updateLocation.bind(this)}/> 
             <View style={styles.mapClose}>
               <TouchableOpacity style={[styles.buttonLitle,{backgroundColor:'white'}]}
@@ -300,11 +330,13 @@ renderMoreInformation() {
                 </View>
               </TouchableOpacity>
             </View>
+            </View>
+            
         </Modal>
         <Modal isVisible={this.state.modalColors}
           hasBackdrop={true} style={{margin:20}}> 
           <View style={{backgroundColor:'white',height:height*0.6,borderRadius:8}}>
-            <View style={{backgroundColor:'#66d2c5', borderTopEndRadius:8,borderTopStartRadius:8,height:height*0.06,alignItems:'center',justifyContent:'center',marginBottom:10}}>
+            <View style={styles.headerModal}>
               <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>Seleccione los colores</Text>
             </View>
             <ScrollView>
@@ -506,7 +538,7 @@ renderMoreInformation() {
             }
             <TouchableOpacity 
               style={styles.buttonPost}
-              onPress={() =>console.log(this.state.colors)}
+              onPress={() => this.validate()}
             >
               <Text style={styles.textPost}> Publicar </Text>
             </TouchableOpacity>     
@@ -549,7 +581,7 @@ const styles = StyleSheet.create({
     },
     mapClose:{
       position: 'absolute',
-      margin:5,
+      margin:15,
       alignSelf: 'flex-start'
     },
     textMap:{
@@ -683,5 +715,14 @@ const styles = StyleSheet.create({
     backgroundColor:'white',
     width:width*0.35,
     alignItems:'center'
+    },
+    headerModal:{
+      backgroundColor:'#66d2c5',
+      borderTopEndRadius:8,
+      borderTopStartRadius:8,
+      height:height*0.06,
+      alignItems:'center',
+      justifyContent:'center',
+      marginBottom:10
     }
   });
