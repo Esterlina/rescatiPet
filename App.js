@@ -4,10 +4,24 @@ import Login from "./src/screens/LoginScreen";
 import Register from "./src/screens/RegisterScreen";
 import Perfil from "./src/screens/PerfilScreen";
 import Search from "./src/screens/SearchScreen";
-//import Notice from "./src/screens/Notice/NoticeScreen";
 import Rescue from "./src/screens/RescueScreen";
 import Notice from "./src/screens/Notice/";
+import DetailNotice from "./src/components/DetailNotice";
+import Prueba from "./src/components/Prueba";
 import Home from "./src/screens/HomeScreen";
+import LoadingScreen from "./src/screens/LoadingScreen";
+
+import * as firebase from 'firebase';
+import FirebaseConfig from './lib/FirebaseConfig';
+firebase.initializeApp(FirebaseConfig);
+
+import {
+  createSwitchNavigator,
+  createAppContainer,
+  createDrawerNavigator,
+  createBottomTabNavigator,
+  createStackNavigator
+} from 'react-navigation';
 /**
  * - AppSwitchNavigator
  *    - WelcomeScreen
@@ -22,20 +36,13 @@ import Home from "./src/screens/HomeScreen";
  *            - Any files you don't want to be a part of the Tab Navigator can go here.
  */
 
-import {
-  createSwitchNavigator,
-  createAppContainer,
-  createDrawerNavigator,
-  createBottomTabNavigator,
-  createStackNavigator
-} from 'react-navigation';
+
 class App extends Component {
   render() {
-    return <AppContainer />;
+      return <AppContainer/>;   
   }
 }
 export default App;
-
 
 const DashboardTabNavigator = createBottomTabNavigator(
   {
@@ -69,13 +76,14 @@ const DashboardTabNavigator = createBottomTabNavigator(
 const DashboardStackNavigator = createStackNavigator(
   {
     DashboardTabNavigator: DashboardTabNavigator,   
-  },
+    DetailNotice: DetailNotice,
+  },{
+    headerMode: 'none'
+  }
 );
 
 const AppDrawerNavigator = createDrawerNavigator({
-  Dashboard: {
-    screen: DashboardTabNavigator
-  },
+  Dashboard: DashboardStackNavigator,
 },{
   drawerBackgroundColor:'#66d2c5',
   //drawerWidth:200,
@@ -85,12 +93,13 @@ const AppDrawerNavigator = createDrawerNavigator({
 
   }
 });
-
-const AppSwitchNavigator = createSwitchNavigator({
-  Dashboard: { screen: AppDrawerNavigator },
-  Login: { screen: Login },
-  Register: {screen: Register},
-  
-});
+const AuthStack = createStackNavigator({ Login: Login, Register: Register },{headerMode: 'none',});
+const AppSwitchNavigator = createSwitchNavigator(
+  {
+    AuthLoading: LoadingScreen,
+    Dashboard: AppDrawerNavigator ,
+    Auth : AuthStack,
+  },
+);
 
 const AppContainer = createAppContainer(AppSwitchNavigator);

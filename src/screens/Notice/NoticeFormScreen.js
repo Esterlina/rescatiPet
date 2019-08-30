@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text,View, Modal, Dimensions,TouchableOpacity, ScrollView,TextInput,Picker} from 'react-native';
+import { StyleSheet,Switch, Text,View, Dimensions,TouchableOpacity, ScrollView,TextInput,Picker,ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Fonts} from '../../utils/Fonts';
 import Header from '../../components/Header';
@@ -7,33 +7,202 @@ import Map from '../../components/Map';
 import Camera from '../../components/Camera';
 import DatePicker from 'react-native-datepicker';
 import { CheckBox } from 'react-native-elements'
-const {height, width} = Dimensions.get('window');
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import {API_KEY} from '../../keys';
+import {API_KEY, API} from '../../keys';
+import Helpers from '../../../lib/helpers'
+import * as firebase from 'firebase';
+import Modal from "react-native-modal";
+
+const {height, width} = Dimensions.get('window');
 export default class NoticeFormScreen extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
+      more_info : this.props.navigation.getParam('info'),
       images: [],
+      img_dir: '',
       map: false,
       collar: false,
       clothes: false,
+      rescue_request: false,
       details:'',
       time_last_seen:'',
       marker: { latitude: -33.499301, longitude: -70.586420},
       address:'',
       name:'',
       specie: 0,
+      specieName:'',
+      situation: 0,
       sex:'',
-      breed: 0,
+      race: 0,
       age:'',
       size: '',
       color:'',
-      specieList:[{id:1, name:"Perro"},{id:2, name:"Gato"},{id:3, name:"Conejo"},{id:4, name:"Hamster"}],
-      breedList:[{id:1, name:"Perro Quiltro"},{id:2, name: "Gato Siamés"},{id:3, name: "Gato Persa"}],
-      ageList:[{id:1, name:"2 semanas"},{id:2, name: "6 meses"},{id:3, name: "2 años"}],
-      colorList:[{id:1, name:"Blanco"},{id:2, name: "Rubio"},{id:3, name: "Blanco/negro"}]
+      json:'',
+      sexList:[],
+      specieList:[],
+      raceList:[],
+      ageList:[],
+      sizeList:[],
+      pelagesList:[],
+      colorList:[],
+      situationList:[],
+      notice:'',
+      token:'',
+      modalColors: false,
+      colors:[],
+      modalSend:false,
+      loading: false,
     };
+}
+componentDidMount(){
+  return fetch(API + 'notices/info_notice')
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        specieList: responseJson['tipos'],
+        raceList: responseJson['razas'],
+        sexList: responseJson['sexos'],
+        ageList: responseJson['edades'],
+        sizeList: responseJson['tamaños'],
+        pelagesList: responseJson['pelajes'],
+        colorList: responseJson['colores'],
+        situationList: responseJson['situaciones']
+      },()=> this.firebaseToken());
+    })
+    .catch((error) =>{
+      console.error(error);
+    });
+}
+getRaceBySpecie(){
+  if(this.state.specie != 0){
+    return fetch(API + 'notices/races/'+ this.state.specie)
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        raceList: responseJson,
+      });
+    })
+    .catch((error) =>{
+      console.error(error);
+    });
+  }
+}
+
+uploadImages = async (uri,name)=> {
+  console.log("ESTOY SUBIENDO LA FOTO " + name);
+  console.log(uri)
+  const response = await fetch(uri);
+  const blob = await response.blob();
+  var ref = firebase.storage().ref().child(this.state.notice.img_dir + name);
+  return ref.put(blob);
+}
+validate(){
+  if (this.state.images.length == 0){
+    alert("Debes subir al menos una imagen")
+    return false
+  }
+  if (this.state.address == ''){
+    alert("Debe completar el campo de dirección, puede abrir el mapa o ingresar una dirección cercana.")
+    return false
+  }
+  if (this.state.time_last_seen == ''){
+    alert("Ingrese una fecha aproximada donde sucedio este hecho.")
+    return false
+  }
+  if (this.state.specie == 0){
+    alert("Por favor, para agilizar la busqueda ingrese el tipo de animal.")
+    return false
+  }
+  this.sendNotice();
+  return true
+}
+async firebaseToken() {
+  const currentUser = firebase.auth().currentUser
+
+   if (currentUser) {
+  // reaches here
+    const idToken = await currentUser.getIdToken();
+    console.log("IMPRIMIRE EL TOKEN A ENVIAR:");
+    console.log(idToken);
+  // never reaches here
+  this.setState({token: idToken})
+  return idToken
+  }
+}
+sendNotice(){
+  this.setState({modalSend:true,loading:true})
+  fetch(API + 'notices', {
+  method: 'POST',
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'Authorization': this.state.token,
+  },
+  body: JSON.stringify({
+    type: this.props.navigation.getParam('type'),
+    last_seen: this.state.time_last_seen,
+    lat: this.state.marker.latitude,
+    lng: this.state.marker.longitude,
+    street: this.state.address,
+    name: this.state.name,
+    animal_type_id: this.state.specie,
+    sex: this.state.sex,
+    race_id: this.state.race,
+    age: this.state.age,
+    size: this.state.size,
+    collar: this.state.collar,
+    clothes: this.state.clothes,
+    details: this.state.details,
+    img_num: this.state.images.length,
+    situation_id: this.state.situation,
+    rescue_request:this.state.rescue_request,
+  }), 
+}).then((response) => response.json())
+  .then((responseJson) => {
+    console.log(responseJson);
+    this.setState({notice: responseJson},()=>{
+      this.state.images.map((item,i) => 
+        this.uploadImages(item.uri,"image_" + i + ".jpg")
+      )
+    });
+  console.log(this.state.notice.img_dir);
+  console.log(this.state.notice)
+  this.setState({loading:false})
+  }).catch((error) =>{
+    console.error(error);
+  });
+}
+changeColor(color){
+  const colors = this.state.colorList.slice() //copy the array
+  index = colors.findIndex(item => item.id === color.id);
+  colors[index].select = (color.select? false:true)
+  this.setState({colorList: colors}) 
+}
+setColors(){
+  const colors = []
+  this.state.colorList.map(function(color) {
+    if(color.select){
+      colors.push(color.name);
+    }
+  });
+  this.setState({colors:colors})
+}
+keepColors(){
+  const seleccionados = this.state.colors.slice()
+  const colors = this.state.colorList.slice() //copy the array 
+  colors.map(function(color){
+    if(seleccionados.length != 0){
+      if(seleccionados.includes(color.name)){
+        color.select = true;
+      }else{
+        color.select = false;
+      }
+    }else{
+      color.select = false;
+    }
+  });
+  this.setState({colorList:colors})
 }
 updateImages(images){
   this.setState({images:images})
@@ -48,13 +217,13 @@ renderMoreInformation() {
       <View style={styles.pickersInfo}>
         <View style={[styles.pickerContainer,{backgroundColor:'white'}]}>
           <Picker
-            selectedValue={this.state.breed}
+            selectedValue={this.state.race}
             style={styles.picker}
             onValueChange={(itemValue, itemIndex) =>
-              this.setState({breed: itemValue})
+              this.setState({race: itemValue})
             }>
-            <Picker.Item color= "#a0a0a0" label="Raza" value="0" />
-            { this.state.breedList.map( breed => (<Picker.Item key={breed.id} color="gray" label={breed.name} value={breed.id} />) ) }
+            <Picker.Item key={0} color= "#a0a0a0" label="Raza" value="0" />
+            { this.state.raceList.map( race => (<Picker.Item key={race.id} color="gray" label={race.name} value={race.id} />) ) }
           </Picker>
         </View>
         <View style={[styles.pickerContainer,{backgroundColor:'white'}]}>
@@ -64,8 +233,8 @@ renderMoreInformation() {
             onValueChange={(itemValue, itemIndex) =>
               this.setState({age: itemValue})
             }>
-              <Picker.Item color= "#a0a0a0" label="Edad" value="0" />
-            { this.state.ageList.map( age => (<Picker.Item key={age.id} color="gray" label={age.name} value={age.id} />) ) }              
+            <Picker.Item key={0} color= "#a0a0a0" label="Edad" value="" />
+            {this.state.ageList.map( age => (<Picker.Item key={age} color="gray" label={age} value={age} />))}              
           </Picker>
         </View>
       </View>
@@ -77,24 +246,21 @@ renderMoreInformation() {
             onValueChange={(itemValue, itemIndex) =>
               this.setState({size: itemValue})
             }>
-            <Picker.Item color= "#a0a0a0" label="Tamaño" value="" />
-            <Picker.Item color="gray" label="Pequeño" value="Pequeño" />
-            <Picker.Item color="gray" label="Mediano" value="Mediano" />
-            <Picker.Item color="gray" label="Grande" value="Grande" />
+            <Picker.Item key={0} color= "#a0a0a0" label="Tamaño" value="" />
+            {this.state.sizeList.map( size => (<Picker.Item key={size} color="gray" label={size} value={size} />))}  
           </Picker>
         </View>
         <View style={[styles.pickerContainer,{backgroundColor:'white'}]}>
-          <Picker
-            selectedValue={this.state.color}
-            style={styles.picker}
-            onValueChange={(itemValue, itemIndex) =>
-              this.setState({color: itemValue})
-            }>
-              <Picker.Item color= "#a0a0a0" label="Color" value="0" />
-            { this.state.colorList.map( color => (<Picker.Item key={color.id} color="gray" label={color.name} value={color.id} />) ) }              
-          </Picker>
+          <TouchableOpacity 
+            style={{paddingHorizontal:8,flexDirection:'row'}}
+            onPress={() => this.setState({modalColors:true})}>  
+              <Text style={{paddingTop:3,fontSize:15,color:'gray'}}>{this.state.colors.length != 0? this.state.colors : 'Colores(es)'}</Text>
+              <Icon name="sort-down" size={16} color='gray' style={{marginTop:3,marginLeft:45}} regular/>
+          </TouchableOpacity>
         </View>
       </View>
+      {(this.state.specieName != 'Ave' && this.state.specieName != 'Roedor')?
+      <View>
       <Text style={[styles.textWhite,{fontFamily: Fonts.OpenSansSemiBold}]}>Marque los accesorios presentes:</Text>
       <View style={styles.pickersInfo}>
         <CheckBox
@@ -115,15 +281,45 @@ renderMoreInformation() {
           fontFamily = {Fonts.OpenSansSemiBold}
           containerStyle = {styles.checkbox}
         />
-      </View>      
+      </View> 
+      </View>: null }
+
+           
     </View>
   ) 
 }
   render(){ 
+    const type = this.props.navigation.getParam('type');
     return(
-      <ScrollView style={styles.container}>
-        <Modal visible={this.state.map}
+      <ScrollView style={[styles.container]}>
+        <Modal isVisible={this.state.modalSend} style={{margin:20}}>
+          
+            <View style={{backgroundColor:'white',height:height*0.25,borderRadius:8}}>
+              <View style={styles.headerModal}>
+                <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>{this.state.loading? "Publicando aviso...": "Aviso publicado"}</Text>
+              </View>
+              {this.state.loading?
+                <View style={{alignSelf:'center'}}>
+                  <Text style={{textAlign:'center',fontSize:16}}>Estamos publicando tu aviso.</Text>
+                  <Text style={{textAlign:'center',fontSize:14,marginBottom:30}}>Por favor, espera unos segundos.</Text>
+                  <ActivityIndicator size="large" color="#66D2C5" />
+                </View>
+              :
+              <View style={{marginBottom:30,alignSelf:'center'}}>
+                <Text style={{textAlign:'center',fontSize:16}}>¡Enhora buena!</Text>
+                <Text style={{textAlign:'center',fontSize:14}}>Tu aviso ha sido publicado con exito.</Text>
+                <Text style={{textAlign:'center',fontSize:14}}>Ya puedes ir a hecharle un vistazo.</Text>
+                <TouchableOpacity style={[styles.buttonLitle,{width:width*0.3,alignSelf:'center'}]}
+                  onPress={() =>this.setState({modalSend:false } ,()=>{this.props.navigation.navigate('DetailNotice', { notice: this.state.notice})}) }>
+                  <Text style={{fontSize:16,textAlign:'center'}}>Aceptar</Text>
+                </TouchableOpacity>
+              </View>
+              }
+            </View>
+        </Modal>
+        <Modal isVisible={this.state.map} style={{margin:0}}
             onRequestClose={()=>console.log("cerrando")}> 
+            <View style={{width:width,height:height}}>
             <Map marker={this.state.marker} update = {this.updateLocation.bind(this)}/> 
             <View style={styles.mapClose}>
               <TouchableOpacity style={[styles.buttonLitle,{backgroundColor:'white'}]}
@@ -134,14 +330,52 @@ renderMoreInformation() {
                 </View>
               </TouchableOpacity>
             </View>
+            </View>
+            
+        </Modal>
+        <Modal isVisible={this.state.modalColors}
+          hasBackdrop={true} style={{margin:20}}> 
+          <View style={{backgroundColor:'white',height:height*0.6,borderRadius:8}}>
+            <View style={styles.headerModal}>
+              <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>Seleccione los colores</Text>
+            </View>
+            <ScrollView>
+              { this.state.colorList.map( color => (
+                <TouchableOpacity  key={color.id}
+                onPress={() => this.changeColor(color)}
+                >
+                  <View  style={{alignContent:'space-between',backgroundColor:'white',height:35,marginVertical:2,paddingHorizontal:5,justifyContent:'center',marginHorizontal:15,borderBottomWidth:0.8,borderColor:'#d6d7da'}}>
+                    <View style={{flexDirection:'row',justifyContent: 'space-between'}}>
+                      <Text style={{fontFamily:Fonts.OpenSansSemiBold,fontSize:16,}}>{color.name}</Text>
+                      <Icon name="check-square" size={24} color={color.select? '#66D2C5': '#d6d7da'} style={{marginRight:15}} solid/> 
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+           
+            <View style={{justifyContent:'flex-end',marginBottom: 10,flex:1}}>
+              <View style={{justifyContent: 'center',flexDirection:'row', alignSelf: 'stretch'}}>
+                <TouchableOpacity style={[styles.buttonLitle,styles.buttonsModal]}
+                  onPress={() =>this.setState({modalColors:false } ,()=>{this.setColors()}) }>
+                  <Text style={{fontSize:18}}>Aceptar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.buttonLitle,styles.buttonsModal]}
+                  onPress={() => this.setState({modalColors:false},()=>this.keepColors())}>
+                    <Text style={{fontSize:18}}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+              
+            </View>     
+          </View>
         </Modal>
         <Header {...this.props} stack='true'/> 
         <Camera update = {this.updateImages.bind(this)} images = {this.state.images} />
         <Text style={styles.textSection}>¿Cuándo y Dondé Fue la ultima vez que lo viste?</Text>
-        <View style={styles.containerForm2}>
+        <View style={[styles.containerForm2,styles.border]}>
           <DatePicker
             style={styles.dateTime}
-            date={this.state.date}
+            date={this.state.time_last_seen}
             mode="datetime"
             placeholder="Ingresa una fecha aproximada"
             format="YYYY-MM-DD HH:mm"
@@ -169,7 +403,7 @@ renderMoreInformation() {
                     alignSelf: 'stretch'
                 }
             }}
-            onDateChange={(date) => {this.setState({date: date})}}
+            onDateChange={(date) => {this.setState({time_last_seen: date})}}
           />
           <GooglePlacesAutocomplete
             ref={(instance) => { this.locationRef = instance }}
@@ -184,17 +418,16 @@ renderMoreInformation() {
             this.setState({marker:
             {latitude:details.geometry.location.lat,longitude: details.geometry.location.lng},
             address: details.formatted_address});
-            //alert(this.state.address);
             }}
             styles={{
               textInputContainer: {
-                backgroundColor: '#F5FCFF',
+                backgroundColor: 'white',
                 borderTopWidth: 0,
                 borderBottomWidth:0,
                 width:width*0.94,
               },
               textInput: {
-                backgroundColor:'#F5FCFF',
+                backgroundColor:'white',
                 borderWidth: 1.3,
                 borderColor: '#d6d7da',
                 borderRadius: 8,
@@ -231,13 +464,15 @@ renderMoreInformation() {
             <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
               <View style={styles.pickerContainer}>
                 <Picker
-                  selectedValue={this.state.specie}
+                  selectedValue={this.state.specieName}
                   style={styles.picker}
                   onValueChange={(itemValue, itemIndex) =>
-                    this.setState({specie: itemValue})
+                    this.setState({specie: itemIndex,specieName:itemValue}, () => {
+                    this.getRaceBySpecie();
+                  })
                   }>
                   <Picker.Item color= "#a0a0a0" label="Especie" value="0" />
-                  { this.state.specieList.map( specie => (<Picker.Item key={specie.id} color="gray" label={specie.name} value={specie.id} />) ) }
+                  { this.state.specieList.map( specie => (<Picker.Item key={specie.id} color="gray" label={specie.name} value={specie.name} />) ) }
                 </Picker>
               </View>
               <View style={styles.pickerContainer}>
@@ -248,12 +483,19 @@ renderMoreInformation() {
                     this.setState({sex: itemValue})
                   }>
                   <Picker.Item color= "#a0a0a0" label="Sexo" value="" />
-                  <Picker.Item color="gray" label="Hembra" value="Hembra" />
-                  <Picker.Item color="gray" label="Macho" value="Macho" />   
+                  { this.state.sexList.map( sex => (<Picker.Item key={sex} color="gray" label={sex} value={sex} />) ) }
                 </Picker>
               </View>
             </View>
-            {this.renderMoreInformation()}
+            {this.state.more_info? this.renderMoreInformation():
+                <TouchableOpacity 
+                style={[styles.buttonPost,styles.border,styles.moreInfo]}
+                onPress={() =>this.setState({more_info: true})}
+              >
+                <Icon name="plus" size={18} color='#9d9c9c' style={{marginRight:5,marginTop:3}} regular/>
+                <Text style={styles.textInfo}> Agregar más informacion </Text>
+              </TouchableOpacity>  
+            }
             <TextInput
               style = {styles.inputArea}
               placeholder = {'Agregue una descripción ...'}
@@ -262,9 +504,41 @@ renderMoreInformation() {
               numberOfLines={4}
               onChangeText={(value) => this.setState({details: value})}
             ></TextInput>  
+            {type === 'SOS' ?
+            <View style={[styles.border, styles.request]}>
+              <View>
+                <Text style={{fontFamily: Fonts.OpenSansSemiBold,marginBottom:5}}>Situación de emergencia</Text>
+                <View style={[styles.pickerContainer,{borderColor:'#d6d7da'}]}>
+                  <Picker
+                    selectedValue={this.state.situation}
+                    style={styles.picker}
+                    onValueChange={(itemValue, itemIndex) =>
+                      this.setState({situation: itemIndex})
+                    }>
+                    <Picker.Item color= "#a0a0a0" label="Situación" value="0" />
+                    { this.state.situationList.map( situation => (<Picker.Item key={situation.id} color="gray" label={situation.name} value={situation.name} />) ) }
+                  </Picker>
+                </View>
+              </View>
+              <View style={{ alignItems:'center'}}>
+                <Text style={{fontFamily: Fonts.OpenSansSemiBold,marginBottom:5}}>Solicitar ayuda</Text>
+                <Switch
+                   onValueChange={(value) =>
+                    this.setState({rescue_request: value})
+                  }
+                  thumbColor="white" 
+                  trackColor={{
+                    true: "#66D2C5",
+                    false: "#d6d7da",
+                }} 
+                  value = {this.state.rescue_request}/>
+              </View>
+            </View>
+              :null
+            }
             <TouchableOpacity 
               style={styles.buttonPost}
-              onPress={() =>console.log("PUBLICAR POST")}
+              onPress={() => this.validate()}
             >
               <Text style={styles.textPost}> Publicar </Text>
             </TouchableOpacity>     
@@ -278,7 +552,7 @@ renderMoreInformation() {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#F5FCFF',
+      backgroundColor: 'white',
     },
     text:{
       fontSize: 14,
@@ -307,7 +581,7 @@ const styles = StyleSheet.create({
     },
     mapClose:{
       position: 'absolute',
-      margin:5,
+      margin:15,
       alignSelf: 'flex-start'
     },
     textMap:{
@@ -324,7 +598,6 @@ const styles = StyleSheet.create({
   },
   dateTime:{
     width: width*0.90,
-    //backgroundColor:'red',
     height:34,
     marginTop:8,
     borderWidth: 1.3,
@@ -377,6 +650,11 @@ const styles = StyleSheet.create({
     padding:5,
     borderRadius:4
   },
+  border:{
+    borderWidth: 1.3,
+    borderColor: '#66D2C5',
+    borderRadius: 4,
+  },
   pickersInfo:{
     flexDirection:'row',
     justifyContent: 'space-between',
@@ -388,9 +666,6 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.OpenSansSemiBold
   },
   containerForm2:{
-    borderWidth: 1.3,
-    borderColor: '#66D2C5',
-    borderRadius: 4,
     justifyContent:'center',
     alignItems:'center',
     marginHorizontal:10,
@@ -409,6 +684,11 @@ const styles = StyleSheet.create({
     fontSize:20,
     fontFamily: Fonts.OpenSansBold
   },
+  textInfo:{
+    color:'gray',
+    fontSize:16,
+    fontFamily: Fonts.OpenSansRegular
+  },
   buttonPost:{
     marginTop: 5,
     borderRadius: 8,
@@ -416,5 +696,33 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent:'center',
     height: 45,
-   }
+   },
+   request:{
+    alignItems:'center',
+    paddingHorizontal:10,
+    paddingVertical:5,
+    flexDirection:'row',
+    justifyContent: 'space-between'
+   },
+   moreInfo:{
+    backgroundColor:'white',
+    borderColor:'#d6d7da',
+    flexDirection:'row',
+    borderStyle: 'dashed',
+    marginTop:10
+   },
+   buttonsModal:{
+    backgroundColor:'white',
+    width:width*0.35,
+    alignItems:'center'
+    },
+    headerModal:{
+      backgroundColor:'#66d2c5',
+      borderTopEndRadius:8,
+      borderTopStartRadius:8,
+      height:height*0.06,
+      alignItems:'center',
+      justifyContent:'center',
+      marginBottom:10
+    }
   });

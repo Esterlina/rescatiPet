@@ -11,13 +11,15 @@ export default class Camera extends React.Component {
 pickMultiple() {
     ImagePicker.openPicker({
         multiple: true,
-        waitAnimationEnd: false,
-        includeExif: true,
-        forceJpg: true,
+        compressImageMaxWidth:580,
+        compressImageMaxHeight:760,
         }).then(images => {
-          const new_images = images.map(i => {
-            console.log('received image', i);
-            return {uri: i.path, width: i.width, height: i.height, mime: i.mime};
+          const new_images = images.map(image => {
+            console.log(image.width)
+            console.log(image.height)
+            console.log(image.path)
+            console.log(image.mime)
+            return {uri:image.path, width: image.width, height: image.height, mime: image.mime};
           })
           this.props.update(new_images);
     }).catch(e => alert("Has salido de la selección de imagen(es). Recuerda subir alguna imagen antes de publicar tu aviso."));
@@ -27,8 +29,8 @@ pickMultiple() {
 pickSingleWithCamera(cropping, mediaType='photo') {
   ImagePicker.openCamera({
     cropping: cropping,
-    width: 500,
-    height: 500,
+    width: 350,
+    height: 400,
     includeExif: true,
     mediaType,
     }).then(image => {
@@ -97,7 +99,7 @@ renderImage(image) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#F5FCFF',
+      backgroundColor: 'white',
     },
     text:{
       fontSize: 14,
