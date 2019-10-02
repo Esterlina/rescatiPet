@@ -40,6 +40,7 @@ export default class LoginScreen extends React.Component {
       await firebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password)
       if (this._isMounted){
         this.setState({response: 'Inicio de sensión exitoso.'});
+        console.log(this.getUserToken());
         console.log(this.state.response);
         setTimeout(()=>{this.props.navigation.navigate('Dashboard')},1500);
       }

@@ -65,7 +65,6 @@ _renderItem = ( {item, index} ) => {
 
 urlToBase64(url) { 
   return new Promise(resolve => {
-    console.log("ESTOY DENTRO DEL AWAIT")
     RNFetchBlob.config({
       fileCache: true
     })
