@@ -102,12 +102,12 @@ validate(){
     alert("Debes subir al menos una imagen")
     return false
   }
-  if (this.state.address == ''){
-    alert("Debe completar el campo de dirección, puede abrir el mapa o ingresar una dirección cercana.")
-    return false
-  }
   if (this.state.time_last_seen == ''){
     alert("Ingrese una fecha aproximada donde sucedio este hecho.")
+    return false
+  }
+  if (this.state.address == ''){
+    alert("Debe completar el campo de dirección, puede abrir el mapa o ingresar una dirección cercana.")
     return false
   }
   if (this.state.specie == 0){
