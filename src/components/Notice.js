@@ -7,7 +7,8 @@ import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { Avatar } from 'react-native-elements'
 import Helpers from '../../lib/helpers'
 import _ from 'lodash';
-
+import Moment from 'moment';
+import 'moment/locale/es'
 const {height, width} = Dimensions.get('window');
 
 YellowBox.ignoreWarnings(['Setting a timer']);
@@ -58,6 +59,8 @@ _renderItem = ( {item, index} ) => {
 }
   render(){ 
     const notice = this.props.dataJson
+    Moment.locale('es')
+    const data_create = Moment(notice.hora_creacion || Moment.now()).fromNow();
     return(
       <View style={styles.container}>
         <View style={styles.notice}>
@@ -77,7 +80,7 @@ _renderItem = ( {item, index} ) => {
 
                 </View>
                 <View style={[styles.text,{flexDirection:'row'}]}>
-                  <Text>Hace 2h - </Text>
+                  <Text>{data_create} - </Text>
                   {notice.estado == 'Abierto' ?
                   <Text style={[styles.semiBold,{color:'#19c9d4'}]}>Caso abierto</Text>:
                   <Text style={[styles.semiBold,{color:'red'}]}>Caso cerrado</Text>
@@ -145,7 +148,7 @@ const styles = StyleSheet.create({
       marginVertical:5,
     },
     image:{
-      height: height*0.2,
+      height: height*0.3,
       width:width * 0.9,
     },
     carousel:{

@@ -34,7 +34,9 @@ componentDidMount() {
     },() => this.setState({loading: false}))
   })
   .catch((error) => {
+    console.log("HA OCURRIDO UN ERROR DE CONEXION")
     console.log(error)
+    this.setState({loading: false})
   });
 }
 

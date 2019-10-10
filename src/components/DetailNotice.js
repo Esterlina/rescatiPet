@@ -115,6 +115,7 @@ async shareToSocial(){
   render(){ 
     Moment.locale('es')
     const notice = this.props.navigation.getParam('notice')
+    const data_create = Moment(notice.hora_creacion || Moment.now()).fromNow();
     return(
       <View style={styles.container}>
         <Header {...this.props}/>
@@ -136,7 +137,7 @@ async shareToSocial(){
                 : `${notice.usuario.substring(0, 21)}...`}</Text>
               </View>
               <View style={[styles.text,{flexDirection:'row'}]}>
-                <Text>Hace 2h - </Text>
+                <Text>{data_create} - </Text>
                 {notice.estado == 'Abierto' ?
                 <Text style={[styles.semiBold,{color:'#19c9d4'}]}>Caso abierto</Text>:
                 <Text style={[styles.semiBold,{color:'red'}]}>Caso cerrado</Text>
@@ -235,10 +236,6 @@ async shareToSocial(){
               <Icon name="arrow-alt-circle-right" size={18} color='#929292' regular/> 
               <Text style={{color:'#929292'}}>seguir</Text>
             </TouchableOpacity>      
-            <TouchableOpacity style={styles.socialButton}>
-              <Icon name="comments" size={18} color='#929292' regular/> 
-              <Text style={{color:'#929292'}}>comentar</Text>
-            </TouchableOpacity> 
             <TouchableOpacity style={styles.socialButton}>
               <Icon name="hands-helping" size={18} color='#929292' regular/> 
               <Text style={{color:'#929292'}}>match</Text>

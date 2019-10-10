@@ -87,6 +87,7 @@ export default class LoginScreen extends React.Component {
         console.log('FACEBOOK+firebase LOGIN CON USUARIO');
       })
       .catch((error) =>{
+        console.log(error)
         console.log('FACEBOOK+firebase LOGIN FALLO');
       })
   }
