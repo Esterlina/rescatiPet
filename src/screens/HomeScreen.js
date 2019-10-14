@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text,TouchableOpacity, ScrollView,View,Image,ActivityIndicator} from 'react-native';
 import Header from '../components/Header';
 import {API} from '../keys';
-import SmallNotice from '../components/Notice'
+import Notice from '../components/Notice'
 
 export default class HomeScreen extends React.Component {
   constructor(props) {
@@ -44,21 +44,23 @@ componentDidMount() {
     
     return(
         <View style={styles.container}>
-          <Header {...this.props}/> 
+          <Header {...this.props} inbox='true'/> 
           {!this.state.loading ?
             <ScrollView style={styles.container}>
               {this.state.notices.map((item) => {
                 console.log(item)
                 return (
-                  <SmallNotice key={item.id} dataJson={item}
+                  <Notice key={item.id} dataJson={item}
                     navigation={this.props.navigation}
                     /> 
                   
                 )
               })}
             </ScrollView>
-            
-            : <ActivityIndicator size="large" color="#66D2C5" />}
+            : 
+            <View style={{flex:1,justifyContent:'center'}}>
+              <ActivityIndicator size="large" color="#66D2C5" />
+            </View> }
       </View>
     );
     

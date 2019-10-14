@@ -4,8 +4,9 @@ import {
   StatusBar,
   StyleSheet,
   View,
+  AsyncStorage,
 } from 'react-native';
-
+import {API} from '../keys';
 import * as firebase from 'firebase'
 
 class LoadingScreen extends React.Component {
@@ -17,14 +18,18 @@ class LoadingScreen extends React.Component {
     this._isMounted = true;
     this.checkIfLoggedIn();
   }
+
+
   async firebaseToken() {
     const currentUser = firebase.auth().currentUser
   
      if (currentUser) {
     // reaches here
       const idToken = await currentUser.getIdToken();
+      this.getUserData(idToken);
       console.log("IMPRIMIRE EL TOKEN:");
       console.log(idToken);
+
     // never reaches here
     return idToken
     }
@@ -32,6 +37,26 @@ class LoadingScreen extends React.Component {
   getUserToken(){
     this.firebaseToken();
   }
+
+  getUserData(idToken){
+    console.log("ESTOY EN SALVANDO LOS DATOS DEL USUAIROOOOO")
+    fetch(API + 'users/data_user/', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': idToken,
+      }})
+    .then((response) => response.json())
+    .then((responseJson) => {
+      let user = responseJson['usuario']
+      AsyncStorage.setItem('user',JSON.stringify(user))
+    }).catch((error) =>{
+      console.error(error);
+    });
+    console.log("ESTOY TERMINANDO EN SALVANDO LOS DATOS DEL USUAIROOOOO")
+  }
+
   // Fetch the token from storage then navigate to our appropriate place
   checkIfLoggedIn = async () => {
     console.log("VOT A REVISAR EL USARIO");

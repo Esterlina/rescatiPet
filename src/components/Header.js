@@ -7,7 +7,7 @@ import {
     TouchableWithoutFeedback,
 } from 'react-native'
 
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 const {width,height} = Dimensions.get('window')
 export default class Header extends Component{
 
@@ -15,13 +15,17 @@ export default class Header extends Component{
         super(props);
         this.state = {
           stack:this.props.navigation.state.stack,
+          inbox:this.props.navigation.state.inbox,
         }
       }
-      renderIcon(){
+    renderIcon(){
         if(this.props.stack == 'true')
-           return <Text>data</Text>;
+            return <Text>data</Text>;
         return null;
-     }
+    }
+    openInbox(){
+        this.props.navigation.navigate('Inbox')
+    }
     render(){
         const { goBack } = this.props.navigation;
         return(
@@ -33,7 +37,7 @@ export default class Header extends Component{
                                 style ={styles.icon}
                                 name="angle-left"
                                 color= "white"
-                                size={20}
+                                size={24}
                             />
                         </TouchableWithoutFeedback>
                         :   
@@ -55,7 +59,19 @@ export default class Header extends Component{
                             source={require('../icons/RescatiPet.png')}
                         />  
                     </View>
-                                                    
+                {this.props.inbox === 'true'?
+                    <TouchableWithoutFeedback
+                        onPress={() => this.openInbox()}>
+                        <Icon
+                            style ={styles.icon}
+                            name="bell"
+                            color= "white"
+                            size={22}
+                            solid
+                        />
+                    </TouchableWithoutFeedback>
+                    :   null
+                }                                    
                 </View>
         )
     }

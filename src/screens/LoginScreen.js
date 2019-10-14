@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, Text,TouchableOpacity,Image, ImageBackground,Dimensions,KeyboardAvoidingView, Button,TextInput } from 'react-native';
+import { View, StyleSheet, Text,TouchableOpacity,Image, ImageBackground,Dimensions,KeyboardAvoidingView, AsyncStorage,TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {Fonts} from '../utils/Fonts';
 import { LoginManager, AccessToken } from "react-native-fbsdk";
 import * as firebase from 'firebase';
 const {height, width} = Dimensions.get('window');
+import {API} from '../keys';
 
 export default class LoginScreen extends React.Component {
   _isMounted = false;
@@ -59,10 +60,30 @@ export default class LoginScreen extends React.Component {
       const idToken = await currentUser.getIdToken();
       console.log("IMPRIMIRE EL TOKEN:");
       console.log(idToken);
+      this.getUserData(idToken)
     // never reaches here
     return idToken
     }
   }
+  getUserData(idToken){
+    console.log("ESTOY EN SALVANDO LOS DATOS DEL USUAIROOOOO")
+    fetch(API + 'users/data_user/', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': idToken,
+      }})
+    .then((response) => response.json())
+    .then((responseJson) => {
+      let user = responseJson['usuario']
+      AsyncStorage.setItem('user',JSON.stringify(user))
+    }).catch((error) =>{
+      console.error(error);
+    });
+    console.log("ESTOY TERMINANDO EN SALVANDO LOS DATOS DEL USUAIROOOOO")
+  }
+
   getUserToken(){
     this.firebaseToken();
   }
@@ -163,7 +184,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     padding: 30,
-    paddingTop: 70
+    //paddingTop: 70
 },
 iconLogin:{
  width: width*0.7,

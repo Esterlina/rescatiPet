@@ -7,7 +7,7 @@ import Search from "./src/screens/SearchScreen";
 import Rescue from "./src/screens/RescueScreen";
 import Notice from "./src/screens/Notice/";
 import DetailNotice from "./src/components/DetailNotice";
-import Prueba from "./src/components/Prueba";
+import Inbox from "./src/screens/InboxScreen"
 import Home from "./src/screens/HomeScreen";
 import LoadingScreen from "./src/screens/LoadingScreen";
 
@@ -77,6 +77,7 @@ const DashboardStackNavigator = createStackNavigator(
   {
     DashboardTabNavigator: DashboardTabNavigator,   
     DetailNotice: DetailNotice,
+    Inbox: Inbox,
   },{
     headerMode: 'none'
   }

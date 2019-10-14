@@ -1,17 +1,21 @@
 import React from 'react';
-import { StyleSheet,YellowBox, ActivityIndicator, Text,View, Modal, Dimensions,TouchableOpacity, ScrollView,TextInput,Picker,Image} from 'react-native';
+import { StyleSheet,YellowBox, ActivityIndicator, Text,View, Dimensions,TouchableOpacity, ScrollView,AsyncStorage,Image} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Fonts} from '../utils/Fonts';
 import Header from '../components/Header';
 import Tag from '../components/Tag';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
-import { Avatar } from 'react-native-elements'
+import UserAvatar from 'react-native-user-avatar';
 import Helpers from '../../lib/helpers'
 import _ from 'lodash';
 import Moment from 'moment';
 import 'moment/locale/es'
 import Share from 'react-native-share';
 import RNFetchBlob from 'react-native-fetch-blob';
+import Modal from "react-native-modal";
+import Match from '../components/Match'
+
+
 const fs = RNFetchBlob.fs;
 let imagePath = null;
 const {height, width} = Dimensions.get('window');
@@ -33,7 +37,22 @@ export default class DetailNotice extends React.Component {
       images: [],
       images_base64:[],
       loading: true,
+      modalMatch:false,
+      user:{}
     };
+}
+componentDidMount() {
+  this.getUser()
+}
+getUser = async () => {
+  console.log("ESTOY EN GET USER")
+  try{
+    let user_item = await AsyncStorage.getItem('user')
+    let user =  JSON.parse(user_item);
+    this.setState({user: user},() => console.log(this.state.user.id))
+  }catch(error){
+    console.log(error)
+  }
 }
 componentWillMount(){  
   console.log(this.props.navigation.getParam('notice'))
@@ -62,7 +81,9 @@ _renderItem = ( {item, index} ) => {
     </View>
   );
 }
-
+updateModalMatch(modalMatch){
+  this.setState({modalMatch:modalMatch})
+}
 urlToBase64(url) { 
   return new Promise(resolve => {
     RNFetchBlob.config({
@@ -118,128 +139,127 @@ async shareToSocial(){
     const data_create = Moment(notice.hora_creacion || Moment.now()).fromNow();
     return(
       <View style={styles.container}>
-        <Header {...this.props}/>
+        <Header {...this.props} stack='true'/> 
         <ScrollView>
+        <Modal isVisible={this.state.modalMatch} style={{margin:20}}>
+          <Match update = {this.updateModalMatch.bind(this)} notice = {notice}/>
+        </Modal>
         <View style={styles.notice}>
           <View style={{paddingHorizontal:8}}>
-          <View style={{flexDirection:'row',paddingTop:10,}}>
-            <Avatar
-            size={40}
-                rounded
-                icon={{name: 'user', type: 'font-awesome'}}
-                containerStyle={{ borderWidth: 1,borderColor: '#66D2C5'}}
-            />
-            <View style={{marginHorizontal: 10}}>
-              <View style={{flexDirection:'row'}}>
-                <Text style={styles.semiBold} numberOfLines={1}>
-                {notice.usuario.length < 20
-                ? `${notice.usuario}`
-                : `${notice.usuario.substring(0, 21)}...`}</Text>
+            <View style={{flexDirection:'row',paddingTop:10,}}>
+              <UserAvatar size="45" name={notice.usuario.nombre} colors={['#ccc', '#fafafa', '#ccaabb']}/>
+              <View style={{marginHorizontal: 10}}>
+                <View style={{flexDirection:'row'}}>
+                  <Text style={styles.semiBold} numberOfLines={1}>
+                  {notice.usuario.nombre.length < 20
+                  ? `${notice.usuario.nombre}`
+                  : `${notice.usuario.nombre.substring(0, 21)}...`}</Text>
+                </View>
+                <View style={[styles.text,{flexDirection:'row'}]}>
+                  <Text>{data_create} - </Text>
+                  {notice.estado == 'Abierto' ?
+                  <Text style={[styles.semiBold,{color:'#19c9d4'}]}>Caso abierto</Text>:
+                  <Text style={[styles.semiBold,{color:'red'}]}>Caso cerrado</Text>
+                }
+                </View>
               </View>
-              <View style={[styles.text,{flexDirection:'row'}]}>
-                <Text>{data_create} - </Text>
-                {notice.estado == 'Abierto' ?
-                <Text style={[styles.semiBold,{color:'#19c9d4'}]}>Caso abierto</Text>:
-                <Text style={[styles.semiBold,{color:'red'}]}>Caso cerrado</Text>
-              }
-              </View>
+              <Tag type={notice.tipo}/>
+            </View>  
+            <View style={styles.carousel}>
+              {!this.state.loading ?
+              <Carousel
+                ref={(c) => { this._carousel = c; }}
+                data={this.state.images}
+                renderItem={this._renderItem}
+                sliderWidth={width*0.95}
+                itemWidth={width*0.95}
+              />
+              : <ActivityIndicator size="large" color="#66D2C5" />}
             </View>
-            <Tag type={notice.tipo}/>
-          </View>  
-          <View style={styles.carousel}>
-            {!this.state.loading ?
-            <Carousel
-              ref={(c) => { this._carousel = c; }}
-              data={this.state.images}
-              renderItem={this._renderItem}
-              sliderWidth={width*0.95}
-              itemWidth={width*0.95}
-            />
-            : <ActivityIndicator size="large" color="#66D2C5" />}
-          </View>
-          <View style={{flexDirection:'row'}}>
-            <Icon name="map-marker-alt" size={20} color='gray' style={{marginRight:4}} regular/>
-                <Text numberOfLines={1}>{notice.dir.length < 45
-                ? `${notice.dir}`
-                : `${notice.dir.substring(0, 45)}...`}</Text>
-          </View>
-          {notice.detalles ?  <Text style={[styles.text,styles.parrafo]}>{notice.detalles}</Text> : null}
-          <View style={[styles.parrafo]}>
-            {notice.visto? <Text>Visto durante el {Moment().format('YYYY') == Moment(notice.visto).format('YYYY')? <Text style={styles.semiBold}>{Moment(notice.visto).format('dddd D MMMM')}</Text>: <Text style={styles.semiBold}>{Moment(notice.visto).format('dddd D MMMM YYYY')}</Text>} cerca de las <Text style={styles.semiBold}>{Moment(notice.visto).format('HH:MM')}</Text> hrs. </Text> : null}
-            {notice.visto?<Text>Por <Text style={styles.semiBold}>{notice.direccion} </Text></Text>  : null} 
-          </View>
-          <View style={styles.parrafo}>
-            <Text style={[styles.semiBold,{fontSize:16,color:'#19c9d4'}]}>Características</Text> 
+            <View style={{flexDirection:'row'}}>
+              <Icon name="map-marker-alt" size={20} color='gray' style={{marginRight:4}} regular/>
+                  <Text numberOfLines={1}>{notice.dir.length < 45
+                  ? `${notice.dir}`
+                  : `${notice.dir.substring(0, 45)}...`}</Text>
+            </View>
+            {notice.detalles ?  <Text style={[styles.text,styles.parrafo]}>{notice.detalles}</Text> : null}
+            <View style={[styles.parrafo]}>
+              {notice.visto? <Text>Visto durante el {Moment().format('YYYY') == Moment(notice.visto).format('YYYY')? <Text style={styles.semiBold}>{Moment(notice.visto).format('dddd D MMMM')}</Text>: <Text style={styles.semiBold}>{Moment(notice.visto).format('dddd D MMMM YYYY')}</Text>} cerca de las <Text style={styles.semiBold}>{Moment(notice.visto).format('HH:MM')}</Text> hrs. </Text> : null}
+              {notice.visto?<Text>Por <Text style={styles.semiBold}>{notice.direccion} </Text></Text>  : null} 
+            </View>
             <View style={styles.parrafo}>
-              
-              <View style={{flexDirection:'row'}}>
-                <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                <Text style={styles.semiBold}>{notice.animal}</Text>
-                {notice.raza? <Text> {notice.raza}</Text> : null }
-              </View>
-              {notice.nombre?
+              <Text style={[styles.semiBold,{fontSize:16,color:'#19c9d4'}]}>Características</Text> 
+              <View style={styles.parrafo}>
+                
                 <View style={{flexDirection:'row'}}>
                   <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                  <Text style={styles.semiBold}>Nombre: </Text>
-                  <Text>{notice.nombre}</Text>               
+                  <Text style={styles.semiBold}>{notice.animal}</Text>
+                  {notice.raza? <Text> {notice.raza}</Text> : null }
                 </View>
-              :null}
-              <View style={{flexDirection:'row'}}>
-                <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                <Text style={styles.semiBold}>Sexo: {notice.sexo}</Text>
-                {notice.edad? <Text>, {notice.edad}</Text> : null }
-              </View>
-              {notice.tamaño?
+                {notice.nombre?
+                  <View style={{flexDirection:'row'}}>
+                    <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
+                    <Text style={styles.semiBold}>Nombre: </Text>
+                    <Text>{notice.nombre}</Text>               
+                  </View>
+                :null}
                 <View style={{flexDirection:'row'}}>
                   <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                  <Text style={styles.semiBold}>Tamaño: </Text>
-                  <Text>{notice.tamaño}</Text>               
+                  <Text style={styles.semiBold}>Sexo: {notice.sexo}</Text>
+                  {notice.edad? <Text>, {notice.edad}</Text> : null }
                 </View>
-              :null}
-              {notice.colores?
-                <View style={{flexDirection:'row'}}>
-                  <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                  <Text style={styles.semiBold}>Colores: </Text>
-                  <Text>{notice.colores}</Text>               
-                </View>
-              :null}
-              {notice.collar || notice.ropa || notice.microship?
-                <View style={{flexDirection:'row'}}>
-                  <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                  {notice.collar || notice.ropa? <Text>Lleva puesto </Text>: <Text>Tiene microship </Text> }
-                  {notice.collar? <Text>Collar</Text> : null}
-                  {notice.ropa? <Text> Ropa/chaleco</Text> : null}             
-                </View>
-              :null}
-              {notice.emergencia?
-                <View style={{flexDirection:'row'}}>
-                  <Icon name="first-aid" size={16} color='#ee1212' style={{marginRight:4}} regular/>
-                  <Text>Encontrado/a en situacion de</Text>   
-                  <Text style={styles.semiBold}>{notice.emergencia}</Text>             
-                </View>
-              :null}
-              {notice.solicitud?
-                <View style={{flexDirection:'row'}}>
-                  <Icon name="first-aid" size={16} color='#ee1212' style={{marginRight:4}} regular/> 
-                  <Text style={[styles.semiBold,{color:'#ee1212'}]}> Se solicita colaboradores urgente</Text>             
-                </View>
-              :null}
-            </View> 
-          </View>
+                {notice.tamaño?
+                  <View style={{flexDirection:'row'}}>
+                    <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
+                    <Text style={styles.semiBold}>Tamaño: </Text>
+                    <Text>{notice.tamaño}</Text>               
+                  </View>
+                :null}
+                {notice.colores?
+                  <View style={{flexDirection:'row'}}>
+                    <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
+                    <Text style={styles.semiBold}>Colores: </Text>
+                    <Text>{notice.colores}</Text>               
+                  </View>
+                :null}
+                {notice.collar || notice.ropa || notice.microship?
+                  <View style={{flexDirection:'row'}}>
+                    <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
+                    {notice.collar || notice.ropa? <Text>Lleva puesto </Text>: <Text>Tiene microship </Text> }
+                    {notice.collar? <Text>Collar</Text> : null}
+                    {notice.ropa? <Text> Ropa/chaleco</Text> : null}             
+                  </View>
+                :null}
+                {notice.emergencia?
+                  <View style={{flexDirection:'row'}}>
+                    <Icon name="first-aid" size={16} color='#ee1212' style={{marginRight:4}} regular/>
+                    <Text>Encontrado/a en situacion de</Text>   
+                    <Text style={styles.semiBold}>{notice.emergencia}</Text>             
+                  </View>
+                :null}
+                {notice.solicitud?
+                  <View style={{flexDirection:'row'}}>
+                    <Icon name="first-aid" size={16} color='#ee1212' style={{marginRight:4}} regular/> 
+                    <Text style={[styles.semiBold,{color:'#ee1212'}]}> Se solicita colaboradores urgente</Text>             
+                  </View>
+                :null}
+              </View> 
+            </View>
           </View>
           <View style={styles.socialButtons}>
-
-            <TouchableOpacity 
-            style={styles.socialButton}
-              onPress={() =>console.log("holita")}
-            >
-              <Icon name="arrow-alt-circle-right" size={18} color='#929292' regular/> 
-              <Text style={{color:'#929292'}}>seguir</Text>
-            </TouchableOpacity>      
-            <TouchableOpacity style={styles.socialButton}>
-              <Icon name="hands-helping" size={18} color='#929292' regular/> 
-              <Text style={{color:'#929292'}}>match</Text>
-            </TouchableOpacity> 
+            {this.state.user.id != notice.usuario.id ? 
+              <TouchableOpacity style={styles.socialButton} onPress={() =>console.log("holita")}>
+                <Icon name="arrow-alt-circle-right" size={18} color='#929292' regular/> 
+                <Text style={{color:'#929292'}}>seguir</Text>
+              </TouchableOpacity>   
+            :null}
+            {this.state.user.id != notice.usuario.id?
+              <TouchableOpacity style={styles.socialButton} onPress={() => this.setState({modalMatch:true})}>
+                <Icon name="hands-helping" size={18} color='#929292' regular/> 
+                <Text style={{color:'#929292'}}>match</Text>
+              </TouchableOpacity>
+            : null }   
+            
             <TouchableOpacity style={styles.socialButton} onPress={() => this.share()}>
               <Icon name="share-square" size={18} color='#929292' regular/> 
               <Text style={{color:'#929292'}}>compartir</Text>

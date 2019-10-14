@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Fonts} from '../utils/Fonts';
 import Tag from '../components/Tag';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
-import { Avatar } from 'react-native-elements'
+import UserAvatar from 'react-native-user-avatar';
 import Helpers from '../../lib/helpers'
 import _ from 'lodash';
 import Moment from 'moment';
@@ -46,7 +46,6 @@ componentWillMount(){
   } 
 }
 openDetail(){
-  console.log("VOY A AB RIR EL DETALLE")
   this.props.navigation.navigate('DetailNotice', { notice: this.props.dataJson})
 }
 _renderItem = ( {item, index} ) => {
@@ -65,18 +64,13 @@ _renderItem = ( {item, index} ) => {
       <View style={styles.container}>
         <View style={styles.notice}>
             <View style={{flexDirection:'row',paddingTop:10}}>
-              <Avatar
-              size={40}
-                  rounded
-                  icon={{name: 'user', type: 'font-awesome'}}
-                  containerStyle={{ borderWidth: 1,borderColor: '#66D2C5',}}
-              />
+              <UserAvatar size="40" name={notice.usuario.nombre} colors={['#ccc', '#fafafa', '#ccaabb']}/>
               <View style={{marginHorizontal: 10}}>
                 <View style={{flexDirection:'row'}}>
                 <Text style={styles.semiBold} numberOfLines={1}>
-                {notice.usuario.length < 20
-                ? `${notice.usuario}`
-                : `${notice.usuario.substring(0, 21)}...`}</Text>
+                {notice.usuario.nombre.length < 20
+                ? `${notice.usuario.nombre}`
+                : `${notice.usuario.nombre.substring(0, 21)}...`}</Text>
 
                 </View>
                 <View style={[styles.text,{flexDirection:'row'}]}>
@@ -107,7 +101,7 @@ _renderItem = ( {item, index} ) => {
                 ? `${notice.dir}`
                 : `${notice.dir.substring(0, 45)}...`}</Text>
             </View>
-            <ScrollView style={{height:height*0.08,marginVertical:2,marginHorizontal:2}}>
+            <ScrollView style={{height:height*0.1,marginVertical:2,marginHorizontal:2}}>
               <Text style={[styles.text,{textAlign:'justify'}]}>{notice.detalles}</Text>
             </ScrollView>
             <TouchableOpacity 
