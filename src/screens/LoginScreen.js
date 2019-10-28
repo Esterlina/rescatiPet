@@ -1,49 +1,35 @@
-import React from 'react';
-import { View, StyleSheet, Text,TouchableOpacity,Image, ImageBackground,Dimensions,KeyboardAvoidingView, AsyncStorage,TextInput } from 'react-native';
+import React,{PureComponent} from 'react';
+import { View, Text,TouchableOpacity,Image, ImageBackground,KeyboardAvoidingView,TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {Fonts} from '../utils/Fonts';
 import { LoginManager, AccessToken } from "react-native-fbsdk";
 import * as firebase from 'firebase';
-const {height, width} = Dimensions.get('window');
 import {API} from '../keys';
-
-export default class LoginScreen extends React.Component {
-  _isMounted = false;
-  constructor(){
-    super()
+import { connect } from 'react-redux'
+import authStyle from '../styles/auth.style'
+import appStyle from '../styles/app.style'
+class LoginScreen extends PureComponent {
+  constructor(props){
+    super(props)
     this.state={
       email : '',
       password: '',
       response: '',
     }
-    this.singUp = this.singUp.bind(this)
     this.login = this.login.bind(this)
+    this.fbAuth = this.fbAuth.bind(this)
   }
-  async singUp(){
-    this._isMounted = true;
-    try{
-      await firebase.auth().createUserWithEmailAndPassword(this.state.email,this.state.password);
-      if (this._isMounted){
-        this.setState({response: 'Su cuenta se ha creado satisfactoriamente.'})
-        console.log(this.state.response)
-        setTimeout(()=>{this.props.navigation.navigate('Dashboard')},3500)
-      }
-    }catch(error){
-      if (this._isMounted){
-        this.setState({response:error.toString()})
-        console.log(this.state.response)
-      }
-    }
+  
+  _isMounted = false;
+  componentWillUnmount() {
+    this._isMounted = false;
   }
+  //Login con correo
   async login(){
     this._isMounted = true;
     try{
       await firebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password)
       if (this._isMounted){
-        this.setState({response: 'Inicio de sensión exitoso.'});
-        console.log(this.getUserToken());
-        console.log(this.state.response);
-        setTimeout(()=>{this.props.navigation.navigate('Dashboard')},1500);
+        this.setState({response: 'Inicio de sensión exitoso.'},() => {this.firebaseToken();setTimeout(()=>{this.props.navigation.navigate('Dashboard')},1500)});
       }
     }catch(error){
       if (this._isMounted){
@@ -52,21 +38,42 @@ export default class LoginScreen extends React.Component {
       }
     }
   }
+  //Login con Facebook
+  async fbAuth(){
+    LoginManager
+    .logInWithPermissions(['public_profile','email'])
+    .then((result) => {
+      if (result.isCancelled){
+        return alert("Login fue cancelado");
+      }
+      console.log("LOGIN DE FB FUNCIONO CON PERMISOS");
+      return AccessToken.getCurrentAccessToken();
+    })
+    .then(data =>{
+      const credential = firebase.auth.FacebookAuthProvider.credential(data.accessToken);
+      return firebase.auth().signInWithCredential(credential)
+    })
+    .then((currentUser) => {
+      console.log('FACEBOOK+firebase LOGIN CON USUARIO');
+      this.firebaseToken();
+      setTimeout(()=>{this.props.navigation.navigate('Dashboard')},1500);
+    })
+    .catch((error) =>{
+      console.log(error)
+    })
+  }
+  //Obetener Token de Firebase
   async firebaseToken() {
     const currentUser = firebase.auth().currentUser
-  
      if (currentUser) {
-    // reaches here
       const idToken = await currentUser.getIdToken();
       console.log("IMPRIMIRE EL TOKEN:");
       console.log(idToken);
       this.getUserData(idToken)
-    // never reaches here
-    return idToken
     }
   }
+  //Obtener datos del usuario
   getUserData(idToken){
-    console.log("ESTOY EN SALVANDO LOS DATOS DEL USUAIROOOOO")
     fetch(API + 'users/data_user/', {
       method: 'GET',
       headers: {
@@ -77,49 +84,16 @@ export default class LoginScreen extends React.Component {
     .then((response) => response.json())
     .then((responseJson) => {
       let user = responseJson['usuario']
-      AsyncStorage.setItem('user',JSON.stringify(user))
+      this.setState({user: user},() => {this.props.updateUser(this.state.user)})
     }).catch((error) =>{
       console.error(error);
     });
-    console.log("ESTOY TERMINANDO EN SALVANDO LOS DATOS DEL USUAIROOOOO")
   }
 
-  getUserToken(){
-    this.firebaseToken();
-  }
-  async fbAuth(){
-      LoginManager
-      .logInWithPermissions(['public_profile','email'])
-      .then((result) => {
-        if (result.isCancelled){
-          return alert("Login fue cancelado");
-        }
-        console.log("LOGIN DE FB FUNCIONO CON PERMISOS"+ result.grantedPermissions.toString());
-        setTimeout(()=>{this.props.navigation.navigate('Dashboard')},1500);
-        return AccessToken.getCurrentAccessToken();
-      })
-      .then(data =>{
-        const credential = firebase.auth.FacebookAuthProvider.credential(data.accessToken);
-        return firebase.auth().signInWithCredential(credential)
-      })
-      .then((currentUser) => {
-        console.log("IMPRIMIRE UN TOKEN RARO");
-        console.log(this.getUserToken());
-        console.log('FACEBOOK+firebase LOGIN CON USUARIO');
-      })
-      .catch((error) =>{
-        console.log(error)
-        console.log('FACEBOOK+firebase LOGIN FALLO');
-      })
-  }
-    
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
   render() {
     return (
       <ImageBackground
-      style={styles.container}
+      style={authStyle.container}
       source={require('../icons/fondo.png')}
       >
         <KeyboardAvoidingView behavior="position">
@@ -127,49 +101,49 @@ export default class LoginScreen extends React.Component {
               <Image
                 source={require('../icons/rescatipeticon.png')}/>
               <Image
-                style={styles.iconLogin} 
+                style={authStyle.iconLogin} 
                 source={require('../icons/RescatiPet1.png')}/>
           </View>
-          <View style={styles.formLogin}>
-            <View style={styles.labelLogin}>
-              <View style={styles.iconLabel}>
+          <View style={authStyle.formLogin}>
+            <View style={authStyle.labelLogin}>
+              <View style={authStyle.iconLabel}>
                 <Icon name="user" size={32} color="#E9FFFC"/>
               </View>
               <TextInput
-                style={styles.input}
+                style={authStyle.input}
                 placeholder = {'Correo electronico'}
                 placeholderTextColor = {'gray'}
                 onChangeText={(email) => this.setState({email})}/> 
             </View>
-            <View style={styles.labelLogin}>
-              <View style={styles.iconLabel}>
+            <View style={authStyle.labelLogin}>
+              <View style={authStyle.iconLabel}>
                 <Icon name="lock" size={32} color="#E9FFFC"/>
               </View>
               <TextInput
-                style={styles.input}
+                style={authStyle.input}
                 placeholder = {'Contraseña'}
                 placeholderTextColor = {'gray'}
                 secureTextEntry = {true}
                 onChangeText={(password) => this.setState({password})}/> 
             </View>
             <TouchableOpacity 
-              style={styles.buttonLogin}
+              style={appStyle.buttonLarge}
               onPress={() => this.login()}>
-              <Text style={styles.text}> Ingresar </Text>
+              <Text style={authStyle.text}> Ingresar </Text>
             </TouchableOpacity>
             <TouchableOpacity 
-                style={styles.buttonLogin}
-                onPress={() => this.singUp()}
+                style={appStyle.buttonLarge}
+                onPress={() => this.props.navigation.navigate('Register')}
                 >
-                <Text style={styles.text}> Registrarme </Text>
+                <Text style={authStyle.text}> Registrarme </Text>
             </TouchableOpacity>
             <TouchableOpacity 
-                style={[styles.buttonLogin,styles.social]}
+                style={[appStyle.buttonLarge,authStyle.social]}
                 onPress={() => this.fbAuth()}
                 >
                 <View style={{flexDirection:'row'}}>
                   <Icon name="facebook-square" size={32} color="white"/>
-                  <Text style={[styles.text,{fontSize:21}]}> Ingresar con Facebook </Text>
+                  <Text style={[authStyle.text,{fontSize:21}]}> Ingresar con Facebook </Text>
                 </View> 
             </TouchableOpacity>
           </View>
@@ -179,62 +153,24 @@ export default class LoginScreen extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    padding: 30,
-    //paddingTop: 70
-},
-iconLogin:{
- width: width*0.7,
- height: 45,
- marginTop:10,
- marginBottom: 10,
-},
-formLogin: {
-  paddingVertical:20,
-},
-iconLabel:{
-  width: 50,
-  backgroundColor:'#66D2C5',
-  borderBottomLeftRadius: 8,
-  borderTopLeftRadius: 8,
-  alignItems: "center",
-  justifyContent:'center',
-},
-labelLogin:{
-  width:width*0.8,
-  backgroundColor:'#E9FFFC',
-  borderRadius:8,
-  flexDirection: 'row',
-  marginBottom: 10,
-},
-buttonLogin:{
-  marginTop: 10,
-  backgroundColor:'#66D2C5',
-  borderRadius: 8,
-  alignItems: "center",
-  justifyContent:'center',
-  height: 45,
-},
+const mapStateToProps = (state) => {
+  console.log('State:');
+  console.log(state);  // Redux Store --> Component
+  console.log(state.userReducer)
+  return {
+    user: state.userReducer,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  // Action
+    return {
+      // update user
+      updateUser: (user) => dispatch({
+        type: 'UPDATE_USER',
+        userReducer: user,
+       // payload: payload,
+      }),
+   };
+};
 
-  text: {
-    color: 'white',
-    alignSelf: 'center',
-    fontSize:26,
-    fontFamily: Fonts.OpenSansBold
-  },
-  input:{
-    width:width*0.6,
-    height:40,
-    fontSize:18,
-    marginVertical: 3,
-    paddingLeft: 10,
-    color:'gray'
-  },
-  social:{
-    backgroundColor:'#3b5998',
-    marginTop:30
-  }
-});
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);

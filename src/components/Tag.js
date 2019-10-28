@@ -8,7 +8,8 @@ import {
     TouchableWithoutFeedback,
 } from 'react-native'
 import {Fonts} from '../utils/Fonts';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import appStyle from '../styles/app.style'
+
 const {width,height} = Dimensions.get('window')
 export default class Tag extends Component{
 
@@ -19,7 +20,7 @@ export default class Tag extends Component{
     render(){
         const type = this.props.type;
         return(
-                <View style={styles.container}> 
+                <View style={{flex:1}}> 
                     
                     { type === 'SOS' ?
                         <View style={styles.tag}>
@@ -29,7 +30,7 @@ export default class Tag extends Component{
                                     tintColor='white'
                                     source={require('../icons/notice/siren.png')}
                                 /> 
-                                <Text style={styles.text}>SOS</Text>
+                                <Text style={appStyle.textTag}>SOS</Text>
                             </View>
                         </View>
                         :   
@@ -41,13 +42,13 @@ export default class Tag extends Component{
                                 tintColor='white'
                                 source={require('../icons/notice/magnifier.png')}
                                 /> 
-                                <Text style={[styles.text,{fontSize:16}]}>Se Busca</Text>
+                                <Text style={[appStyle.textTag,{fontSize:16}]}>Se Busca</Text>
                             </View>
                         </View>
                        :
                        <View style={styles.tag}>
                         <View style={[styles.subTag,{backgroundColor:'#81ab81'}]}>
-                            <Text style={[styles.text,{fontSize:16}]}>Encontrado</Text>
+                            <Text style={[appStyle.textTag,{fontSize:16}]}>Encontrado</Text>
                         </View>
                     </View>
                     }                                                
@@ -57,16 +58,6 @@ export default class Tag extends Component{
 }
 
 const styles = StyleSheet.create({
-    container:{
-        flex: 1,
-        backgroundColor: 'white',
-    },
-    text: {
-        color:'white',
-        fontFamily:Fonts.OpenSansBold,
-        fontSize:16,
-        textAlign:'center'
-    },
     tag:{
         alignSelf: 'flex-end',
         position: "absolute",

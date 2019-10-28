@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text,TouchableOpacity, ScrollView,View,Image,ActivityIndicator} from 'react-native';
+import {ScrollView,View,Image,ActivityIndicator} from 'react-native';
 import Header from '../components/Header';
 import {API} from '../keys';
 import Notice from '../components/Notice'
+import {Colors} from '../styles/colors'
 
 export default class HomeScreen extends React.Component {
   constructor(props) {
@@ -43,10 +44,10 @@ componentDidMount() {
   render(){ 
     
     return(
-        <View style={styles.container}>
+        <View style={{flex:1}}>
           <Header {...this.props} inbox='true'/> 
           {!this.state.loading ?
-            <ScrollView style={styles.container}>
+            <ScrollView style={{flex:1}}>
               {this.state.notices.map((item) => {
                 console.log(item)
                 return (
@@ -59,27 +60,10 @@ componentDidMount() {
             </ScrollView>
             : 
             <View style={{flex:1,justifyContent:'center'}}>
-              <ActivityIndicator size="large" color="#66D2C5" />
+              <ActivityIndicator size="large" color= {Colors.primaryColor} />
             </View> }
       </View>
     );
     
   }
 }
-
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#F5FCFF',
-    },
-    welcome: {
-      fontSize: 20,
-      textAlign: 'center',
-      margin: 10,
-    },
-    instructions: {
-      textAlign: 'center',
-      color: '#333333',
-      marginBottom: 5,
-    },
-  });

@@ -1,18 +1,18 @@
-import React from 'react';
+import React, {PureComponent} from 'react';
 import { StyleSheet, Text,View,Button,Image, AsyncStorage} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../components/Header';
 import Helpers from '../../lib/helpers'
 import * as firebase from 'firebase';
+import {connect} from 'react-redux'
 
-export default class PerfilScreen extends React.Component {
+class PerfilScreen extends PureComponent {
   _isMounted = false;
-  constructor(){
-    super()
+  constructor(props){
+    super(props)
     this.state={
       response: '',
       dataSource:'',
-      user:{}
     }
     this.signOut = this.signOut.bind(this)
   }
@@ -29,6 +29,7 @@ export default class PerfilScreen extends React.Component {
       if (this._isMounted){
         this.setState({response: 'Sesión cerrada con exito.'})
         console.log(this.state.response)
+       // this.props.authLogout();
         setTimeout(()=>{this.props.navigation.navigate('Auth')},1500)
       }
     }catch(error){
@@ -42,27 +43,13 @@ export default class PerfilScreen extends React.Component {
   componentWillUnmount() {
     this._isMounted = false;
   }
-  componentDidMount(){
-    this.displayData();
-  }
-
-  displayData = async () => {
-    try{
-      let user_item = await AsyncStorage.getItem('user')
-      let user =  JSON.parse(user_item);
-      this.setState({user: user},()=> console.log(this.state.user.nombre))
-    }catch(error){
-      alert(error)
-    }
-  }
- 
 
   render(){ 
     
     return(
-        <View style={styles.container}>
+        <View style={{flex:1}}>
           <Header {...this.props} /> 
-          <Text style={styles.welcome}>PERFIL {this.state.user.nombre}</Text>
+          <Text style={styles.welcome}>PERFIL {this.props.user.nombre}</Text>
 
           <Button
             backgroundColor="#03A9F4"
@@ -76,10 +63,6 @@ export default class PerfilScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#F5FCFF',
-    },
     welcome: {
       fontSize: 20,
       textAlign: 'center',
@@ -91,3 +74,14 @@ const styles = StyleSheet.create({
       marginBottom: 5,
     },
   });
+
+const mapStateToProps = (state) => {
+  console.log('State:');
+  console.log(state);  // Redux Store --> Component
+  console.log(state.userReducer)
+  return {
+    user: state.userReducer,
+  };
+}
+
+export default connect(mapStateToProps)(PerfilScreen);

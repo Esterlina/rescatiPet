@@ -14,7 +14,9 @@ import Share from 'react-native-share';
 import RNFetchBlob from 'react-native-fetch-blob';
 import Modal from "react-native-modal";
 import Match from '../components/Match'
-
+import {Colors} from '../styles/colors'
+import appStyle from '../styles/app.style'
+import {connect} from 'react-redux';
 
 const fs = RNFetchBlob.fs;
 let imagePath = null;
@@ -28,7 +30,7 @@ console.warn = message => {
   }
 };
 
-export default class DetailNotice extends React.Component {
+class DetailNotice extends React.Component {
   constructor(props) {
     super(props);
         
@@ -41,19 +43,7 @@ export default class DetailNotice extends React.Component {
       user:{}
     };
 }
-componentDidMount() {
-  this.getUser()
-}
-getUser = async () => {
-  console.log("ESTOY EN GET USER")
-  try{
-    let user_item = await AsyncStorage.getItem('user')
-    let user =  JSON.parse(user_item);
-    this.setState({user: user},() => console.log(this.state.user.id))
-  }catch(error){
-    console.log(error)
-  }
-}
+
 componentWillMount(){  
   console.log(this.props.navigation.getParam('notice'))
   notice = this.props.navigation.getParam('notice');
@@ -150,16 +140,16 @@ async shareToSocial(){
               <UserAvatar size="45" name={notice.usuario.nombre} colors={['#ccc', '#fafafa', '#ccaabb']}/>
               <View style={{marginHorizontal: 10}}>
                 <View style={{flexDirection:'row'}}>
-                  <Text style={styles.semiBold} numberOfLines={1}>
+                  <Text style={styles.semiBo} numberOfLines={1}>
                   {notice.usuario.nombre.length < 20
                   ? `${notice.usuario.nombre}`
                   : `${notice.usuario.nombre.substring(0, 21)}...`}</Text>
                 </View>
-                <View style={[styles.text,{flexDirection:'row'}]}>
+                <View style={[appStyle.textRegular,{flexDirection:'row'}]}>
                   <Text>{data_create} - </Text>
                   {notice.estado == 'Abierto' ?
-                  <Text style={[styles.semiBold,{color:'#19c9d4'}]}>Caso abierto</Text>:
-                  <Text style={[styles.semiBold,{color:'red'}]}>Caso cerrado</Text>
+                  <Text style={[appStyle.textSemiBold,{color:'#19c9d4'}]}>Caso abierto</Text>:
+                  <Text style={[appStyle.textSemiBold,{color:'red'}]}>Caso cerrado</Text>
                 }
                 </View>
               </View>
@@ -174,7 +164,7 @@ async shareToSocial(){
                 sliderWidth={width*0.95}
                 itemWidth={width*0.95}
               />
-              : <ActivityIndicator size="large" color="#66D2C5" />}
+              : <ActivityIndicator size="large" color={Colors.primaryColor} />}
             </View>
             <View style={{flexDirection:'row'}}>
               <Icon name="map-marker-alt" size={20} color='gray' style={{marginRight:4}} regular/>
@@ -182,43 +172,43 @@ async shareToSocial(){
                   ? `${notice.dir}`
                   : `${notice.dir.substring(0, 45)}...`}</Text>
             </View>
-            {notice.detalles ?  <Text style={[styles.text,styles.parrafo]}>{notice.detalles}</Text> : null}
+            {notice.detalles ?  <Text style={[appStyle.textRegular,styles.parrafo]}>{notice.detalles}</Text> : null}
             <View style={[styles.parrafo]}>
-              {notice.visto? <Text>Visto durante el {Moment().format('YYYY') == Moment(notice.visto).format('YYYY')? <Text style={styles.semiBold}>{Moment(notice.visto).format('dddd D MMMM')}</Text>: <Text style={styles.semiBold}>{Moment(notice.visto).format('dddd D MMMM YYYY')}</Text>} cerca de las <Text style={styles.semiBold}>{Moment(notice.visto).format('HH:MM')}</Text> hrs. </Text> : null}
-              {notice.visto?<Text>Por <Text style={styles.semiBold}>{notice.direccion} </Text></Text>  : null} 
+              {notice.visto? <Text>Visto durante el {Moment().format('YYYY') == Moment(notice.visto).format('YYYY')? <Text style={styles.semiBo}>{Moment(notice.visto).format('dddd D MMMM')}</Text>: <Text style={styles.semiBo}>{Moment(notice.visto).format('dddd D MMMM YYYY')}</Text>} cerca de las <Text style={styles.semiBo}>{Moment(notice.visto).format('HH:MM')}</Text> hrs. </Text> : null}
+              {notice.visto?<Text>Por <Text style={styles.semiBo}>{notice.direccion} </Text></Text>  : null} 
             </View>
             <View style={styles.parrafo}>
-              <Text style={[styles.semiBold,{fontSize:16,color:'#19c9d4'}]}>Características</Text> 
+              <Text style={[appStyle.textSemiBold,{fontSize:16,color:'#19c9d4'}]}>Características</Text> 
               <View style={styles.parrafo}>
                 
                 <View style={{flexDirection:'row'}}>
                   <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                  <Text style={styles.semiBold}>{notice.animal}</Text>
+                  <Text style={styles.semiBo}>{notice.animal}</Text>
                   {notice.raza? <Text> {notice.raza}</Text> : null }
                 </View>
                 {notice.nombre?
                   <View style={{flexDirection:'row'}}>
                     <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                    <Text style={styles.semiBold}>Nombre: </Text>
+                    <Text style={styles.semiBo}>Nombre: </Text>
                     <Text>{notice.nombre}</Text>               
                   </View>
                 :null}
                 <View style={{flexDirection:'row'}}>
                   <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                  <Text style={styles.semiBold}>Sexo: {notice.sexo}</Text>
+                  <Text style={styles.semiBo}>Sexo: {notice.sexo}</Text>
                   {notice.edad? <Text>, {notice.edad}</Text> : null }
                 </View>
                 {notice.tamaño?
                   <View style={{flexDirection:'row'}}>
                     <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                    <Text style={styles.semiBold}>Tamaño: </Text>
+                    <Text style={styles.semiBo}>Tamaño: </Text>
                     <Text>{notice.tamaño}</Text>               
                   </View>
                 :null}
                 {notice.colores?
                   <View style={{flexDirection:'row'}}>
                     <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                    <Text style={styles.semiBold}>Colores: </Text>
+                    <Text style={styles.semiBo}>Colores: </Text>
                     <Text>{notice.colores}</Text>               
                   </View>
                 :null}
@@ -234,26 +224,26 @@ async shareToSocial(){
                   <View style={{flexDirection:'row'}}>
                     <Icon name="first-aid" size={16} color='#ee1212' style={{marginRight:4}} regular/>
                     <Text>Encontrado/a en situacion de</Text>   
-                    <Text style={styles.semiBold}>{notice.emergencia}</Text>             
+                    <Text style={styles.semiBo}>{notice.emergencia}</Text>             
                   </View>
                 :null}
                 {notice.solicitud?
                   <View style={{flexDirection:'row'}}>
                     <Icon name="first-aid" size={16} color='#ee1212' style={{marginRight:4}} regular/> 
-                    <Text style={[styles.semiBold,{color:'#ee1212'}]}> Se solicita colaboradores urgente</Text>             
+                    <Text style={[appStyle.textSemiBold,{color:'#ee1212'}]}> Se solicita colaboradores urgente</Text>             
                   </View>
                 :null}
               </View> 
             </View>
           </View>
           <View style={styles.socialButtons}>
-            {this.state.user.id != notice.usuario.id ? 
+            {this.props.user.id != notice.usuario.id ? 
               <TouchableOpacity style={styles.socialButton} onPress={() =>console.log("holita")}>
                 <Icon name="arrow-alt-circle-right" size={18} color='#929292' regular/> 
                 <Text style={{color:'#929292'}}>seguir</Text>
               </TouchableOpacity>   
             :null}
-            {this.state.user.id != notice.usuario.id?
+            {this.props.user.id != notice.usuario.id?
               <TouchableOpacity style={styles.socialButton} onPress={() => this.setState({modalMatch:true})}>
                 <Icon name="hands-helping" size={18} color='#929292' regular/> 
                 <Text style={{color:'#929292'}}>match</Text>
@@ -291,7 +281,7 @@ const styles = StyleSheet.create({
       marginHorizontal:5,
       marginBottom:10,
       borderWidth: 1.8,
-      borderColor: '#66D2C5',
+      borderColor: Colors.primaryColor,
       borderRadius: 4,
     },
     image:{
@@ -315,7 +305,7 @@ const styles = StyleSheet.create({
     height:height*0.065,
    // paddingVertical:5,
     borderTopWidth:0.8,
-    borderTopColor:'#66D2C5',
+    borderTopColor: Colors.primaryColor,
     alignItems: 'center',
     justifyContent: 'space-around',
   },
@@ -327,3 +317,10 @@ const styles = StyleSheet.create({
   }
   
 });
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.userReducer,
+  };
+};
+export default connect(mapStateToProps)(DetailNotice);

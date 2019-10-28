@@ -3,6 +3,8 @@ import { StyleSheet, Text,View, Image, Dimensions,TouchableOpacity, ScrollView,I
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Fonts} from '../utils/Fonts';
 import ImagePicker from 'react-native-image-crop-picker';
+import {Colors} from '../styles/colors'
+import appStyle from '../styles/app.style'
 
 const {height, width} = Dimensions.get('window');
 
@@ -78,14 +80,14 @@ renderImage(image) {
               onPress={this.pickMultiple.bind(this)}>
               <View style={{flexDirection:'row'}}>
                 <Icon name="images" size={20} color="gray" style={{marginRight:5}} regular/>
-                <Text style={styles.text}>Seleccionar imagen(s) desde galeria</Text>
+                <Text style={appStyle.textRegular}>Seleccionar imagen(s) desde galeria</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity style={styles.buttonLitle}
               onPress={() => this.pickSingleWithCamera(false)}>
               <View style={{flexDirection:'row'}}>
                 <Icon name="camera-retro" size={20} color="gray" style={{marginRight:5}} regular/>
-                <Text style={styles.text}>Tomar foto desde camara</Text>
+                <Text style={appStyle.textRegular}>Tomar foto desde camara</Text>
               </View>
             </TouchableOpacity>
           </View>  
@@ -101,11 +103,6 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: 'white',
     },
-    text:{
-      fontSize: 14,
-      color: 'gray',
-      fontFamily: Fonts.OpenSans
-    },
     imageContainer:{
       justifyContent:'center',
       alignItems:'center',height:130,
@@ -118,14 +115,14 @@ const styles = StyleSheet.create({
       marginHorizontal:10,
       paddingHorizontal:5,
       borderWidth: 1.3,
-      borderColor: '#66D2C5',
+      borderColor: Colors.primaryColor,
       borderRadius: 4,
       justifyContent:'center',
       alignItems:'center'
     },
     buttonLitle:{
       borderWidth: 1.3,
-      borderColor: '#d6d7da',
+      borderColor: Colors.lightGray,
       borderRadius: 8,
       margin:10,
       marginBottom:0,

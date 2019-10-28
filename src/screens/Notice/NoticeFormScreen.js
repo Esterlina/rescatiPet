@@ -12,6 +12,8 @@ import {API_KEY, API} from '../../keys';
 import Helpers from '../../../lib/helpers'
 import * as firebase from 'firebase';
 import Modal from "react-native-modal";
+import {Colors} from '../../styles/colors';
+import appStyle from '../../styles/app.style';
 
 const {height, width} = Dimensions.get('window');
 export default class NoticeFormScreen extends React.Component {
@@ -267,8 +269,8 @@ renderMoreInformation() {
           title='Collar y/o correa'
           checked={this.state.collar}
           onPress={() => this.setState({collar: !this.state.collar})}
-          textStyle = {[styles.text,{fontWeight:'400', marginLeft:0}]}
-          checkedColor = '#66D2C5'
+          textStyle = {[appStyle.textRegular,{fontWeight:'400', marginLeft:0}]}
+          checkedColor = {Colors.primaryColor}
           fontFamily = {Fonts.OpenSansSemiBold}
           containerStyle = {styles.checkbox}
         />
@@ -276,8 +278,8 @@ renderMoreInformation() {
           title='Chaleco/ropa'
           checked={this.state.clothes}
           onPress={() => this.setState({clothes: !this.state.clothes})}
-          textStyle = {[styles.text,{fontWeight:'400', marginLeft:0}]}
-          checkedColor = '#66D2C5'
+          textStyle = {[appStyle.textRegular,{fontWeight:'400', marginLeft:0}]}
+          checkedColor = {Colors.primaryColor}
           fontFamily = {Fonts.OpenSansSemiBold}
           containerStyle = {styles.checkbox}
         />
@@ -291,25 +293,25 @@ renderMoreInformation() {
   render(){ 
     const type = this.props.navigation.getParam('type');
     return(
-      <ScrollView style={[styles.container]}>
+      <ScrollView style={{flex:1}}>
         <Modal isVisible={this.state.modalSend} style={{margin:20}}>
           
             <View style={{backgroundColor:'white',height:height*0.25,borderRadius:8}}>
-              <View style={styles.headerModal}>
+              <View style={appStyle.headerModal}>
                 <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>{this.state.loading? "Publicando aviso...": "Aviso publicado"}</Text>
               </View>
               {this.state.loading?
                 <View style={{alignSelf:'center'}}>
                   <Text style={{textAlign:'center',fontSize:16}}>Estamos publicando tu aviso.</Text>
                   <Text style={{textAlign:'center',fontSize:14,marginBottom:30}}>Por favor, espera unos segundos.</Text>
-                  <ActivityIndicator size="large" color="#66D2C5" />
+                  <ActivityIndicator size="large" color= {Colors.primaryColor} />
                 </View>
               :
               <View style={{marginBottom:30,alignSelf:'center'}}>
                 <Text style={{textAlign:'center',fontSize:16}}>¡Enhora buena!</Text>
                 <Text style={{textAlign:'center',fontSize:14}}>Tu aviso ha sido publicado con exito.</Text>
                 <Text style={{textAlign:'center',fontSize:14}}>Ya puedes ir a hecharle un vistazo.</Text>
-                <TouchableOpacity style={[styles.buttonLitle,{width:width*0.3,alignSelf:'center'}]}
+                <TouchableOpacity style={[appStyle.buttonModal,{width:width*0.3,alignSelf:'center'}]}
                   onPress={() =>this.setState({modalSend:false } ,()=>{this.props.navigation.navigate('DetailNotice', { notice: this.state.notice})}) }>
                   <Text style={{fontSize:16,textAlign:'center'}}>Aceptar</Text>
                 </TouchableOpacity>
@@ -322,11 +324,11 @@ renderMoreInformation() {
             <View style={{width:width,height:height}}>
             <Map marker={this.state.marker} update = {this.updateLocation.bind(this)}/> 
             <View style={styles.mapClose}>
-              <TouchableOpacity style={[styles.buttonLitle,{backgroundColor:'white'}]}
+              <TouchableOpacity style={[appStyle.buttonModal,{backgroundColor:'white'}]}
                 onPress={() => this.setState({map:false})}>
                 <View style={{flexDirection:'row'}}>
                   <Icon name="arrow-left" size={14} color='gray' style={{marginRight:5,marginTop:3}} regular/>
-                  <Text style={[styles.text,styles.textMap]}>Volver</Text>
+                  <Text style={[appStyle.textRegular,{fontSize:16}]}>Volver</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -335,8 +337,8 @@ renderMoreInformation() {
         </Modal>
         <Modal isVisible={this.state.modalColors}
           hasBackdrop={true} style={{margin:20}}> 
-          <View style={{backgroundColor:'white',height:height*0.6,borderRadius:8}}>
-            <View style={styles.headerModal}>
+          <View style={{backgroundColor:'white',height:height*0.65,borderRadius:8}}>
+            <View style={appStyle.headerModal}>
               <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>Seleccione los colores</Text>
             </View>
             <ScrollView>
@@ -344,10 +346,10 @@ renderMoreInformation() {
                 <TouchableOpacity  key={color.id}
                 onPress={() => this.changeColor(color)}
                 >
-                  <View  style={{alignContent:'space-between',backgroundColor:'white',height:35,marginVertical:2,paddingHorizontal:5,justifyContent:'center',marginHorizontal:15,borderBottomWidth:0.8,borderColor:'#d6d7da'}}>
+                  <View  style={{alignContent:'space-between',backgroundColor:'white',height:35,marginVertical:2,paddingHorizontal:5,justifyContent:'center',marginHorizontal:15,borderBottomWidth:0.8,borderColor: Colors.lightGray}}>
                     <View style={{flexDirection:'row',justifyContent: 'space-between'}}>
                       <Text style={{fontFamily:Fonts.OpenSansSemiBold,fontSize:16,}}>{color.name}</Text>
-                      <Icon name="check-square" size={24} color={color.select? '#66D2C5': '#d6d7da'} style={{marginRight:15}} solid/> 
+                      <Icon name="check-square" size={24} color={color.select? Colors.primaryColor: Colors.lightGray} style={{marginRight:15}} solid/> 
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -356,13 +358,13 @@ renderMoreInformation() {
            
             <View style={{justifyContent:'flex-end',marginBottom: 10,flex:1}}>
               <View style={{justifyContent: 'center',flexDirection:'row', alignSelf: 'stretch'}}>
-                <TouchableOpacity style={[styles.buttonLitle,styles.buttonsModal]}
-                  onPress={() =>this.setState({modalColors:false } ,()=>{this.setColors()}) }>
-                  <Text style={{fontSize:18}}>Aceptar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.buttonLitle,styles.buttonsModal]}
+              <TouchableOpacity style={[appStyle.buttonModal,appStyle.buttonsModal]}
                   onPress={() => this.setState({modalColors:false},()=>this.keepColors())}>
-                    <Text style={{fontSize:18}}>Cancelar</Text>
+                    <Text style={appStyle.TextModalButton}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[appStyle.buttonModal,appStyle.buttonsModal]}
+                  onPress={() =>this.setState({modalColors:false } ,()=>{this.setColors()}) }>
+                  <Text style={appStyle.TextModalButton}>Aceptar</Text>
                 </TouchableOpacity>
               </View>
               
@@ -429,7 +431,7 @@ renderMoreInformation() {
               textInput: {
                 backgroundColor:'white',
                 borderWidth: 1.3,
-                borderColor: '#d6d7da',
+                borderColor: Colors.lightGray,
                 borderRadius: 8,
                 margin:10,
                 marginBottom:0,
@@ -449,8 +451,8 @@ renderMoreInformation() {
           <TouchableOpacity style={styles.buttonMap}
             onPress={() => this.setState({map:true})}>
             <View style={{flexDirection:'row'}}>
-              <Icon name="map-marker-alt" size={14} color='#66D2C5' style={{marginRight:5}} regular/>
-              <Text style={[styles.text,{color: '#66D2C5'}]}>Ver mapa</Text>
+              <Icon name="map-marker-alt" size={14} color={Colors.primaryColor} style={{marginRight:5}} regular/>
+              <Text style={[appStyle.textRegular,{color: Colors.primaryColor}]}>Ver mapa</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -493,11 +495,11 @@ renderMoreInformation() {
                 onPress={() =>this.setState({more_info: true})}
               >
                 <Icon name="plus" size={18} color='#9d9c9c' style={{marginRight:5,marginTop:3}} regular/>
-                <Text style={styles.textInfo}> Agregar más informacion </Text>
+                <Text style={[appStyle.textRegular,{fontSize:16}]}> Agregar más información </Text>
               </TouchableOpacity>  
             }
             <TextInput
-              style = {styles.inputArea}
+              style = {[appStyle.inputArea, appStyle.textRegular]}
               placeholder = {'Agregue una descripción ...'}
               placeholderTextColor = {'gray'}
               multiline={true}
@@ -508,7 +510,7 @@ renderMoreInformation() {
             <View style={[styles.border, styles.request]}>
               <View>
                 <Text style={{fontFamily: Fonts.OpenSansSemiBold,marginBottom:5}}>Situación de emergencia</Text>
-                <View style={[styles.pickerContainer,{borderColor:'#d6d7da'}]}>
+                <View style={[styles.pickerContainer,{borderColor : Colors.lightGray}]}>
                   <Picker
                     selectedValue={this.state.situation}
                     style={styles.picker}
@@ -528,8 +530,8 @@ renderMoreInformation() {
                   }
                   thumbColor="white" 
                   trackColor={{
-                    true: "#66D2C5",
-                    false: "#d6d7da",
+                    true: Colors.primaryColor,
+                    false: Colors.lightGray,
                 }} 
                   value = {this.state.rescue_request}/>
               </View>
@@ -537,10 +539,10 @@ renderMoreInformation() {
               :null
             }
             <TouchableOpacity 
-              style={styles.buttonPost}
+              style={appStyle.buttonLarge}
               onPress={() => this.validate()}
             >
-              <Text style={styles.textPost}> Publicar </Text>
+              <Text style={appStyle.buttonLargeText}> Publicar </Text>
             </TouchableOpacity>     
           </View>
           
@@ -550,43 +552,23 @@ renderMoreInformation() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: 'white',
-    },
-    text:{
-      fontSize: 14,
-      color: 'gray',
-      fontFamily: Fonts.OpenSans
-    },
     buttonMap:{
       width:80,
       alignSelf: 'flex-end',
       borderBottomWidth: 1.3,
-      borderColor: '#66D2C5',
+      borderColor: Colors.primaryColor,
       margin:10,
       marginTop:5,
       marginBottom:10,
       paddingVertical:0,
       paddingHorizontal:2,
     },
-    buttonLitle:{
-      borderWidth: 1.3,
-      borderColor: '#d6d7da',
-      borderRadius: 8,
-      margin:10,
-      marginBottom:0,
-      paddingVertical:5,
-      paddingHorizontal:10,
-    },
     mapClose:{
       position: 'absolute',
       margin:15,
       alignSelf: 'flex-start'
     },
-    textMap:{
-      fontSize:16,
-    },
+
     containerForm:{
       paddingHorizontal:10,
       paddingBottom:10,
@@ -601,25 +583,12 @@ const styles = StyleSheet.create({
     height:34,
     marginTop:8,
     borderWidth: 1.3,
-    borderColor: '#d6d7da',
+    borderColor: Colors.lightGray,
     borderRadius: 8,
   },
   input:{
     borderWidth: 1.3,
-    borderColor: '#66D2C5',
-    borderRadius: 8,
-    marginVertical:10,
-    marginHorizontal:0,
-    paddingVertical:1,
-    paddingHorizontal:10,
-  },
-  inputArea:{
-    color:'gray',
-    borderColor: '#d6d7da',
-    textAlignVertical: "top",
-    paddingTop:5,
-    borderWidth: 1.3,
-    //borderColor: '#66D2C5',
+    borderColor: Colors.primaryColor,
     borderRadius: 8,
     marginVertical:10,
     marginHorizontal:0,
@@ -628,7 +597,7 @@ const styles = StyleSheet.create({
   },
   pickerContainer:{
     borderWidth: 1.3,
-    borderColor: '#66D2C5',
+    borderColor: Colors.primaryColor,
     borderRadius: 8,
     width: width*0.45,
   },
@@ -644,7 +613,7 @@ const styles = StyleSheet.create({
     marginLeft:2
   },
   moreInformation:{
-    backgroundColor:"#66D2C5",
+    backgroundColor: Colors.primaryColor,
     marginTop:10,
     marginVertical:5,
     padding:5,
@@ -652,7 +621,7 @@ const styles = StyleSheet.create({
   },
   border:{
     borderWidth: 1.3,
-    borderColor: '#66D2C5',
+    borderColor: Colors.primaryColor,
     borderRadius: 4,
   },
   pickersInfo:{
@@ -684,15 +653,10 @@ const styles = StyleSheet.create({
     fontSize:20,
     fontFamily: Fonts.OpenSansBold
   },
-  textInfo:{
-    color:'gray',
-    fontSize:16,
-    fontFamily: Fonts.OpenSansRegular
-  },
   buttonPost:{
     marginTop: 5,
     borderRadius: 8,
-    backgroundColor :'#66D2C5',
+    backgroundColor : Colors.primaryColor,
     alignItems: "center",
     justifyContent:'center',
     height: 45,
@@ -706,23 +670,9 @@ const styles = StyleSheet.create({
    },
    moreInfo:{
     backgroundColor:'white',
-    borderColor:'#d6d7da',
+    borderColor: Colors.lightGray,
     flexDirection:'row',
     borderStyle: 'dashed',
     marginTop:10
    },
-   buttonsModal:{
-    backgroundColor:'white',
-    width:width*0.35,
-    alignItems:'center'
-    },
-    headerModal:{
-      backgroundColor:'#66d2c5',
-      borderTopEndRadius:8,
-      borderTopStartRadius:8,
-      height:height*0.06,
-      alignItems:'center',
-      justifyContent:'center',
-      marginBottom:10
-    }
   });
