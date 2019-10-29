@@ -10,7 +10,7 @@ import {
 import {Fonts} from '../utils/Fonts';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { API} from '../keys';
-import * as firebase from 'firebase';
+import firebase from 'react-native-firebase'
 import {Colors} from '../styles/colors';
 import appStyle from '../styles/app.style'
 

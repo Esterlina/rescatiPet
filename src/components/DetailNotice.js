@@ -126,6 +126,7 @@ async shareToSocial(){
   render(){ 
     Moment.locale('es')
     const notice = this.props.navigation.getParam('notice')
+    console.log(notice)
     const data_create = Moment(notice.hora_creacion || Moment.now()).fromNow();
     return(
       <View style={styles.container}>

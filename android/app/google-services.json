@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "963364960760",
+    "firebase_url": "https://rescatipet-develop.firebaseio.com",
+    "project_id": "rescatipet-develop",
+    "storage_bucket": "rescatipet-develop.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:963364960760:android:3d427879dd5114f5c9be0d",
+        "android_client_info": {
+          "package_name": "com.rescatipet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "963364960760-ru1ag6uikgm7bavodin85j45kimdgjo2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4G7G3OqZFzMQTPfa3V3kuf9tSqUUnS1s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "963364960760-ru1ag6uikgm7bavodin85j45kimdgjo2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

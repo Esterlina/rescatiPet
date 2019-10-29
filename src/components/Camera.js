@@ -19,7 +19,9 @@ pickMultiple() {
           const new_images = images.map(image => {
             console.log(image.width)
             console.log(image.height)
+            console.log("IMPRIMRE LOS PATH")
             console.log(image.path)
+            console.log(image.path.toString())
             console.log(image.mime)
             return {uri:image.path, width: image.width, height: image.height, mime: image.mime};
           })

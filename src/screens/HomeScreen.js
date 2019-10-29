@@ -4,6 +4,8 @@ import Header from '../components/Header';
 import {API} from '../keys';
 import Notice from '../components/Notice'
 import {Colors} from '../styles/colors'
+import firebase from 'react-native-firebase'
+import type { Notification, NotificationOpen } from 'react-native-firebase';
 
 export default class HomeScreen extends React.Component {
   constructor(props) {
@@ -27,6 +29,19 @@ static navigationOptions = {
 }
 
 componentDidMount() {
+  firebase.notifications().getInitialNotification()
+    .then((notificationOpen: NotificationOpen) => {
+      if (notificationOpen) {
+        console.log("ACABO DE ABRIR NOTIFICACION")
+        this.props.navigation.navigate('Inbox');
+        console.log("FUI UNA NOTIFICACION ABIERTA")
+        // App was opened by a notification
+        // Get the action triggered by the notification being opened
+       // const action = notificationOpen.action;
+        // Get information about the notification that was opened
+        //const notification: Notification = notificationOpen.notification;  
+      }
+    });
   return fetch(API+'notices')
   .then( (response) => response.json() )
   .then( (responseJson ) => {

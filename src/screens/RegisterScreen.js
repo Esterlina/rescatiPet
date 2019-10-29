@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text,Image,View,TouchableOpacity,ImageBackground,KeyboardAvoidingView,TextInput,Alert, Dimensions} from 'react-native';
-import * as firebase from 'firebase';
+import firebase from 'react-native-firebase'
 import { connect } from 'react-redux'
 import authStyle from '../styles/auth.style'
 import appStyle from '../styles/app.style'
@@ -91,9 +91,25 @@ class RegisterScreen extends React.Component {
     .then((response) => response.json())
     .then((responseJson) => {
       let user = responseJson['usuario']
-      this.setState({user: user},() => {this.props.updateUser(this.state.user); } )
+      this.setState({user: user},() => {this.updateTokenDevice(idToken);this.props.updateUser(this.state.user); } )
     }).catch((error) =>{
       console.error(error);
+    });
+  }
+  async updateTokenDevice(idToken){
+    console.log("VOY A PEDIR EL TOKEN DEL DISPOSITVO ")
+    let token_device = await firebase.messaging().getToken();
+    console.log(token_device);
+    fetch(API + 'users/' + this.state.user.id, {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': idToken,
+      },
+      body: JSON.stringify({
+        token_device: token_device,
+      }),
     });
   }
   render(){  

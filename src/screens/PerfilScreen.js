@@ -3,7 +3,7 @@ import { StyleSheet, Text,View,Button,Image, AsyncStorage} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../components/Header';
 import Helpers from '../../lib/helpers'
-import * as firebase from 'firebase';
+import firebase from 'react-native-firebase'
 import {connect} from 'react-redux'
 
 class PerfilScreen extends PureComponent {

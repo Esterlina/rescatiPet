@@ -12,10 +12,6 @@ import Home from "../screens/HomeScreen";
 import LoadingScreen from "../screens/LoadingScreen";
 import {Colors} from "../styles/colors"
 
-import * as firebase from 'firebase';
-import FirebaseConfig from '../../lib/FirebaseConfig';
-firebase.initializeApp(FirebaseConfig);
-
 import {
     createSwitchNavigator,
     createAppContainer,

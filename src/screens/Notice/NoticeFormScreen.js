@@ -10,7 +10,7 @@ import { CheckBox } from 'react-native-elements'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import {API_KEY, API} from '../../keys';
 import Helpers from '../../../lib/helpers'
-import * as firebase from 'firebase';
+import firebase from 'react-native-firebase'
 import Modal from "react-native-modal";
 import {Colors} from '../../styles/colors';
 import appStyle from '../../styles/app.style';
@@ -93,11 +93,12 @@ getRaceBySpecie(){
 
 uploadImages = async (uri,name)=> {
   console.log("ESTOY SUBIENDO LA FOTO " + name);
-  console.log(uri)
-  const response = await fetch(uri);
-  const blob = await response.blob();
-  var ref = firebase.storage().ref().child(this.state.notice.img_dir + name);
-  return ref.put(blob);
+  //const response = await fetch(uri);
+  //const blob = await response.blob();
+  firebase.storage().ref(this.state.notice.img_dir + name).putFile(uri)
+  .then(file => file.ref)
+  .catch(error => console.log(error));
+  //return ref.put(blob);
 }
 validate(){
   if (this.state.images.length == 0){
@@ -164,13 +165,19 @@ sendNotice(){
   .then((responseJson) => {
     console.log(responseJson);
     this.setState({notice: responseJson},()=>{
-      this.state.images.map((item,i) => 
+      this.state.images.map((item,i) => {
         this.uploadImages(item.uri,"image_" + i + ".jpg")
+        if (i == this.state.images.length -1){
+          console.log("lA ULTIMA IMAGEN ES ");
+          console.log(i)
+          this.setState({loading:false})
+        }
+      }       
       )
     });
   console.log(this.state.notice.img_dir);
   console.log(this.state.notice)
-  this.setState({loading:false})
+  
   }).catch((error) =>{
     console.error(error);
   });
@@ -296,7 +303,7 @@ renderMoreInformation() {
       <ScrollView style={{flex:1}}>
         <Modal isVisible={this.state.modalSend} style={{margin:20}}>
           
-            <View style={{backgroundColor:'white',height:height*0.25,borderRadius:8}}>
+            <View style={{backgroundColor:'white',height:height*0.27,borderRadius:8}}>
               <View style={appStyle.headerModal}>
                 <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>{this.state.loading? "Publicando aviso...": "Aviso publicado"}</Text>
               </View>

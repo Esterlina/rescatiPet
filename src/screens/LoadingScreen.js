@@ -5,7 +5,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import * as firebase from 'firebase'
+import firebase from 'react-native-firebase'
 import { Colors } from '../styles/colors';
 
 export default class LoadingScreen extends React.Component {
