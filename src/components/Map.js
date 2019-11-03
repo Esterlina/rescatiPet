@@ -12,7 +12,8 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 const {width,height} = Dimensions.get('window');
 import Geocoder from 'react-native-geocoding';
 import {API_KEY} from '../keys';
-
+import {Colors} from '../styles/colors'
+import appStyle from '../styles/app.style';
 
 export default class Map extends Component{
     constructor(props) {
@@ -86,14 +87,14 @@ export default class Map extends Component{
                     onPress={() => this.userLocation()}>
                     <View style={{flexDirection:'row'}}>
                     <Icon name="street-view" size={20} color='gray' style={{marginRight:8}} regular/>
-                    <Text style={styles.textMap}>UBICACIÓN ACTUAL</Text>
+                    <Text style={appStyle.textRegular}>UBICACIÓN ACTUAL</Text>
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.buttonMap,{backgroundColor:"#4db74e"}]}
                     onPress={() => this.saveLocation()}>
                     <View style={{flexDirection:'row',alignContent:'center',alignItems:'center',justifyContent:'center'}}>
                     <Icon name="check-square" size={20} color='white' style={{marginRight:8}} regular/>
-                    <Text style={[styles.textMap,{color:'white'}]}>LISTO</Text>
+                    <Text style={[appStyle.textRegular,{color:'white'}]}>LISTO</Text>
                     </View>
                 </TouchableOpacity>
                 </View>
@@ -111,17 +112,12 @@ const styles = StyleSheet.create({
     buttonMap:{
         backgroundColor:"white",
         borderWidth: 1.3,
-        borderColor: '#d6d7da',
+        borderColor: Colors.lightGray,
         borderRadius: 10,
         margin:5,
         marginBottom:0,
         paddingVertical:8,
         paddingHorizontal:20,
     },
-    textMap:{
-      fontSize: 16,
-      color: 'gray',
-      fontFamily: Fonts.OpenSans
-    }
 });
 

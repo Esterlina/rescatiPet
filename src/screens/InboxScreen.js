@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text,View,ActivityIndicator,ScrollView,Dimensions,TouchableOpacity,AsyncStorage} from 'react-native';
+import { StyleSheet, Text,View,ActivityIndicator,ScrollView,Dimensions,TouchableOpacity} from 'react-native';
 import Header from '../components/Header';
 import {Fonts} from '../utils/Fonts' ;
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -11,10 +11,11 @@ import ModalMatch from "../components/ModalMatch";
 import Moment from 'moment';
 import 'moment/locale/es';
 import _ from "lodash";
+import {connect} from 'react-redux';
+const {width,height} = Dimensions.get('window');
+import {Colors} from '../styles/colors';
 
-const {width,height} = Dimensions.get('window')
-
-export default class InboxScreen extends React.Component {
+class InboxScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -27,27 +28,21 @@ export default class InboxScreen extends React.Component {
         }
         this.arrayholder = [];
       }
-  getInbox = async () => {
-    try{
-      let user_item = await AsyncStorage.getItem('user')
-      let user =  JSON.parse(user_item);
-        return fetch(API+'matches/matches_recipients/' + user.id)
-        .then( (response) => response.json() )
-          .then( (responseJson ) => {
-            this.setState({
-              matches: responseJson['matches'],
-              loading:false,
-            }, function() {
-            this.arrayholder = responseJson['matches'];
-          })
-        })
-      .catch((error) => {
-        console.log(error)
-        this.setState({loading: false})
-      });
-    }catch(error){
+  getInbox(){
+    return fetch(API+'matches/matches_recipients/' + this.props.user.id)
+    .then( (response) => response.json() )
+      .then( (responseJson ) => {
+        this.setState({
+          matches: responseJson['matches'],
+          loading:false,
+        }, function() {
+        this.arrayholder = responseJson['matches'];
+      })
+    })
+    .catch((error) => {
       console.log(error)
-    }
+      this.setState({loading: false})
+    });
   }
   componentDidMount() {
       this.getInbox()
@@ -95,7 +90,7 @@ export default class InboxScreen extends React.Component {
   render(){ 
     Moment.locale('es')
     return(
-        <View style={styles.container}>
+        <View style={{flex:1}}>
           <Header {...this.props} stack='true'/> 
           <Modal isVisible={this.state.modalMatch} style={{margin:20}}>
             <ModalMatch update = {this.updateModalMatch.bind(this)} match = {this.state.match} navigation={this.props.navigation}/>
@@ -125,7 +120,7 @@ export default class InboxScreen extends React.Component {
                   {this.state.matches.map((match) => {
                   return (
                     <TouchableOpacity key={match.id} onPress={() => this.openMatch(match.id)}>
-                      <View key={match.id} style={[styles.matchContainer,{borderWidth:match.leido? 1 : 1.5,borderColor: match.leido? '#d6d7da':'#66d2c5'}]}>
+                      <View key={match.id} style={[styles.matchContainer,{borderWidth:match.leido? 1 : 1.5,borderColor: match.leido? Colors.lightGray :Colors.primaryColor}]}>
                         <View key={match.id} style={{flexDirection:'row'}}>
                             <UserAvatar size="60" name={match.emisor.nombre} colors={['#0ebda7','#ccc000', '#fafafa', '#ccaabb']}/>
                             <View style={{alignContent:'center',justifyContent:'center',marginLeft:5}}>
@@ -135,7 +130,7 @@ export default class InboxScreen extends React.Component {
                                   ? `${match.emisor.nombre}`
                                   : `${match.emisor.nombre.substring(0, 21)}...`}
                                 </Text>
-                                <Text style={{fontFamily: match.leido? Fonts.OpenSans : Fonts.OpenSansBold,color: match.leido? 'gray' : '#66d2c5' }}>
+                                <Text style={{fontFamily: match.leido? Fonts.OpenSans : Fonts.OpenSansBold,color: match.leido? 'gray' : Colors.primaryColor }}>
                                   {match.hora_creacion}
                                 </Text>
                               </View>
@@ -149,7 +144,7 @@ export default class InboxScreen extends React.Component {
                 </ScrollView>
             </View>
             :<View style={{flex:1,justifyContent:'center'}}>
-                <ActivityIndicator size="large" color="#66D2C5" />
+                <ActivityIndicator size="large" color={Colors.primaryColor} />
             </View> 
             }
       </View>
@@ -159,15 +154,11 @@ export default class InboxScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: 'white',
-    },
     searchInput:{
         height:30,
         borderWidth:1,
         borderBottomWidth:1,
-        borderColor:'#d6d7da',
+        borderColor: Colors.lightGray,
         backgroundColor:'white'
     },
     matchContainer:{
@@ -178,3 +169,10 @@ const styles = StyleSheet.create({
       marginBottom:10,
     }
   });
+
+  const mapStateToProps = (state) => {
+    return {
+      user: state.userReducer,
+    };
+  };
+  export default connect(mapStateToProps)(InboxScreen);

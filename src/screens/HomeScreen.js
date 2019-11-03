@@ -1,8 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text,TouchableOpacity, ScrollView,View,Image,ActivityIndicator} from 'react-native';
+import {ScrollView,View,Image,ActivityIndicator} from 'react-native';
 import Header from '../components/Header';
 import {API} from '../keys';
 import Notice from '../components/Notice'
+import {Colors} from '../styles/colors'
+import firebase from 'react-native-firebase'
+import type { Notification, NotificationOpen } from 'react-native-firebase';
 
 export default class HomeScreen extends React.Component {
   constructor(props) {
@@ -26,6 +29,19 @@ static navigationOptions = {
 }
 
 componentDidMount() {
+  firebase.notifications().getInitialNotification()
+    .then((notificationOpen: NotificationOpen) => {
+      if (notificationOpen) {
+        console.log("ACABO DE ABRIR NOTIFICACION")
+        this.props.navigation.navigate('Inbox');
+        console.log("FUI UNA NOTIFICACION ABIERTA")
+        // App was opened by a notification
+        // Get the action triggered by the notification being opened
+       // const action = notificationOpen.action;
+        // Get information about the notification that was opened
+        //const notification: Notification = notificationOpen.notification;  
+      }
+    });
   return fetch(API+'notices')
   .then( (response) => response.json() )
   .then( (responseJson ) => {
@@ -43,10 +59,10 @@ componentDidMount() {
   render(){ 
     
     return(
-        <View style={styles.container}>
+        <View style={{flex:1}}>
           <Header {...this.props} inbox='true'/> 
           {!this.state.loading ?
-            <ScrollView style={styles.container}>
+            <ScrollView style={{flex:1}}>
               {this.state.notices.map((item) => {
                 console.log(item)
                 return (
@@ -59,27 +75,10 @@ componentDidMount() {
             </ScrollView>
             : 
             <View style={{flex:1,justifyContent:'center'}}>
-              <ActivityIndicator size="large" color="#66D2C5" />
+              <ActivityIndicator size="large" color= {Colors.primaryColor} />
             </View> }
       </View>
     );
     
   }
 }
-
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#F5FCFF',
-    },
-    welcome: {
-      fontSize: 20,
-      textAlign: 'center',
-      margin: 10,
-    },
-    instructions: {
-      textAlign: 'center',
-      color: '#333333',
-      marginBottom: 5,
-    },
-  });

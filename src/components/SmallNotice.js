@@ -6,6 +6,8 @@ import Helpers from '../../lib/helpers'
 import _ from 'lodash';
 import Moment from 'moment';
 import 'moment/locale/es'
+import {Colors} from '../styles/colors'
+import appStyle from '../styles/app.style'
 const {height, width} = Dimensions.get('window');
 
 YellowBox.ignoreWarnings(['Setting a timer']);
@@ -72,8 +74,8 @@ openDetail(){
                         </View>
                     }
                     <View style={{marginVertical:10}}>
-                        <Text style={{color:'gray',fontFamily:Fonts.OpenSansBold,fontSize:14}}>{notice.estado == 'Abierto'? 'Caso abierto' : 'Caso cerrado'}</Text>
-                        <Text style={{color:'gray',fontFamily:Fonts.OpenSansSemiBold,fontSize:14}}>Publicado {data_create} </Text>
+                        <Text style={appStyle.textBold}>{notice.estado == 'Abierto'? 'Caso abierto' : 'Caso cerrado'}</Text>
+                        <Text style={appStyle.textRegular}>Publicado {data_create} </Text>
                     </View>
                     
                 </View>
@@ -81,10 +83,10 @@ openDetail(){
 
             </View>
             <TouchableOpacity 
-              style={styles.button}
+              style={appStyle.buttonLarge2}
               onPress={() =>this.openDetail()}
             >
-              <Text style={styles.buttonText}> Ver detalles </Text>
+              <Text style={appStyle.buttonLargeText2}> Ver detalles </Text>
             </TouchableOpacity>  
         </View>
     );
@@ -97,32 +99,9 @@ const styles = StyleSheet.create({
       marginHorizontal:10,
       paddingHorizontal:8,
       borderWidth: 1.8,
-      borderColor: '#66D2C5',
+      borderColor: Colors.primaryColor,
       borderRadius: 4,
       marginBottom:5,
-    },
-    image:{
-      height: height*0.3,
-      width:width * 0.9,
-    },
-    carousel:{
-     justifyContent: 'center',
-     alignItems:'center',
-     marginVertical:10
-    },
-    button:{
-      marginTop:8,
-      marginHorizontal: 5,
-      borderRadius: 8,
-      backgroundColor :'#66D2C5',
-      alignItems: "center",
-      justifyContent:'center',
-      height: 30,
-    },
-    buttonText:{
-      color:'white',
-      fontSize:16,
-      fontFamily: Fonts.OpenSansBold
     },
     imageDefault:{
         width:width*0.32,

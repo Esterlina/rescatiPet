@@ -9,6 +9,8 @@ import Helpers from '../../lib/helpers'
 import _ from 'lodash';
 import Moment from 'moment';
 import 'moment/locale/es'
+import { Colors } from '../styles/colors';
+import appStyle from '../styles/app.style';
 const {height, width} = Dimensions.get('window');
 
 YellowBox.ignoreWarnings(['Setting a timer']);
@@ -61,30 +63,30 @@ _renderItem = ( {item, index} ) => {
     Moment.locale('es')
     const data_create = Moment(notice.hora_creacion || Moment.now()).fromNow();
     return(
-      <View style={styles.container}>
+      <View style={{flex:1}}>
         <View style={styles.notice}>
             <View style={{flexDirection:'row',paddingTop:10}}>
               <UserAvatar size="40" name={notice.usuario.nombre} colors={['#ccc', '#fafafa', '#ccaabb']}/>
               <View style={{marginHorizontal: 10}}>
                 <View style={{flexDirection:'row'}}>
-                <Text style={styles.semiBold} numberOfLines={1}>
+                <Text style={appStyle.textSemiBold} numberOfLines={1}>
                 {notice.usuario.nombre.length < 20
                 ? `${notice.usuario.nombre}`
                 : `${notice.usuario.nombre.substring(0, 21)}...`}</Text>
 
                 </View>
-                <View style={[styles.text,{flexDirection:'row'}]}>
+                <View style={[appStyle.textRegular,{flexDirection:'row'}]}>
                   <Text>{data_create} - </Text>
                   {notice.estado == 'Abierto' ?
-                  <Text style={[styles.semiBold,{color:'#19c9d4'}]}>Caso abierto</Text>:
-                  <Text style={[styles.semiBold,{color:'red'}]}>Caso cerrado</Text>
+                  <Text style={[appStyle.textSemiBold,{color:'#19c9d4'}]}>Caso abierto</Text>:
+                  <Text style={[appStyle.textSemiBold,{color:'red'}]}>Caso cerrado</Text>
                 }
                 </View>
               </View>
               <Tag type={notice.tipo}/>
             </View>
             
-            <View style={styles.carousel}>
+            <View style={appStyle.carousel}>
               {!this.state.loading ?
               <Carousel
                 ref={(c) => { this._carousel = c; }}
@@ -93,22 +95,22 @@ _renderItem = ( {item, index} ) => {
                 sliderWidth={width*0.9}
                 itemWidth={width*0.9}
               />
-              : <ActivityIndicator size="large" color="#66D2C5" />}
+              : <ActivityIndicator size="large" color= {Colors.primaryColor} />}
             </View>
             <View style={{flexDirection:'row'}}>
             <Icon name="map-marker-alt" size={20} color='gray' style={{marginRight:4}} regular/>
-                <Text style={styles.semiBold} numberOfLines={1}>{notice.dir.length < 45
+                <Text style={appStyle.textSemiBold} numberOfLines={1}>{notice.dir.length < 45
                 ? `${notice.dir}`
                 : `${notice.dir.substring(0, 45)}...`}</Text>
             </View>
             <ScrollView style={{height:height*0.1,marginVertical:2,marginHorizontal:2}}>
-              <Text style={[styles.text,{textAlign:'justify'}]}>{notice.detalles}</Text>
+              <Text style={[appStyle.textRegular,{textAlign:'justify'}]}>{notice.detalles}</Text>
             </ScrollView>
             <TouchableOpacity 
-              style={styles.button}
+              style={appStyle.buttonLarge2}
               onPress={() =>this.openDetail()}
             >
-              <Text style={styles.buttonText}> Ver detalles </Text>
+              <Text style={appStyle.buttonLargeText2}> Ver detalles </Text>
             </TouchableOpacity>  
         </View>
       </View>
@@ -117,27 +119,13 @@ _renderItem = ( {item, index} ) => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: 'white',
-    },
-    text:{
-      fontSize: 14,
-      color: 'gray',
-      fontFamily: Fonts.OpenSans
-    },
-    semiBold:{
-      fontSize: 14,
-      color: 'gray',
-      fontFamily: Fonts.OpenSansSemiBold
-    },
     notice:{
       paddingVertical:10,
       paddingTop:4,
       marginHorizontal:10,
       paddingHorizontal:8,
       borderWidth: 1.8,
-      borderColor: '#66D2C5',
+      borderColor: Colors.primaryColor,
       borderRadius: 4,
       marginVertical:5,
     },
@@ -145,23 +133,4 @@ const styles = StyleSheet.create({
       height: height*0.3,
       width:width * 0.9,
     },
-    carousel:{
-     justifyContent: 'center',
-     alignItems:'center',
-     marginVertical:10
-    },
-    button:{
-      marginTop:8,
-      marginHorizontal: 5,
-      borderRadius: 8,
-      backgroundColor :'#66D2C5',
-      alignItems: "center",
-      justifyContent:'center',
-      height: 30,
-    },
-    buttonText:{
-      color:'white',
-      fontSize:16,
-      fontFamily: Fonts.OpenSansBold
-    }
 });

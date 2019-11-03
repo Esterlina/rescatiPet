@@ -6,7 +6,7 @@ import {
     Dimensions,
     TouchableWithoutFeedback,
 } from 'react-native'
-
+import {Colors} from '../styles/colors'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 const {width,height} = Dimensions.get('window')
 export default class Header extends Component{
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     container:{
-        backgroundColor:"#66d2c5",
+        backgroundColor: Colors.primaryColor,
         height:40,
         alignItems: 'center',
         flexDirection: 'row',
