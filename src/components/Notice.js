@@ -61,7 +61,16 @@ _renderItem = ( {item, index} ) => {
   render(){ 
     const notice = this.props.dataJson
     Moment.locale('es')
-    const data_create = Moment(notice.hora_creacion || Moment.now()).fromNow();
+    var date_notice = Moment(notice.hora_creacion).format('DD/MM/YYYY');
+    var date = new Date();
+    const today = Moment(date).format('DD/MM/YYYY');
+    const yesterday = Moment(date.setDate(date.getDate() - 1)).format('DD/MM/YYYY');
+    if(date_notice == today || date_notice ==  yesterday){
+      date_create = Moment(notice.hora_creacion || Moment.now()).fromNow();
+    }
+    else{
+      date_create = date_notice
+    }
     return(
       <View style={{flex:1}}>
         <View style={styles.notice}>
@@ -76,7 +85,7 @@ _renderItem = ( {item, index} ) => {
 
                 </View>
                 <View style={[appStyle.textRegular,{flexDirection:'row'}]}>
-                  <Text>{data_create} - </Text>
+                  <Text>{date_create} - </Text>
                   {notice.estado == 'Abierto' ?
                   <Text style={[appStyle.textSemiBold,{color:'#19c9d4'}]}>Caso abierto</Text>:
                   <Text style={[appStyle.textSemiBold,{color:'red'}]}>Caso cerrado</Text>

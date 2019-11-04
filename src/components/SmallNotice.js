@@ -44,18 +44,29 @@ componentWillMount(){
 }
 openDetail(){
     this.props.update(false)
-    this.props.navigation.navigate('DetailNotice', { notice: this.props.notice})
+    this.props.navigation.navigate('DetailNotice', { notice: this.props.notice, request_sos: this.props.request_sos})
 }
 
   render(){ 
     const notice = this.props.notice
+    const suggestion = this.props.suggestion
     Moment.locale('es')
-    const data_create = Moment(notice.hora_creacion || Moment.now()).fromNow();
+    const date_notice = Moment(notice.hora_creacion).format('DD/MM/YYYY');
+    var date = new Date();
+    const today = Moment(date).format('DD/MM/YYYY');
+    const yesterday = Moment(date.setDate(date.getDate() - 1)).format('DD/MM/YYYY');
+    if(date_notice == today || date_notice ==  yesterday){
+      date_create = Moment(notice.hora_creacion || Moment.now()).fromNow();
+    }
+    else{
+      date_create = date_notice
+    }
     return(
-        <View style={styles.notice}>
+        <View style={[styles.notice,{borderWidth: suggestion? 0 : 1.8, marginHorizontal: suggestion? 0 : 10, paddingHorizontal: suggestion? 0 : 8,marginBottom: suggestion? 0 : 5}]}>
+            
             <View style={{flexDirection:'row'}}>
                 <Image
-                    style={styles.imageDefault}
+                    style={[styles.imageDefault,{height: suggestion? height*0.11 : height*0.14}]}
                     source={this.state.image ? {uri: this.state.image } : null}
                 />
                 <View style={{marginHorizontal:5}}>
@@ -73,21 +84,33 @@ openDetail(){
                             <Text style={{fontSize:16,color:'white',fontFamily: Fonts.OpenSansBold}}>Aviso Encontrado</Text>
                         </View>
                     }
-                    <View style={{marginVertical:10}}>
-                        <Text style={appStyle.textBold}>{notice.estado == 'Abierto'? 'Caso abierto' : 'Caso cerrado'}</Text>
-                        <Text style={appStyle.textRegular}>Publicado {data_create} </Text>
+                    <View style={{marginVertical: suggestion? 2:10}}>
+                      {suggestion?
+                        <View>
+                          <Text style={appStyle.textRegular}>Por <Text style={appStyle.textSemiBold}>{notice.usuario.nombre}</Text></Text>
+                          <Text style={appStyle.textRegular}>Publicado {date_create} </Text>
+                        </View>
+                      :
+                        <View>
+                          <Text style={appStyle.textBold}>{notice.estado == 'Abierto'? 'Caso abierto' : 'Caso cerrado'}</Text>
+                          <Text style={appStyle.textRegular}>Publicado {date_create} </Text>
+                        </View>
+                      }
+                        
                     </View>
                     
                 </View>
 
 
             </View>
+            {suggestion? null :
             <TouchableOpacity 
-              style={appStyle.buttonLarge2}
-              onPress={() =>this.openDetail()}
+            style={appStyle.buttonLarge2}
+            onPress={() =>this.openDetail()}
             >
               <Text style={appStyle.buttonLargeText2}> Ver detalles </Text>
-            </TouchableOpacity>  
+            </TouchableOpacity>  }
+            
         </View>
     );
   }
@@ -96,7 +119,6 @@ openDetail(){
 const styles = StyleSheet.create({
     notice:{
       paddingVertical:5,
-      marginHorizontal:10,
       paddingHorizontal:8,
       borderWidth: 1.8,
       borderColor: Colors.primaryColor,
