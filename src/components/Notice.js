@@ -75,7 +75,12 @@ _renderItem = ( {item, index} ) => {
       <View style={{flex:1}}>
         <View style={styles.notice}>
             <View style={{flexDirection:'row',paddingTop:10}}>
-              <UserAvatar size="40" name={notice.usuario.nombre} colors={['#ccc', '#fafafa', '#ccaabb']}/>
+              {notice.usuario.perfil?
+              <UserAvatar size="40" name={notice.usuario.nombre} src={notice.usuario.perfil}/>
+              :
+              <UserAvatar size="40" name={notice.usuario.nombre} colors={['#0ebda7','#ccc000', '#fafafa', '#ccaabb']}/>
+              }
+
               <View style={{marginHorizontal: 10}}>
                 <View style={{flexDirection:'row'}}>
                 <Text style={appStyle.textSemiBold} numberOfLines={1}>

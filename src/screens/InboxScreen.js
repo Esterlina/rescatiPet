@@ -151,7 +151,12 @@ class InboxScreen extends React.Component {
                     <TouchableOpacity key={match.id} onPress={() => this.openMatch(match.id)}>
                       <View key={match.id} style={[styles.matchContainer,{borderWidth:match.leido? 1 : 1.5,borderColor: match.leido? Colors.lightGray : (match.tipo == "Solicitud-SOS"? Colors.red : Colors.primaryColor)}]}>
                         <View key={match.id} style={{flexDirection:'row'}}>
-                            <UserAvatar size="60" name={match.emisor.nombre} colors={['#0ebda7','#ccc000', '#fafafa', '#ccaabb']}/>
+                          {match.emisor.perfil?
+                          <UserAvatar size="60" name={match.emisor.nombre} src={match.emisor.perfil}/>
+                          :
+                          <UserAvatar size="60" name={match.emisor.nombre} colors={['#0ebda7','#ccc000', '#fafafa', '#ccaabb']}/>
+                          }
+                            
                             <View style={{alignContent:'center',justifyContent:'center',marginLeft:5}}>
                               <View style={{flexDirection:'row',width:width-96,justifyContent: 'space-between',}}>
                                 <Text style={{fontFamily: match.leido? Fonts.OpenSansSemiBold : Fonts.OpenSansBold,fontSize:16}}>

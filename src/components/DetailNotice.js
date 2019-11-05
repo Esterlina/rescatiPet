@@ -226,7 +226,11 @@ async shareToSocial(){
         <View style={styles.notice}>
           <View style={{paddingHorizontal:8}}>
             <View style={{flexDirection:'row',paddingTop:10,}}>
-              <UserAvatar size="45" name={notice.usuario.nombre} colors={['#ccc', '#fafafa', '#ccaabb']}/>
+              {notice.usuario.perfil?
+              <UserAvatar size="45" name={notice.usuario.nombre} src={notice.usuario.perfil}/>
+              :
+              <UserAvatar size="45" name={notice.usuario.nombre} colors={['#0ebda7','#ccc000', '#fafafa', '#ccaabb']}/>
+              }
               <View style={{marginHorizontal: 10}}>
                 <View style={{flexDirection:'row'}}>
                   <Text style={styles.semiBo} numberOfLines={1}>

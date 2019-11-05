@@ -96,7 +96,11 @@ export default class ModalMatch extends Component{
                 <SmallNotice request_sos = {match.solicitud} notice = {match.notice} navigation={this.props.navigation} update = {this.props.update.bind(this)}/>
                 <View style={{flex:1,marginHorizontal:15}}>
                     <View style={{flexDirection:'row'}}>
-                        <UserAvatar size="65" name={match.emisor.nombre} colors={['#0ebda7','#ccc000', '#fafafa', '#ccaabb']}/>
+                        {match.emisor.perfil?
+                        <UserAvatar size="60" name={match.emisor.nombre} src={match.emisor.perfil}/>
+                        :
+                        <UserAvatar size="60" name={match.emisor.nombre} colors={['#0ebda7','#ccc000', '#fafafa', '#ccaabb']}/>
+                        }
                         <View style={{justifyContent:'center',marginHorizontal:4}}>
                             <Text style={[appStyle.textBold,{fontSize:16}]}>{match.emisor.nombre}</Text>
                             <Text style={[appStyle.textBold,{color:Colors.primaryColor}]}>
