@@ -92,7 +92,7 @@ class PerfilScreen extends PureComponent {
   }
 
   getUserData(idToken){
-    console.log("AHORA OBTENDRE LA DATA DEL USUARIO")
+    console.log("AHORA OBTENDRE LOS DATOS DEL USUARIO")
     fetch(API + 'users/data_user', {
       method: 'PUT',
       headers: {
@@ -107,7 +107,6 @@ class PerfilScreen extends PureComponent {
     .then((response) => response.json())
     .then((responseJson) => {
       let user = responseJson['usuario']
-      console.log("ANTES DE MORIR")
       console.log(user)
       this.setState({user: user},() => {this.props.updateUser(this.state.user)})
     }).catch((error) =>{
@@ -173,7 +172,6 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  console.log("ENTRE AL DISPATCH PARA ACTUALIZAR USUARIO")
   // Action
     return {
       // update user
