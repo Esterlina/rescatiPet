@@ -17,6 +17,8 @@ import Match from '../components/Match'
 import {Colors} from '../styles/colors'
 import appStyle from '../styles/app.style'
 import {connect} from 'react-redux';
+import firebase from 'react-native-firebase'
+import { API} from '../keys';
 
 const fs = RNFetchBlob.fs;
 let imagePath = null;
@@ -40,10 +42,33 @@ class DetailNotice extends React.Component {
       images_base64:[],
       loading: true,
       modalMatch:false,
-      user:{}
+      modalRequest:false,
+      token:'',
     };
 }
+componentDidMount(){
+  console.log("VOY A IMPRIMIR LO Q TRAIGO DE PROPS")
+  console.log(this.props.request_sos)
+  if(this.props.navigation.getParam('request_sos')){
+    request = this.props.navigation.getParam('request_sos')
+    this.setState({rejected: request.rechazado, accepted: request.aceptado})
+  }
+  this.firebaseToken();
+}
 
+async firebaseToken() {
+  const currentUser = firebase.auth().currentUser
+
+   if (currentUser) {
+  // reaches here
+    const idToken = await currentUser.getIdToken();
+    console.log("IMPRIMIRE EL TOKEN A ENVIAR:");
+    console.log(idToken);
+  // never reaches here
+  this.setState({token: idToken})
+  return idToken
+  }
+}
 componentWillMount(){  
   console.log(this.props.navigation.getParam('notice'))
   notice = this.props.navigation.getParam('notice');
@@ -73,7 +98,58 @@ _renderItem = ( {item, index} ) => {
 }
 updateModalMatch(modalMatch){
   this.setState({modalMatch:modalMatch})
+  this.setState({modalRequest:modalMatch})
 }
+updateRequest(){
+  this.setState({accepted:true, rejected:false})
+}
+updateMatchRequest(request_id){
+  console.log("ESTOY EN EL UPDATE MATCH REQUESTTTTTTTTTTTTT" + request_id)
+  fetch(API + 'matches/' + request_id, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': this.state.token,
+    },
+    body: JSON.stringify({
+      rejected: true,
+      accepted: false,
+    }),
+  });
+}
+displayRequest(request_id,name){
+  if(this.state.rejected == true){
+    return(
+      <View style={[styles.notice,{borderColor: Colors.lightGray,padding:10}]}>
+      <Text style={appStyle.textSemiBold}>Haz rechazado esta solicitud.</Text>
+    </View>
+    )
+  }
+  if(this.state.accepted == true){
+    return(
+      <View style={[styles.notice,{borderColor: Colors.lightGray,padding:10}]}>
+      <Text style={appStyle.textSemiBold}>Usted ha aceptado la solicitud.</Text>
+    </View>
+    )
+  }
+  return(
+    <View style={[styles.notice,{borderColor: Colors.lightGray,padding:10}]}>
+      <Text style={appStyle.textSemiBold}>¿Desea aceptar la solicitud para colaborar y contactarse con {name}?</Text>
+      <View style={{justifyContent: 'center',flexDirection:'row', alignSelf: 'stretch'}}>
+          <TouchableOpacity style={[appStyle.buttonModal,appStyle.buttonsModal]}
+          onPress={() => this.setState({rejected:true,accepted:false},()=>{this.updateMatchRequest(request_id)})}>
+              <Text style={appStyle.TextModalButton}>Rechazar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[appStyle.buttonModal,appStyle.buttonsModal,{backgroundColor: Colors.primaryColor,borderWidth: 0}]}
+              onPress={() => this.setState({modalRequest:true})}>
+              <Text style={[appStyle.TextModalButton,{color:'white'}]}>Aceptar</Text>
+          </TouchableOpacity>
+      </View>
+    </View>  
+  )
+}
+
 urlToBase64(url) { 
   return new Promise(resolve => {
     RNFetchBlob.config({
@@ -126,19 +202,35 @@ async shareToSocial(){
   render(){ 
     Moment.locale('es')
     const notice = this.props.navigation.getParam('notice')
-    console.log(notice)
-    const data_create = Moment(notice.hora_creacion || Moment.now()).fromNow();
+    const request_sos = this.props.navigation.getParam('request_sos')
+    var date_notice = Moment(notice.hora_creacion).format('DD/MM/YYYY');
+    var date = new Date();
+    const today = Moment(date).format('DD/MM/YYYY');
+    const yesterday = Moment(date.setDate(date.getDate() - 1)).format('DD/MM/YYYY');
+    if(date_notice == today || date_notice ==  yesterday){
+      date_create = Moment(notice.hora_creacion || Moment.now()).fromNow();
+    }
+    else{
+      date_create = date_notice
+    }
     return(
       <View style={styles.container}>
         <Header {...this.props} stack='true'/> 
         <ScrollView>
         <Modal isVisible={this.state.modalMatch} style={{margin:20}}>
-          <Match update = {this.updateModalMatch.bind(this)} notice = {notice}/>
+          <Match updateRequest = {this.updateRequest.bind(this)} update = {this.updateModalMatch.bind(this)} notice = {notice}/>
+        </Modal>
+        <Modal isVisible={this.state.modalRequest} style={{margin:20}}>
+          <Match updateRequest = {this.updateRequest.bind(this)} update = {this.updateModalMatch.bind(this)} notice = {notice} request = {request_sos}/>
         </Modal>
         <View style={styles.notice}>
           <View style={{paddingHorizontal:8}}>
             <View style={{flexDirection:'row',paddingTop:10,}}>
-              <UserAvatar size="45" name={notice.usuario.nombre} colors={['#ccc', '#fafafa', '#ccaabb']}/>
+              {notice.usuario.perfil?
+              <UserAvatar size="45" name={notice.usuario.nombre} src={notice.usuario.perfil}/>
+              :
+              <UserAvatar size="45" name={notice.usuario.nombre} colors={['#0ebda7','#ccc000', '#fafafa', '#ccaabb']}/>
+              }
               <View style={{marginHorizontal: 10}}>
                 <View style={{flexDirection:'row'}}>
                   <Text style={styles.semiBo} numberOfLines={1}>
@@ -147,7 +239,7 @@ async shareToSocial(){
                   : `${notice.usuario.nombre.substring(0, 21)}...`}</Text>
                 </View>
                 <View style={[appStyle.textRegular,{flexDirection:'row'}]}>
-                  <Text>{data_create} - </Text>
+                  <Text>{date_create} - </Text>
                   {notice.estado == 'Abierto' ?
                   <Text style={[appStyle.textSemiBold,{color:'#19c9d4'}]}>Caso abierto</Text>:
                   <Text style={[appStyle.textSemiBold,{color:'red'}]}>Caso cerrado</Text>
@@ -224,7 +316,7 @@ async shareToSocial(){
                 {notice.emergencia?
                   <View style={{flexDirection:'row'}}>
                     <Icon name="first-aid" size={16} color='#ee1212' style={{marginRight:4}} regular/>
-                    <Text>Encontrado/a en situacion de</Text>   
+                    <Text>Encontrado/a en situacion de </Text>   
                     <Text style={styles.semiBo}>{notice.emergencia}</Text>             
                   </View>
                 :null}
@@ -257,6 +349,9 @@ async shareToSocial(){
             </TouchableOpacity> 
           </View>
         </View>
+        {request_sos? 
+          this.displayRequest(request_sos.id,notice.usuario.nombre)
+        :null}
       </ScrollView>
     </View>
     );

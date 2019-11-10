@@ -4,6 +4,7 @@ const initialState = {
     email: '',
     telefono: '',
     tipo: '',
+    perfil: ''
 };
 
 const userReducer = (state = initialState, action) => {
@@ -15,7 +16,8 @@ const userReducer = (state = initialState, action) => {
         nombre: action.userReducer.nombre,
         email: action.userReducer.email,
         telefono: action.userReducer.telefono,
-        tipo: action.userReducer.tipo
+        tipo: action.userReducer.tipo,
+        perfil: action.userReducer.perfil
       };
     default:
       return state;

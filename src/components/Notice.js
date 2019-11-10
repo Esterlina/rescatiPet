@@ -61,12 +61,26 @@ _renderItem = ( {item, index} ) => {
   render(){ 
     const notice = this.props.dataJson
     Moment.locale('es')
-    const data_create = Moment(notice.hora_creacion || Moment.now()).fromNow();
+    var date_notice = Moment(notice.hora_creacion).format('DD/MM/YYYY');
+    var date = new Date();
+    const today = Moment(date).format('DD/MM/YYYY');
+    const yesterday = Moment(date.setDate(date.getDate() - 1)).format('DD/MM/YYYY');
+    if(date_notice == today || date_notice ==  yesterday){
+      date_create = Moment(notice.hora_creacion || Moment.now()).fromNow();
+    }
+    else{
+      date_create = date_notice
+    }
     return(
       <View style={{flex:1}}>
         <View style={styles.notice}>
             <View style={{flexDirection:'row',paddingTop:10}}>
-              <UserAvatar size="40" name={notice.usuario.nombre} colors={['#ccc', '#fafafa', '#ccaabb']}/>
+              {notice.usuario.perfil?
+              <UserAvatar size="40" name={notice.usuario.nombre} src={notice.usuario.perfil}/>
+              :
+              <UserAvatar size="40" name={notice.usuario.nombre} colors={['#0ebda7','#ccc000', '#fafafa', '#ccaabb']}/>
+              }
+
               <View style={{marginHorizontal: 10}}>
                 <View style={{flexDirection:'row'}}>
                 <Text style={appStyle.textSemiBold} numberOfLines={1}>
@@ -76,7 +90,7 @@ _renderItem = ( {item, index} ) => {
 
                 </View>
                 <View style={[appStyle.textRegular,{flexDirection:'row'}]}>
-                  <Text>{data_create} - </Text>
+                  <Text>{date_create} - </Text>
                   {notice.estado == 'Abierto' ?
                   <Text style={[appStyle.textSemiBold,{color:'#19c9d4'}]}>Caso abierto</Text>:
                   <Text style={[appStyle.textSemiBold,{color:'red'}]}>Caso cerrado</Text>

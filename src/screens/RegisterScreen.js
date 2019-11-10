@@ -82,7 +82,7 @@ class RegisterScreen extends React.Component {
   //Obtener datos del usuario
   getUserData(idToken){
     fetch(API + 'users/data_user/', {
-      method: 'GET',
+      method: 'PUT',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',

@@ -1,7 +1,7 @@
 import React,{PureComponent} from 'react';
 import { View, Text,TouchableOpacity,Image, ImageBackground,KeyboardAvoidingView,TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { LoginManager, AccessToken } from "react-native-fbsdk";
+import { LoginManager, AccessToken,GraphRequest, GraphRequestManager } from "react-native-fbsdk";
 import firebase from 'react-native-firebase';
 import {API} from '../keys';
 import { connect } from 'react-redux'
@@ -14,6 +14,8 @@ class LoginScreen extends PureComponent {
       email : '',
       password: '',
       response: '',
+      picture: '',
+      token_device:'',
     }
     this.login = this.login.bind(this)
     this.fbAuth = this.fbAuth.bind(this)
@@ -22,6 +24,10 @@ class LoginScreen extends PureComponent {
   _isMounted = false;
   componentWillUnmount() {
     this._isMounted = false;
+  }
+  componentDidMount(){
+    console.log("PRIMERO OBTENDRE EL TOKEN")
+    this.getTokenDevice();
   }
   //Login con correo
   async login(){
@@ -38,6 +44,7 @@ class LoginScreen extends PureComponent {
       }
     }
   }
+
   //Login con Facebook
   async fbAuth(){
     LoginManager
@@ -51,16 +58,30 @@ class LoginScreen extends PureComponent {
     })
     .then(data =>{
       const credential = firebase.auth.FacebookAuthProvider.credential(data.accessToken);
+      console.log("IMPRIMIRE AL TOKEN DE Fb?????")
+      console.log(data.accessToken);
+      this.getPicture(data.accessToken)
       return firebase.auth().signInWithCredential(credential)
     })
     .then((currentUser) => {
       console.log('FACEBOOK+firebase LOGIN CON USUARIO');
       this.firebaseToken();
+      
       setTimeout(()=>{this.props.navigation.navigate('Dashboard')},1500);
     })
     .catch((error) =>{
       console.log(error)
     })
+  }
+
+  async getPicture(token){
+      const response =  await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=picture.type(large)`);
+      const picture = await response.json();
+      this.setState({picture: picture.picture.data.url})
+  }
+  async getTokenDevice(){
+    let token_device = await firebase.messaging().getToken();
+    this.setState({token_device:token_device})
   }
   //Obetener Token de Firebase
   async firebaseToken() {
@@ -74,39 +95,29 @@ class LoginScreen extends PureComponent {
   }
   //Obtener datos del usuario
   getUserData(idToken){
-    fetch(API + 'users/data_user/', {
-      method: 'GET',
+    console.log("AHORA OBTENDRE LA DATA DEL USUARIO")
+    fetch(API + 'users/data_user', {
+      method: 'PUT',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         'Authorization': idToken,
-      }})
+      },
+      body: JSON.stringify({
+        profile_picture: this.state.picture
+      }),
+    })
     .then((response) => response.json())
     .then((responseJson) => {
       let user = responseJson['usuario']
       console.log(user)
-      this.setState({user: user},() => {this.updateTokenDevice(idToken);this.props.updateUser(this.state.user)})
+      this.setState({user: user},() => {this.props.updateUser(this.state.user)})
     }).catch((error) =>{
       console.error(error);
     });
   }
   
-  async updateTokenDevice(idToken){
-    console.log("VOY A PEDIR EL TOKEN DEL DISPOSITVO ")
-    let token_device = await firebase.messaging().getToken();
-    console.log(token_device);
-    fetch(API + 'users/' + this.state.user.id, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': idToken,
-      },
-      body: JSON.stringify({
-        token_device: token_device,
-      }),
-    });
-  }
+
 
   render() {
     return (
@@ -180,6 +191,7 @@ const mapStateToProps = (state) => {
   };
 };
 const mapDispatchToProps = (dispatch) => {
+  console.log("ENTRE AL DISPATCH PARA ACTUALIZAR USUARIO")
   // Action
     return {
       // update user

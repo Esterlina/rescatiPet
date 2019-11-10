@@ -87,6 +87,35 @@ class InboxScreen extends React.Component {
       search: text,
     });
   }    
+
+  subTitle(type, read){
+    console.log(type)
+    if(type == "Usuario-Avisos"){
+      return(
+        <Text style={{fontFamily: read? Fonts.OpenSansSemiBold : Fonts.OpenSansBold,fontSize:14}}>Te envio un mensaje por tu aviso</Text>
+      )
+    }
+    if(type == "Sugerencias-Rescatistas"){
+      return(
+        <Text style={{fontFamily: read? Fonts.OpenSansSemiBold : Fonts.OpenSansBold,fontSize:14}}>Información sobre solicitud SOS</Text>
+      )
+    }
+    if(type == "Sugerencias-Avisos" ){
+      return(
+        <Text style={{fontFamily: read? Fonts.OpenSansSemiBold : Fonts.OpenSansBold,fontSize:14}}>Nuevas coincidencias encontradas</Text>
+      )
+    }
+    if(type == "Solicitud-SOS"){
+      return(
+        <Text style={{fontFamily: read? Fonts.OpenSansSemiBold : Fonts.OpenSansBold,fontSize:14}}>Nueva solicitud SOS</Text>
+      )
+    }
+    if(type == "Solicitud-Aceptada"){
+      return(
+        <Text style={{fontFamily: read? Fonts.OpenSansSemiBold : Fonts.OpenSansBold,fontSize:14}}>Solicitud SOS aceptada</Text>
+      )
+    }
+  }
   render(){ 
     Moment.locale('es')
     return(
@@ -120,9 +149,14 @@ class InboxScreen extends React.Component {
                   {this.state.matches.map((match) => {
                   return (
                     <TouchableOpacity key={match.id} onPress={() => this.openMatch(match.id)}>
-                      <View key={match.id} style={[styles.matchContainer,{borderWidth:match.leido? 1 : 1.5,borderColor: match.leido? Colors.lightGray :Colors.primaryColor}]}>
+                      <View key={match.id} style={[styles.matchContainer,{borderWidth:match.leido? 1 : 1.5,borderColor: match.leido? Colors.lightGray : (match.tipo == "Solicitud-SOS"? Colors.red : Colors.primaryColor)}]}>
                         <View key={match.id} style={{flexDirection:'row'}}>
-                            <UserAvatar size="60" name={match.emisor.nombre} colors={['#0ebda7','#ccc000', '#fafafa', '#ccaabb']}/>
+                          {match.emisor.perfil?
+                          <UserAvatar size="60" name={match.emisor.nombre} src={match.emisor.perfil}/>
+                          :
+                          <UserAvatar size="60" name={match.emisor.nombre} colors={['#0ebda7','#ccc000', '#fafafa', '#ccaabb']}/>
+                          }
+                            
                             <View style={{alignContent:'center',justifyContent:'center',marginLeft:5}}>
                               <View style={{flexDirection:'row',width:width-96,justifyContent: 'space-between',}}>
                                 <Text style={{fontFamily: match.leido? Fonts.OpenSansSemiBold : Fonts.OpenSansBold,fontSize:16}}>
@@ -134,7 +168,8 @@ class InboxScreen extends React.Component {
                                   {match.hora_creacion}
                                 </Text>
                               </View>
-                              <Text style={{fontFamily: match.leido? Fonts.OpenSansSemiBold : Fonts.OpenSansBold,fontSize:14}}>Te envio un mensaje por tu aviso</Text>
+                              {this.subTitle(match.tipo,match.leido)}
+                             
                             </View>
                         </View>
                       </View>     
