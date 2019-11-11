@@ -1,16 +1,16 @@
 import { createStackNavigator } from 'react-navigation'
 
-import Notices from './NoticesScreen';
-import Form from './NoticeFormScreen';
-
+import Options from './RescueScreen';
+import AdoptionForm from './AdoptionFormScreen';
+import Adoptions from './AdoptionsScreen';
 export default createStackNavigator({
-    Notices,
-    Form
+    Options,
+    AdoptionForm,
+    Adoptions,
 },
 {
     headerMode: 'none',
     navigationOptions: {
         headerVisible: false,
-    },
-    initialRouteName: 'Notices'
+    }
 });

@@ -76,23 +76,30 @@ renderImage(image) {
         </View>
         <View>
         {this.props.images.length > 0 ? 
-          <View></View>:
+          null:
+          this.props.type == "Adopcion" ? 
+            <View>
+              <TouchableOpacity style={[appStyle.buttonLarge2,{marginHorizontal:10, backgroundColor:Colors.violet}]} onPress={this.pickMultiple.bind(this)}>
+                <Text style={appStyle.buttonLargeText2}>Seleccionar imagen(es)</Text>
+              </TouchableOpacity>
+            </View>
+          : 
           <View>
-            <TouchableOpacity style={styles.buttonLitle}
-              onPress={this.pickMultiple.bind(this)}>
-              <View style={{flexDirection:'row'}}>
-                <Icon name="images" size={20} color="gray" style={{marginRight:5}} regular/>
-                <Text style={appStyle.textRegular}>Seleccionar imagen(s) desde galeria</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonLitle}
-              onPress={() => this.pickSingleWithCamera(false)}>
-              <View style={{flexDirection:'row'}}>
-                <Icon name="camera-retro" size={20} color="gray" style={{marginRight:5}} regular/>
-                <Text style={appStyle.textRegular}>Tomar foto desde camara</Text>
-              </View>
-            </TouchableOpacity>
-          </View>  
+          <TouchableOpacity style={styles.buttonLitle}
+            onPress={this.pickMultiple.bind(this)}>
+            <View style={{flexDirection:'row'}}>
+              <Icon name="images" size={20} color="gray" style={{marginRight:5}} regular/>
+              <Text style={appStyle.textRegular}>Seleccionar imagen(s) desde galeria</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonLitle}
+            onPress={() => this.pickSingleWithCamera(false)}>
+            <View style={{flexDirection:'row'}}>
+              <Icon name="camera-retro" size={20} color="gray" style={{marginRight:5}} regular/>
+              <Text style={appStyle.textRegular}>Tomar foto desde camara</Text>
+            </View>
+          </TouchableOpacity>
+        </View>  
         }
       </View>      
     </View>
@@ -117,7 +124,7 @@ const styles = StyleSheet.create({
       marginHorizontal:10,
       paddingHorizontal:5,
       borderWidth: 1.3,
-      borderColor: Colors.primaryColor,
+      borderColor: Colors.lightGray,
       borderRadius: 4,
       justifyContent:'center',
       alignItems:'center'

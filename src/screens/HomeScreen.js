@@ -65,12 +65,13 @@ componentDidMount() {
             <ScrollView style={{flex:1}}>
               {this.state.notices.map((item) => {
                 console.log(item)
+                if(item.tipe != "Adopcion"){
                 return (
                   <Notice key={item.id} dataJson={item}
                     navigation={this.props.navigation}
                     /> 
                   
-                )
+                )}
               })}
             </ScrollView>
             : 

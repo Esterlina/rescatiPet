@@ -27,12 +27,14 @@ export default class Header extends Component{
         this.props.navigation.navigate('Inbox')
     }
     render(){
+        console.log(this.props.home)
         const { goBack } = this.props.navigation;
         return(
+            
                 <View style={styles.container}> 
                     { this.props.stack === 'true' ?
                         <TouchableWithoutFeedback
-                        onPress={() => goBack()}>
+                        onPress={() =>{this.props.home? this.props.navigation.navigate(this.props.home) :goBack()} }>
                             <Icon
                                 style ={styles.icon}
                                 name="angle-left"

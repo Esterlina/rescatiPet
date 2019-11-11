@@ -4,14 +4,15 @@ import Login from "../screens/LoginScreen";
 import Register from "../screens/RegisterScreen";
 import Perfil from "../screens/PerfilScreen";
 import Search from "../screens/SearchScreen";
-import Rescue from "../screens/RescueScreen";
+import Rescue from "../screens/Rescue/";
 import Notice from "../screens/Notice/";
 import DetailNotice from "./DetailNotice";
+import DetailAdoption from "./DetailAdoption"
 import Inbox from "../screens/InboxScreen"
 import Home from "../screens/HomeScreen";
 import LoadingScreen from "../screens/LoadingScreen";
 import {Colors} from "../styles/colors"
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 import {
     createSwitchNavigator,
     createAppContainer,
@@ -44,7 +45,14 @@ import {
     {
       Home,
       Search,
-      Rescue,
+      Rescue:{
+        screen: Rescue,
+        navigationOptions:{
+          tabBarIcon:({tintColor}) => (
+            <Icon name="paw" size={25} color="white"/>
+          )
+        }
+      },
       Notice: {
         screen: Notice,
         navigationOptions: {
@@ -73,6 +81,7 @@ import {
     {
       DashboardTabNavigator: DashboardTabNavigator,   
       DetailNotice: DetailNotice,
+      DetailAdoption,
       Inbox: Inbox,
     },{
       headerMode: 'none'
