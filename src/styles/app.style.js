@@ -101,6 +101,22 @@ headerModal:{
     justifyContent:'center',
     marginBottom:10
 },
+header:{
+  backgroundColor:Colors.violet,
+  borderTopEndRadius:2,
+  borderTopStartRadius:2,
+  height:height*0.06,
+  alignItems:'center',
+  justifyContent:'center',
+  //marginBottom:0
+},
+containerPublication:{
+  marginHorizontal:5,
+  marginBottom:10,
+  borderWidth: 1.8,
+  borderColor: Colors.violet,
+  borderRadius: 4,
+},
 inputArea:{
     borderColor: Colors.lightGray,
     textAlignVertical: "top",
@@ -111,5 +127,11 @@ inputArea:{
     marginHorizontal:0,
     paddingVertical:1,
     paddingHorizontal:10,
+  },
+  lineTop:{
+    borderTopWidth:1, borderTopColor: Colors.lightGray, marginTop: 10
+  },
+  lineBottom:{
+    borderBottomColor: Colors.lightGray, borderBottomWidth:1
   }
   });

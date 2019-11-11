@@ -3,13 +3,9 @@ import { StyleSheet,Switch, Text,View, Dimensions,TouchableOpacity, ScrollView,T
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Fonts} from '../../utils/Fonts';
 import Header from '../../components/Header';
-import Map from '../../components/Map';
 import Camera from '../../components/Camera';
-import DatePicker from 'react-native-datepicker';
-import { CheckBox } from 'react-native-elements'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import {API_KEY, API} from '../../keys';
-import Helpers from '../../../lib/helpers'
 import firebase from 'react-native-firebase'
 import Modal from "react-native-modal";
 import {Colors} from '../../styles/colors';
@@ -17,92 +13,93 @@ import appStyle from '../../styles/app.style';
 import { StackActions,NavigationActions } from 'react-navigation';
 
 const {height, width} = Dimensions.get('window');
-export default class NoticeFormScreen extends React.Component {
+export default class AdoptionFormScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      more_info : this.props.navigation.getParam('info'),
       images: [],
       img_dir: '',
-      map: false,
-      collar: false,
-      clothes: false,
-      rescue_request: false,
       details:'',
-      time_last_seen:'',
       marker: { latitude: -33.499301, longitude: -70.586420},
       address:'',
       name:'',
       specie: 0,
       specieName:'',
-      situation: 0,
       sex:'',
       race: 0,
       age:'',
       size: '',
       color:'',
-      json:'',
       sexList:[],
       specieList:[],
       raceList:[],
       ageList:[],
       sizeList:[],
-      pelagesList:[],
       colorList:[],
-      situationList:[],
-      notice:'',
+      notice:{},
       token:'',
       modalColors: false,
       colors:[],
       modalSend:false,
       loading: false,
+      sterile: false,
+      dewormed: false,
+      vaccinated: false,
+      microship: false
     };
 }
-reset(){
-  console.log("PROBANDO EL RESEEET x222222222222 NOTICE otra veeeeeeez")
-  /*const resetAction = NavigationActions.reset({
-    index: 0, // Reset nav stack
-    actions: [
-      NavigationActions.navigate({
-        routeName: 'Notice', // Call home stack
-        action: NavigationActions.navigate({
-          routeName: 'Notices', // Navigate to this screen
-        }),
-      }),
-    ],
-    key: null,
-  });*/
 
-  //this.props.navigation.dispatch(resetAction);
-  //
-  const resetAction = StackActions.reset({
+reset(){
+  console.log("PROBANDO EL RESEEET x222222222222 ADOPCIOOOON")
+    const resetAction = StackActions.reset({
     index: 0,
     actions: [
       NavigationActions.navigate({
-        routeName: 'Notice', // Call home stack
+        routeName: 'Rescue', // Call home stack
         action: NavigationActions.navigate({
-          routeName: 'Notices', // Navigate to this screen
+          routeName: 'Options', // Navigate to this screen
         }),
       }),
     ],
     key: 'DashboardTabNavigator',
   });
   this.props.navigation.dispatch(resetAction);
+  this.GooglePlacesRef.setAddressText("")
+  this.setState({
+    images: [],
+      img_dir: '',
+      details:'',
+      marker: { latitude: -33.499301, longitude: -70.586420},
+      address:'',
+      name:'',
+      specie: 0,
+      specieName:'',
+      sex:'',
+      race: 0,
+      age:'',
+      size: '',
+      color:'',
+      modalColors: false,
+      colors:[],
+      modalSend:false,
+      loading: false,
+      sterile: false,
+      dewormed: false,
+      vaccinated: false,
+      microship: false
+  })
 };
 componentDidMount(){
-  this.reset();
   return fetch(API + 'notices/info_notice')
-    .then((response) => response.json())
+  .then((response) => response.json())
     .then((responseJson) => {
       this.setState({
-        specieList: responseJson['tipos'],
+        specieList: responseJson['tipos_adoptivos'],
         raceList: responseJson['razas'],
         sexList: responseJson['sexos'],
         ageList: responseJson['edades'],
         sizeList: responseJson['tamaños'],
-        pelagesList: responseJson['pelajes'],
         colorList: responseJson['colores'],
-        situationList: responseJson['situaciones']
       },()=> this.firebaseToken());
     })
     .catch((error) =>{
@@ -138,16 +135,16 @@ validate(){
     alert("Debes subir al menos una imagen")
     return false
   }
-  if (this.state.time_last_seen == ''){
-    alert("Ingrese una fecha aproximada donde sucedio este hecho.")
-    return false
-  }
   if (this.state.address == ''){
-    alert("Debe completar el campo de dirección, puede abrir el mapa o ingresar una dirección cercana.")
+    alert("Debe completar el campo de dirección,ingresar una dirección cercana o la comuna.")
     return false
   }
   if (this.state.specie == 0){
-    alert("Por favor, para agilizar la busqueda ingrese el tipo de animal.")
+    alert("Por favor, ingrese el tipo de animal.")
+    return false
+  }
+  if(this.state.sex == '' || this.state.age == '' || this.state.size == '' || this.state.colorList == []){
+    alert("Aún faltan campos por completas")
     return false
   }
   this.sendNotice();
@@ -176,8 +173,7 @@ sendNotice(){
     'Authorization': this.state.token,
   },
   body: JSON.stringify({
-    type: this.props.navigation.getParam('type'),
-    last_seen: this.state.time_last_seen,
+    type: "Adopcion",
     lat: this.state.marker.latitude,
     lng: this.state.marker.longitude,
     street: this.state.address,
@@ -187,13 +183,13 @@ sendNotice(){
     race_id: this.state.race,
     age: this.state.age,
     size: this.state.size,
-    collar: this.state.collar,
-    clothes: this.state.clothes,
     colors: this.state.colors,
+    vaccinated: this.state.vaccinated,
+    microship: this.state.microship,
+    sterile: this.state.sterile,
+    dewormed: this.state.dewormed,
     details: this.state.details,
     img_num: this.state.images.length,
-    situation_id: this.state.situation,
-    rescue_request:this.state.rescue_request,
   }), 
 }).then((response) => response.json())
   .then((responseJson) => {
@@ -204,6 +200,7 @@ sendNotice(){
         if (i == this.state.images.length -1){
           console.log("lA ULTIMA IMAGEN ES ");
           console.log(i)
+          this.reset();
           this.setState({loading:false})
         }
       }       
@@ -250,14 +247,28 @@ keepColors(){
 updateImages(images){
   this.setState({images:images})
 }
-updateLocation(marker,address){
-  this.setState({marker:marker,address:address,map:false}, () =>{this.locationRef.setAddressText(this.state.address);})
-}
+
 renderMoreInformation() {
   return(
     <View style={styles.moreInformation}>
-      <Text style={styles.textWhite}>AGREGA MÁS CARACTERISTICAS</Text>
+      <Text style={[styles.textWhite,{marginLeft:5}]}>CARACTERISTICAS</Text>
+      <View style={{backgroundColor:'white',padding:5}}>
       <View style={styles.pickersInfo}>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={this.state.specieName}
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) =>
+              this.setState({specie: itemIndex,specieName:itemValue}, () => {
+              this.getRaceBySpecie();
+            })
+            }>
+            <Picker.Item color= "#a0a0a0" label="Especie" value="0" />
+            { this.state.specieList.map( specie => (
+            <Picker.Item key={specie.id} color="gray" label={specie.name} value={specie.name} />
+            ) ) }
+          </Picker>
+        </View>
         <View style={[styles.pickerContainer,{backgroundColor:'white'}]}>
           <Picker
             selectedValue={this.state.race}
@@ -267,6 +278,19 @@ renderMoreInformation() {
             }>
             <Picker.Item key={0} color= "#a0a0a0" label="Raza" value="0" />
             { this.state.raceList.map( race => (<Picker.Item key={race.id} color="gray" label={race.name} value={race.id} />) ) }
+          </Picker>
+        </View>
+      </View>
+      <View style={styles.pickersInfo}>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={this.state.sex}
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) =>
+              this.setState({sex: itemValue})
+            }>
+            <Picker.Item color= "#a0a0a0" label="Sexo" value="" />
+            { this.state.sexList.map( sex => (<Picker.Item key={sex} color="gray" label={sex} value={sex} />) ) }
           </Picker>
         </View>
         <View style={[styles.pickerContainer,{backgroundColor:'white'}]}>
@@ -297,42 +321,78 @@ renderMoreInformation() {
           <TouchableOpacity 
             style={{paddingHorizontal:8,flexDirection:'row'}}
             onPress={() => this.setState({modalColors:true})}>  
-              <Text style={{paddingTop:3,fontSize:15,color:'gray'}}>{this.state.colors.length != 0? this.state.colors : 'Colores(es)'}</Text>
-              <Icon name="sort-down" size={16} color='gray' style={{marginTop:3,marginLeft:45}} regular/>
+              <Text style={{paddingTop:3,fontSize:15,color:'gray'}}>{this.state.colors.length != 0? this.state.colors : 'Color(es)'}</Text>
+              <Icon name="sort-down" size={16} color='gray' style={{right:15,position:'absolute',alignSelf:'center'}} regular/>
           </TouchableOpacity>
         </View>
       </View>
-      {(this.state.specieName != 'Ave' && this.state.specieName != 'Roedor')?
       <View>
-      <Text style={[styles.textWhite,{fontFamily: Fonts.OpenSansSemiBold}]}>Marque los accesorios presentes:</Text>
-      <View style={styles.pickersInfo}>
-        <CheckBox
-          title='Collar y/o correa'
-          checked={this.state.collar}
-          onPress={() => this.setState({collar: !this.state.collar})}
-          textStyle = {[appStyle.textRegular,{fontWeight:'400', marginLeft:0}]}
-          checkedColor = {Colors.primaryColor}
-          fontFamily = {Fonts.OpenSansSemiBold}
-          containerStyle = {styles.checkbox}
-        />
-        <CheckBox
-          title='Chaleco/ropa'
-          checked={this.state.clothes}
-          onPress={() => this.setState({clothes: !this.state.clothes})}
-          textStyle = {[appStyle.textRegular,{fontWeight:'400', marginLeft:0}]}
-          checkedColor = {Colors.primaryColor}
-          fontFamily = {Fonts.OpenSansSemiBold}
-          containerStyle = {styles.checkbox}
-        />
-      </View> 
-      </View>: null }
-
-           
+      <View style={[styles.pickersInfo,{marginTop:8}]}>
+        <View style={{flexDirection:'row',width:width*0.42}}>
+          <Text style={[appStyle.textSemiBold,{alignSelf:'center'}]}>Vacunado/a</Text>
+          <Switch
+              onValueChange={(value) =>
+              this.setState({vaccinated: value})
+            }
+            thumbColor="white" 
+            style= {{position: "absolute",right:-10, alignSelf:'center'}}
+            trackColor={{
+              true: Colors.violet,
+              false: Colors.lightGray,
+            }} 
+            value = {this.state.vaccinated}/>
+        </View>
+        <View style={{flexDirection:'row',width:width*0.42}}>
+          <Text style={[appStyle.textSemiBold,{alignSelf:'center'}]}>Desparacitado/a</Text>
+          <Switch
+              onValueChange={(value) =>
+              this.setState({dewormed: value})
+            }
+            thumbColor="white" 
+            style= {{position: "absolute",right:-10, alignSelf:'center'}}
+            trackColor={{
+              true: Colors.violet,
+              false: Colors.lightGray,
+            }} 
+            value = {this.state.dewormed}/>
+        </View>
+      </View>
+      <View style={[styles.pickersInfo,{marginTop:8}]}>
+        <View style={{flexDirection:'row',width:width*0.42}}>
+          <Text style={[appStyle.textSemiBold,{alignSelf:'center'}]}>Esterlizado/a</Text>
+          <Switch
+              onValueChange={(value) =>
+              this.setState({sterile: value})
+            }
+            thumbColor="white" 
+            style= {{position: "absolute",right:-10, alignSelf:'center'}}
+            trackColor={{
+              true: Colors.violet,
+              false: Colors.lightGray,
+            }} 
+            value = {this.state.sterile}/>
+        </View>
+        <View style={{flexDirection:'row',width:width*0.42}}>
+          <Text style={[appStyle.textSemiBold,{alignSelf:'center'}]}>Microship</Text>
+          <Switch
+              onValueChange={(value) =>
+              this.setState({microship: value})
+            }
+            thumbColor="white" 
+            style= {{position: "absolute",right:-10, alignSelf:'center'}}
+            trackColor={{
+              true: Colors.violet,
+              false: Colors.lightGray,
+            }} 
+            value = {this.state.microship}/>
+        </View>
+      </View>
+      </View>
+      </View>      
     </View>
   ) 
 }
   render(){ 
-    const type = this.props.navigation.getParam('type');
     return(
       <ScrollView style={{flex:1}}>
         <Modal isVisible={this.state.modalSend} style={{margin:20}}>
@@ -350,31 +410,15 @@ renderMoreInformation() {
               :
               <View style={{marginBottom:30,alignSelf:'center'}}>
                 <Text style={{textAlign:'center',fontSize:16}}>¡Enhora buena!</Text>
-                <Text style={{textAlign:'center',fontSize:14}}>Tu aviso ha sido publicado con exito.</Text>
+                <Text style={{textAlign:'center',fontSize:14}}>Tu aviso de adopción ha sido publicado con exito.</Text>
                 <Text style={{textAlign:'center',fontSize:14}}>Ya puedes ir a hecharle un vistazo.</Text>
                 <TouchableOpacity style={[appStyle.buttonModal,{width:width*0.3,alignSelf:'center'}]}
-                  onPress={() =>this.setState({modalSend:false } ,()=>{this.props.navigation.navigate('DetailNotice', { notice: this.state.notice})}) }>
+                  onPress={() =>this.setState({modalSend:false } ,()=>{this.props.navigation.navigate('DetailAdoption', { adoption: this.state.notice})}) }>
                   <Text style={{fontSize:16,textAlign:'center'}}>Aceptar</Text>
                 </TouchableOpacity>
               </View>
               }
             </View>
-        </Modal>
-        <Modal isVisible={this.state.map} style={{margin:0}}
-            onRequestClose={()=>console.log("cerrando")}> 
-            <View style={{width:width,height:height}}>
-            <Map marker={this.state.marker} update = {this.updateLocation.bind(this)}/> 
-            <View style={styles.mapClose}>
-              <TouchableOpacity style={[appStyle.buttonModal,{backgroundColor:'white'}]}
-                onPress={() => this.setState({map:false})}>
-                <View style={{flexDirection:'row'}}>
-                  <Icon name="arrow-left" size={14} color='gray' style={{marginRight:5,marginTop:3}} regular/>
-                  <Text style={[appStyle.textRegular,{fontSize:16}]}>Volver</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-            </View>
-            
         </Modal>
         <Modal isVisible={this.state.modalColors}
           hasBackdrop={true} style={{margin:20}}> 
@@ -413,45 +457,24 @@ renderMoreInformation() {
           </View>
         </Modal>
         <Header {...this.props} stack='true'/> 
-        <Camera update = {this.updateImages.bind(this)} images = {this.state.images} />
-        <Text style={styles.textSection}>¿Cuándo y Dondé Fue la ultima vez que lo viste?</Text>
-        <View style={[styles.containerForm2,styles.border]}>
-          <DatePicker
-            style={styles.dateTime}
-            date={this.state.time_last_seen}
-            mode="datetime"
-            placeholder="Ingresa una fecha aproximada"
-            format="YYYY-MM-DD HH:mm"
-            confirmBtnText="Confirmar"
-            cancelBtnText="Cancelar"
-            showIcon={false}
-            customStyles={{
-                dateInput: {
-                  height:10,
-                  borderWidth:0,
-                  paddingBottom:10, 
-                  paddingHorizontal:8
-                },
-                dateText: {
-                    color:'gray',
-                    fontSize:14,
-                    textAlign: 'left',
-                    alignSelf: 'stretch'
-                },
-                placeholderText: {
-                    color: '#a0a0a0',
-                    fontFamily: Fonts.OpenSans,
-                    fontSize:14,
-                    textAlign: 'left',
-                    alignSelf: 'stretch'
-                }
-            }}
-            onDateChange={(date) => {this.setState({time_last_seen: date})}}
-          />
-          <GooglePlacesAutocomplete
+        <Camera update = {this.updateImages.bind(this)} images = {this.state.images} type = {"Adopcion"} />
+        <View style={styles.containerForm}>
+          <View style={{flexDirection:'row',marginVertical:10, marginTop:20}}>
+            <Text style={[appStyle.textSemiBold,{alignSelf:'center',marginHorizontal:5}]}>Nombre </Text>
+            <TextInput
+              style = {[styles.input,{color:'gray', width:width*0.65,position: 'absolute', right: 0, alignSelf:'center'}]}
+              //placeholder = {'Nombre mascota (Opcional)'}
+              //placeholderTextColor = {'gray'}
+              value={this.state.name}
+              onChangeText={(value) => this.setState({name: value})}                         
+            /> 
+          </View>
+          <View style={{flexDirection:'row',marginVertical:10,marginBottom:0}}>
+            <Text style={[appStyle.textSemiBold,{alignSelf:'center',marginHorizontal:5}]}>Comuna </Text>
+            <GooglePlacesAutocomplete
             ref={(instance) => { this.locationRef = instance }}
             query={{ key: API_KEY,language: 'es',components: 'country:cl'}}
-            placeholder='Ingresa una dirección'
+            placeholder=''
             minLength={2} 
             autoFocus={false}
             returnKeyType={'default'}
@@ -467,12 +490,15 @@ renderMoreInformation() {
                 backgroundColor: 'white',
                 borderTopWidth: 0,
                 borderBottomWidth:0,
-                width:width*0.94,
+                width:width*0.65,
+                //position:'absolute',
+                //right:0,
+                alignSelf:'flex-end'
               },
               textInput: {
                 backgroundColor:'white',
                 borderWidth: 1.3,
-                borderColor: Colors.lightGray,
+                borderColor: Colors.violet,
                 borderRadius: 8,
                 margin:10,
                 marginBottom:0,
@@ -481,109 +507,36 @@ renderMoreInformation() {
                 height: 34,
                 color: 'gray',
                 fontSize: 14,
-                fontFamily: Fonts.OpenSans
+                fontFamily: Fonts.OpenSans,
+                width:width*0.65,
+                position:'absolute',
+                right:-8,
+                alignSelf:'center'
               },
               predefinedPlacesDescription: {
                 color: '#1faadb'
               },
             }}
-
           />
-          <TouchableOpacity style={styles.buttonMap}
-            onPress={() => this.setState({map:true})}>
-            <View style={{flexDirection:'row'}}>
-              <Icon name="map-marker-alt" size={14} color={Colors.primaryColor} style={{marginRight:5}} regular/>
-              <Text style={[appStyle.textRegular,{color: Colors.primaryColor}]}>Ver mapa</Text>
-            </View>
-          </TouchableOpacity>
         </View>
+          {this.renderMoreInformation()}
+        </View>
+
           <View style={styles.containerForm}>     
-            <TextInput
-              style = {[styles.input,{color:'gray'}]}
-              placeholder = {'Nombre mascota (Opcional)'}
-              placeholderTextColor = {'gray'}
-              onChangeText={(value) => this.setState({name: value})}                         
-            /> 
-            <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={this.state.specieName}
-                  style={styles.picker}
-                  onValueChange={(itemValue, itemIndex) =>
-                    this.setState({specie: itemIndex,specieName:itemValue}, () => {
-                    this.getRaceBySpecie();
-                  })
-                  }>
-                  <Picker.Item color= "#a0a0a0" label="Especie" value="0" />
-                  { this.state.specieList.map( specie => (<Picker.Item key={specie.id} color="gray" label={specie.name} value={specie.name} />) ) }
-                </Picker>
-              </View>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={this.state.sex}
-                  style={styles.picker}
-                  onValueChange={(itemValue, itemIndex) =>
-                    this.setState({sex: itemValue})
-                  }>
-                  <Picker.Item color= "#a0a0a0" label="Sexo" value="" />
-                  { this.state.sexList.map( sex => (<Picker.Item key={sex} color="gray" label={sex} value={sex} />) ) }
-                </Picker>
-              </View>
-            </View>
-            {this.state.more_info? this.renderMoreInformation():
-                <TouchableOpacity 
-                style={[styles.buttonPost,styles.border,styles.moreInfo]}
-                onPress={() =>this.setState({more_info: true})}
-              >
-                <Icon name="plus" size={18} color='#9d9c9c' style={{marginRight:5,marginTop:3}} regular/>
-                <Text style={[appStyle.textRegular,{fontSize:16}]}> Agregar más información </Text>
-              </TouchableOpacity>  
-            }
             <TextInput
               style = {[appStyle.inputArea, appStyle.textRegular]}
               placeholder = {'Agregue una descripción ...'}
               placeholderTextColor = {'gray'}
               multiline={true}
-              numberOfLines={4}
+              numberOfLines={5}
+              value = {this.state.details}
               onChangeText={(value) => this.setState({details: value})}
             ></TextInput>  
-            {type === 'SOS' ?
-            <View style={[styles.border, styles.request]}>
-              <View>
-                <Text style={{fontFamily: Fonts.OpenSansSemiBold,marginBottom:5}}>Situación de emergencia</Text>
-                <View style={[styles.pickerContainer,{borderColor : Colors.lightGray}]}>
-                  <Picker
-                    selectedValue={this.state.situation}
-                    style={styles.picker}
-                    onValueChange={(itemValue, itemIndex) =>
-                      this.setState({situation: itemIndex})
-                    }>
-                    <Picker.Item color= "#a0a0a0" label="Situación" value="0" />
-                    { this.state.situationList.map( situation => (<Picker.Item key={situation.id} color="gray" label={situation.name} value={situation.name} />) ) }
-                  </Picker>
-                </View>
-              </View>
-              <View style={{ alignItems:'center'}}>
-                <Text style={{fontFamily: Fonts.OpenSansSemiBold,marginBottom:5}}>Solicitar ayuda</Text>
-                <Switch
-                   onValueChange={(value) =>
-                    this.setState({rescue_request: value})
-                  }
-                  thumbColor="white" 
-                  trackColor={{
-                    true: Colors.primaryColor,
-                    false: Colors.lightGray,
-                }} 
-                  value = {this.state.rescue_request}/>
-              </View>
-            </View>
-              :null
-            }
             <TouchableOpacity 
-              style={appStyle.buttonLarge}
+              style={[appStyle.buttonLarge,{backgroundColor:Colors.violet}]}
               onPress={() => this.validate()}
             >
-              <Text style={appStyle.buttonLargeText}> Publicar </Text>
+              <Text style={appStyle.buttonLargeText}> Publicar adopción </Text>
             </TouchableOpacity>     
           </View>
           
@@ -629,7 +582,7 @@ const styles = StyleSheet.create({
   },
   input:{
     borderWidth: 1.3,
-    borderColor: Colors.primaryColor,
+    borderColor: Colors.violet,
     borderRadius: 8,
     marginVertical:10,
     marginHorizontal:0,
@@ -638,13 +591,13 @@ const styles = StyleSheet.create({
   },
   pickerContainer:{
     borderWidth: 1.3,
-    borderColor: Colors.primaryColor,
+    borderColor: Colors.violet,
     borderRadius: 8,
-    width: width*0.45,
+    width: width*0.42,
   },
   picker:{
     height: 28,
-    width: width*0.44,
+    width: width*0.42,
     color: 'gray',
     },
   textWhite:{
@@ -654,10 +607,10 @@ const styles = StyleSheet.create({
     marginLeft:2
   },
   moreInformation:{
-    backgroundColor: Colors.primaryColor,
+    backgroundColor: Colors.violet,
     marginTop:10,
-    marginVertical:5,
-    padding:5,
+    marginVertical:2,
+    padding:2,
     borderRadius:4
   },
   border:{
@@ -668,7 +621,8 @@ const styles = StyleSheet.create({
   pickersInfo:{
     flexDirection:'row',
     justifyContent: 'space-between',
-    marginBottom:4
+    marginBottom:8,
+    marginHorizontal:5
   },
   textSection:{
     paddingHorizontal:10,

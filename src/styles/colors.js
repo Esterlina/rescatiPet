@@ -4,4 +4,6 @@ export const Colors = {
     red: '#ee1212',
     calipso: '#03BAFF',
     green: '#81ab81',
+    violet: '#7573df',
+    lightGreen: '#83d23c',
 }
