@@ -5,11 +5,28 @@ import {Fonts} from '../utils/Fonts';
 import ImagePicker from 'react-native-image-crop-picker';
 import {Colors} from '../styles/colors'
 import appStyle from '../styles/app.style'
+import { tsParenthesizedType } from '@babel/types';
 
 const {height, width} = Dimensions.get('window');
 
 export default class Camera extends React.Component {
-
+  pickSingle() {
+    ImagePicker.openPicker({
+      width: 200,
+      height: 200,
+      //cropping: cropit,
+      cropperCircleOverlay: true,
+     // includeExif: true,
+    }).then(image => {
+      console.log('received image', image);
+        new_image = {uri: image.path, width: image.width, height: image.height, mime: image.mime},
+        console.log([new_image])
+        this.props.update([new_image]);
+    }).catch(e => {
+      console.log(e);
+      Alert.alert(e.message ? e.message : e);
+    });
+  }
 pickMultiple() {
     ImagePicker.openPicker({
         multiple: true,
@@ -52,16 +69,30 @@ cleanArrayImages(item){
 }
 
 renderImage(image) {
-  return(
-    <View style={styles.imageContainer}> 
-      <ImageBackground style={{width: 130, height: 130,textAlign: 'right'}} source={image}>
+  if(this.props.type == "Evento"){
+    return(
+      <View style={[styles.imageContainer,{width:width*0.7}]}> 
+      <ImageBackground style={{width: width*0.7, height: 130,textAlign: 'right'}} source={image}>
         <TouchableOpacity style={styles.circle}
           onPress={() => {this.cleanArrayImages(image)}}>
            <Icon name="times-circle" size={30} color="white" regular/>
         </TouchableOpacity>
       </ImageBackground>
     </View>
-  ) 
+    )
+  }
+  else{
+    return(
+      <View style={styles.imageContainer}> 
+        <ImageBackground style={{width: 130, height: 130,textAlign: 'right'}} source={image}>
+          <TouchableOpacity style={styles.circle}
+            onPress={() => {this.cleanArrayImages(image)}}>
+            <Icon name="times-circle" size={30} color="white" regular/>
+          </TouchableOpacity>
+        </ImageBackground>
+      </View>
+    )
+  } 
 }
   render(){    
     return(
@@ -83,7 +114,14 @@ renderImage(image) {
                 <Text style={appStyle.buttonLargeText2}>Seleccionar imagen(es)</Text>
               </TouchableOpacity>
             </View>
-          : 
+          :
+          this.props.type == "Evento" ?
+          <View>
+              <TouchableOpacity style={[appStyle.buttonLarge2,{marginHorizontal:10}]} onPress={this.pickSingle.bind(this)}>
+                <Text style={appStyle.buttonLargeText2}>Seleccionar imagen</Text>
+              </TouchableOpacity>
+            </View>
+          :  
           <View>
           <TouchableOpacity style={styles.buttonLitle}
             onPress={this.pickMultiple.bind(this)}>
@@ -114,7 +152,8 @@ const styles = StyleSheet.create({
     },
     imageContainer:{
       justifyContent:'center',
-      alignItems:'center',height:130,
+      alignItems:'center',
+      height:130,
       width:130,
       marginHorizontal:5,
     },
@@ -145,8 +184,9 @@ const styles = StyleSheet.create({
       alignItems:'center'
     },
     circle: {
-      marginTop:2,
-      marginLeft: 98,
+     position:'absolute',
+      right:2,
+      top:2,
       width: 30,
       height: 30,
       borderRadius: 30/2,

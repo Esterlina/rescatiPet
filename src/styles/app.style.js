@@ -35,6 +35,11 @@ export default StyleSheet.create({
     fontSize:16,
     fontFamily: Fonts.OpenSansBold
   },
+  textTitleCalipso:{
+    color: Colors.primaryColor,
+    fontSize:16,
+    fontFamily: Fonts.OpenSansBold
+  },
   textRegular:{
     fontSize: 14,
     color: 'gray',

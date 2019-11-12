@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react';
-import { StyleSheet, Text,View,Button,Image, TouchableOpacity, Alert} from 'react-native';
+import { StyleSheet, Text,View,ActivityIndicator,ScrollView, TouchableOpacity, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../components/Header';
 import Helpers from '../../lib/helpers'
@@ -9,7 +9,9 @@ import UserAvatar from 'react-native-user-avatar';
 import appStyle from '../styles/app.style'
 import ImagePicker from 'react-native-image-crop-picker';
 import {API} from '../keys';
-
+import {Colors} from '../styles/colors'
+import SmallEvent from '../components/SmallEvent'
+import Calendar from '../components/Calendar'
 class PerfilScreen extends PureComponent {
   _isMounted = false;
   constructor(props){
@@ -19,7 +21,9 @@ class PerfilScreen extends PureComponent {
       dataSource:'',
       image:{},
       url_image: '',
-      user:{}
+      user:{},
+      events:[],
+      loading: true,
     }
     this.signOut = this.signOut.bind(this)
   }
@@ -27,6 +31,20 @@ class PerfilScreen extends PureComponent {
     tabBarIcon:({tintColor}) => (
       <Icon name="user-circle" size={25} color="white"/>
     )
+  }
+  componentDidMount(){
+    return fetch(API+'events/user/' + this.props.user.id)
+  .then( (response) => response.json() )
+  .then( (responseJson ) => {
+    this.setState({
+      events: responseJson['events'],
+    },() => this.setState({loading: false}))
+  })
+  .catch((error) => {
+    console.log("HA OCURRIDO UN ERROR DE CONEXION")
+    console.log(error)
+    this.setState({loading: false})
+  });
   }
   async signOut(){
     this._isMounted = true;
@@ -117,9 +135,37 @@ class PerfilScreen extends PureComponent {
   componentWillUnmount() {
     this._isMounted = false;
   }
-
+  displayEvents(events){
+    if(this.props.user.tipo != "Normal"){
+      return(
+        <View>
+          <View style={{margin:10}}>
+            <Text style={appStyle.textBold}>Eventos</Text>
+          </View>
+          {this.state.loading != true ?
+            <ScrollView style={{height: 200, marginHorizontal:10}}>
+              {events.map((event) => {
+              console.log(event)
+              console.log("ya CARGUE EL EVENTO")
+              return (
+                <SmallEvent key={event.id} event={event}
+                navigation={this.props.navigation}
+                />
+              )
+            })}
+            </ScrollView>
+            : 
+            <View style={{flex:1,justifyContent:'center'}}>
+              <ActivityIndicator size="large" color= {Colors.primaryColor} />
+            </View>
+          }
+        </View>
+      )
+    }
+  }
   render(){ 
     console.log(this.props.user.perfil)
+    console.log(this.state.events)
     return(
         <View style={{flex:1}}>
           <Header {...this.props} /> 
@@ -143,6 +189,8 @@ class PerfilScreen extends PureComponent {
               onPress={() => console.log(this.signOut())}>
               <Text style={appStyle.buttonLargeText2}> Cerrar sesion </Text>
             </TouchableOpacity>
+            
+            {this.displayEvents(this.state.events)}
       </View>
     );
     
