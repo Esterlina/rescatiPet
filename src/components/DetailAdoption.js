@@ -189,9 +189,9 @@ async shareToSocial(){
                 </View>
               </View>
               <Image
-                    source={require('../icons/rescue/adoption.png')}
-                    style= {{width:35,height:35,right:0,top:10, position:'absolute'}}
-                  />
+                source={require('../icons/rescue/adoption.png')}
+                style= {{width:35,height:35,right:0,top:10, position:'absolute'}}
+              />
             </View>  
             <View style={styles.carousel}>
               {!this.state.loading ?

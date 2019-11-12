@@ -8,6 +8,7 @@ import Rescue from "../screens/Rescue/";
 import Notice from "../screens/Notice/";
 import DetailNotice from "./DetailNotice";
 import DetailAdoption from "./DetailAdoption"
+import DetailEvent from "./DetailEvent"
 import Inbox from "../screens/InboxScreen"
 import Home from "../screens/HomeScreen";
 import LoadingScreen from "../screens/LoadingScreen";
@@ -82,6 +83,7 @@ import {
       DashboardTabNavigator: DashboardTabNavigator,   
       DetailNotice: DetailNotice,
       DetailAdoption,
+      DetailEvent,
       Inbox: Inbox,
     },{
       headerMode: 'none'
