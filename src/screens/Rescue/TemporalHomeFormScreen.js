@@ -41,7 +41,7 @@ export default class TemporaryHomeFormScreen extends React.Component {
           modalSend:false,
           modalAnimals:false,
           loading: false,
-          temporal_home:{},
+          temporary_home:{},
           token: '',
         };
     }
@@ -193,9 +193,9 @@ export default class TemporaryHomeFormScreen extends React.Component {
       }).then((response) => response.json())
         .then((responseJson) => {
           console.log(responseJson);
-          this.setState({temporal_home: responseJson},()=>{
+          this.setState({temporary_home: responseJson},()=>{
               console.log("IMPRIMIRE EL RESULTADO")
-              console.log(this.state.temporal_home)
+              console.log(this.state.temporary_home)
               this.setState({loading:false})
           });   
         }).catch((error) =>{
