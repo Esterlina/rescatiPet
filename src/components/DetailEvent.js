@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet,YellowBox, ActivityIndicator, Text,View, Dimensions,TouchableOpacity, ScrollView,Image} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Header from '../components/Header';
-import Carousel from 'react-native-snap-carousel';
 import _ from 'lodash';
 import Moment from 'moment';
 import 'moment/locale/es'

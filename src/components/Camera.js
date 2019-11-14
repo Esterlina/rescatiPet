@@ -148,7 +148,7 @@ renderImage(image) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: 'white',
+      marginTop:10,
     },
     imageContainer:{
       justifyContent:'center',

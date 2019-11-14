@@ -78,7 +78,7 @@ class RescueScreen extends React.Component {
           <Text style={[appStyle.textBold,{alignSelf:'center',fontSize: 18}]}> ¿Deseas ayudar? </Text>
           <View style = {appStyle.lineTop}>
             <View style={[appStyle.lineBottom]}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate('TemporaryHomeForm')}>
                 <View style={{flexDirection:'row',padding:10,alignItems:'center'}}>
                   <Image
                     source={require('../../icons/rescue/house.png')}
@@ -109,7 +109,9 @@ class RescueScreen extends React.Component {
     return(
         <View style={styles.container}>
           <Header {...this.props}/> 
-          {this.options(this.props.user.tipo)}
+          <View style={{marginTop:10}}>
+            {this.options(this.props.user.tipo)}
+          </View>
       </View>
     );
     
@@ -119,17 +121,6 @@ class RescueScreen extends React.Component {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#F5FCFF',
-    },
-    welcome: {
-      fontSize: 20,
-      textAlign: 'center',
-      margin: 10,
-    },
-    instructions: {
-      textAlign: 'center',
-      color: '#333333',
-      marginBottom: 5,
     },
   });
 
