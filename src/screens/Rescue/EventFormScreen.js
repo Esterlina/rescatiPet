@@ -172,7 +172,7 @@ updateLocation(marker,address){
             </View>
             </Modal>
             <Header {...this.props} stack='true'/> 
-            <Text style={[appStyle.textTitle,{alignSelf:'center'}]}>Crear evento</Text>
+            <Text style={[appStyle.textTitle,{alignSelf:'center',marginTop:10}]}>Crear evento</Text>
             <Camera update = {this.updateImage.bind(this)} images = {this.state.image} type = {"Evento"} />
             <View style={styles.containerForm}>
                 <View style={{marginTop:10}}>

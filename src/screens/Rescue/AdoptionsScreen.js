@@ -40,7 +40,7 @@ componentDidMount() {
         <View style={{flex:1}}>
          <Header {...this.props} stack='true'/> 
           {!this.state.loading ?
-            <ScrollView style={{flex:1}}>
+            <ScrollView style={{flex:1,marginTop:10}}>
               {this.state.adoptions.map((adoption) => {
                 console.log(adoption)
                 return (

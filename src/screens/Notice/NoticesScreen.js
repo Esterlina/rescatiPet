@@ -79,7 +79,7 @@ export default class NoticesScreen extends React.Component {
 
 const styles = StyleSheet.create({
     noticesTitle:{
-      //paddingTop:25,
+      marginTop:10,
       paddingBottom:10,
       marginHorizontal:20,
       paddingHorizontal:10,

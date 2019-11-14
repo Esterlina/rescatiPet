@@ -122,6 +122,25 @@ containerPublication:{
   borderColor: Colors.violet,
   borderRadius: 4,
 },
+input:{
+  borderWidth: 1.3,
+  borderColor: Colors.violet,
+  borderRadius: 8,
+  marginVertical:10,
+  marginHorizontal:0,
+  paddingVertical:1,
+  paddingHorizontal:10,
+},
+inputFilters:{
+  height:30,
+  width:width*0.45,
+  alignSelf:'center',
+  borderColor: Colors.primaryColor,
+  marginVertical:5
+},
+pickerFilter:{
+  color:'gray',height:28, width:width*0.45, alignSelf:'center'
+},
 inputArea:{
     borderColor: Colors.lightGray,
     textAlignVertical: "top",

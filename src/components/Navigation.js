@@ -3,7 +3,7 @@ import { Image } from 'react-native';
 import Login from "../screens/LoginScreen";
 import Register from "../screens/RegisterScreen";
 import Perfil from "../screens/PerfilScreen";
-import Search from "../screens/SearchScreen";
+import Search from "../screens/Search/";
 import Rescue from "../screens/Rescue/";
 import Notice from "../screens/Notice/";
 import DetailNotice from "./DetailNotice";
@@ -45,7 +45,18 @@ import {
   const DashboardTabNavigator = createBottomTabNavigator(
     {
       Home,
-      Search,
+      Search:{
+        screen: Search,
+        navigationOptions:{
+          tabBarIcon:({tintColor}) => (
+            <Image
+              source={require('../icons/tabs/search.png')}
+              style= {{width:25,height:25,tintColor:'white'}}
+            >
+            </Image>
+          )
+        }
+      },
       Rescue:{
         screen: Rescue,
         navigationOptions:{

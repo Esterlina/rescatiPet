@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
         height:40,
         alignItems: 'center',
         flexDirection: 'row',
-        marginBottom:10,
+        //marginBottom:10,
     },
     icon: {
         paddingHorizontal:15,

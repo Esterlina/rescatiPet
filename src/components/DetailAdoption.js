@@ -3,7 +3,6 @@ import { StyleSheet,YellowBox, ActivityIndicator, Text,View, Dimensions,Touchabl
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Fonts} from '../utils/Fonts';
 import Header from '../components/Header';
-import Tag from '../components/Tag';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import UserAvatar from 'react-native-user-avatar';
 import Helpers from '../../lib/helpers'
@@ -18,7 +17,6 @@ import {Colors} from '../styles/colors'
 import appStyle from '../styles/app.style'
 import {connect} from 'react-redux';
 import firebase from 'react-native-firebase'
-import { StackActions,NavigationActions } from 'react-navigation';
 const fs = RNFetchBlob.fs;
 let imagePath = null;
 const {height, width} = Dimensions.get('window');
@@ -30,7 +28,6 @@ console.warn = message => {
     _console.warn(message);
   }
 };
-
 class DetailAdoption extends React.Component {
   constructor(props) {
     super(props);
@@ -44,10 +41,8 @@ class DetailAdoption extends React.Component {
       token:'',
     };
 }
-
 componentDidMount(){ 
 
-    console.log("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOJOOOOOOOOOOOOOOO")
     if(this.props.adoption == undefined){
         adoption = this.props.navigation.getParam('adoption')
     }
@@ -216,7 +211,10 @@ async shareToSocial(){
                   {adoption.raza? <Text style={appStyle.textRegular}> {adoption.raza}</Text> : null }
                 </View>
                 <View style={{flexDirection:'row'}}>
-                  <Icon name="mars" size={20} color= {Colors.violet} style={{marginRight:4}} regular/>
+                  {adoption.sexo == "Hembra"? 
+                    <Icon name="venus" size={20} color= {Colors.violet} style={{marginRight:4}} regular/>
+                    :<Icon name="mars" size={20} color= {Colors.violet} style={{marginRight:4}} regular/>
+                  }
                   <Text style={appStyle.textSemiBold}>{adoption.sexo}</Text>
                   {adoption.edad? <Text style={appStyle.textRegular}>, {adoption.edad}</Text> : null }
                 </View>
