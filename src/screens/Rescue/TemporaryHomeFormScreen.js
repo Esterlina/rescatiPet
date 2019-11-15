@@ -56,7 +56,7 @@ export default class TemporaryHomeFormScreen extends React.Component {
                 home_types: responseJson['tipo_hogar'],
                 times: responseJson['tiempo'],
                 regions: responseJson['regiones']
-            },()=> this.firebaseToken());
+            });
             })
             .catch((error) =>{
             console.error(error);
@@ -336,7 +336,6 @@ export default class TemporaryHomeFormScreen extends React.Component {
                         </Picker>
                     </View>
                 </View>
-               
                 <Text style={[appStyle.textTitleCalipso,{color: Colors.violet}]}>Vivienda</Text>   
                 <View style={{flexDirection:'row', marginVertical:10}}>
                     <Text style={appStyle.textSemiBold}>Vives en</Text>

@@ -7,12 +7,14 @@ import Search from "../screens/Search/";
 import Rescue from "../screens/Rescue/";
 import Notice from "../screens/Notice/";
 import DetailNotice from "./DetailNotice";
-import DetailAdoption from "./DetailAdoption"
-import DetailEvent from "./DetailEvent"
+import DetailAdoption from "./DetailAdoption";
+import DetailTemporaryHome from "./DetailTemporaryHome";
+import DetailRequestHome from "./DetailRequestHome";
+import DetailEvent from "./DetailEvent";
 import Inbox from "../screens/InboxScreen"
 import Home from "../screens/HomeScreen";
 import LoadingScreen from "../screens/LoadingScreen";
-import {Colors} from "../styles/colors"
+import {Colors} from "../styles/colors";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
     createSwitchNavigator,
@@ -95,6 +97,8 @@ import {
       DetailNotice: DetailNotice,
       DetailAdoption,
       DetailEvent,
+      DetailTemporaryHome,
+      DetailRequestHome,
       Inbox: Inbox,
     },{
       headerMode: 'none'

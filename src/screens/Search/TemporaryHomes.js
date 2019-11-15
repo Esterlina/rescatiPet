@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView,View,Text,ActivityIndicator,Dimensions,TouchableOpacity,Picker} from 'react-native';
+import {ScrollView,View,Text,ActivityIndicator,Dimensions,TouchableOpacity,Picker,Image} from 'react-native';
 import Header from '../../components/Header';
 import {API} from '../../keys';
 import TemporaryHome from '../../components/DetailTemporaryHome'
@@ -227,7 +227,15 @@ getTemporaryHomes(){
                 </TouchableOpacity>                    
             </View>
             {!this.state.loading ?
-            <ScrollView style={{flex:1,marginVertical:10}}>
+            this.state.temporary_homes.length == 0?
+            <View style={{flex:1,justifyContent:'center',alignItems:'center',marginHorizontal:20}}>
+                    <Image
+                    source={require('../../icons/search/no-encontrado.png')}
+                    style= {{width: height*0.2,height:height*0.2,marginBottom:20}}
+                    />
+                    <Text style={[appStyle.textBold,{fontSize:16,textAlign:'center'}]}>No se han encontrado hogares temporales</Text>
+            </View>
+            :<ScrollView style={{flex:1,marginVertical:10}}>
                 <View style={{marginVertical:10}}>
                     {this.state.temporary_homes.map((temporary_home) => {
                     console.log(temporary_home)

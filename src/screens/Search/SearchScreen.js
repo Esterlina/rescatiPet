@@ -27,6 +27,17 @@ class SearchScreen extends React.Component {
             </View>
               :null
               }
+              <View style={[appStyle.lineBottom,appStyle.lineTop]}>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate('RequestHomes')}>
+                <View style={{flexDirection:'row',padding:10,alignItems:'center'}}>
+                  <Image
+                    source={require('../../icons/rescue/house.png')}
+                    style= {{width:35,height:35,marginRight:10}}
+                  />
+                  <Text style={appStyle.textSemiBold}>Solicitudes de Hogar temporal</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
       </View>
       
