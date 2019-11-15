@@ -7,7 +7,8 @@ import _ from 'lodash';
 import {Colors} from '../styles/colors'
 import appStyle from '../styles/app.style'
 import {connect} from 'react-redux';
-
+import {API} from '../keys';
+const {height, width} = Dimensions.get('window');
 class DetailTemporaryHome extends React.Component {
   constructor(props) {
     super(props);
@@ -15,21 +16,49 @@ class DetailTemporaryHome extends React.Component {
     this.isMounted = true;
     this.state = {
       loading: true,
+      temporary_home: (this.props.temporary_home == undefined? this.props.navigation.getParam('temporary_home') :  temporary_home = this.props.temporary_home)
     };
 }
 
+stateTemporaryHome(){
+  fetch(API + 'temporary_homes/' + temporary_home.id, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      avaible: !temporary_home.disponible,
+    }),
+  }).then((response) => response.json())
+  .then((responseJson) => {
+    console.log(responseJson);
+    this.setState({temporary_home: responseJson});
+  }).catch((error) =>{
+    console.error(error);
+  });;
+}
+
   render(){ 
-    console.log(this.props.temporary_home)
-    if(this.props.temporary_home == undefined){
-         temporary_home = this.props.navigation.getParam('temporary_home')
-    }
-    else{
-         temporary_home = this.props.temporary_home
-    }
+    temporary_home = this.state.temporary_home
     return(
       <View style={styles.container}>
           {this.props.temporary_home == undefined? <Header {...this.props} stack='true' home='Home'/> :null}
         <ScrollView>
+        {temporary_home.usuario.id == this.props.user.id? 
+        <View style={{margin:10}}>
+          <Text style={[appStyle.textRegular,{textAlign:'justify',marginRight:10}]}>Usted ya completo el formulario para disponer de un hogar temporal.</Text>
+          <Text style={[appStyle.textRegular,{textAlign:'justify',marginRight:10}]}>Actualmente su hogar temporal se encuentra {temporary_home.disponible? "Disponible, Puedes deshabilitar la publicación para que nadie vea tus datos o editar los datos." : "No disponible, puedes volver a habilitarlo para que los rescatistas y fundaciones vean tu publicación."} </Text>
+          <View style={{flexDirection:'row', justifyContent:'center'}}>
+            <TouchableOpacity style={[appStyle.buttonLarge2,{width:width*0.4}]} onPress={() => this.stateTemporaryHome()}>
+                <Text style={[appStyle.buttonLargeText2]}>{temporary_home.disponible? "Deshabilitar" : "Habilitar" }</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[appStyle.buttonLarge2,{width:width*0.4}]} onPress={() => console.log("VISTA EDITAR")}>
+                <Text style={[appStyle.buttonLargeText2]}>Editar</Text>
+            </TouchableOpacity>                    
+          </View>
+        </View>
+        :null}
         <View style={appStyle.containerPublication}>
           <View style={{paddingHorizontal:8}}>
             <View style={{flexDirection:'row',paddingTop:10,}}>

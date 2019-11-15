@@ -1,11 +1,42 @@
 import React from 'react';
 import { StyleSheet, Text,View,Image,TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import {API} from '../../keys';
 import Header from '../../components/Header';
 import {connect} from 'react-redux'
 import appStyle from '../../styles/app.style'
 
 class RescueScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      temporary_home:{},
+    };
+}
+  getTemporaryHome(){
+    console.log("CHECKEANDO SI HAY HOGAR TEMPORAL")
+    return fetch(API + 'temporary_homes/user/' + this.props.user.id)
+      .then((response) => response.json())
+      .then((responseJson) => {
+          console.log("IMPRIMIRE LA RESPUESTA")
+          console.log(responseJson)
+      this.setState({
+          temporary_home: responseJson['temporary_homes'],
+      },()=> {
+        console.log("VAMOS A DIRIGIR LA RESPUESTA")
+        if(this.state.temporary_home.length == 0){
+          console.log("EL LARGO ES CERO")
+          this.props.navigation.navigate('TemporaryHomeForm')
+        }
+        else{
+          console.log("TE ENVIAREMOS AL DETALLE")
+          this.props.navigation.navigate('DetailTemporaryHome',{ temporary_home: this.state.temporary_home[0]})
+        }
+      });
+      })
+      .catch((error) =>{
+      console.error(error);
+    });
+  }
   options(type){
     console.log(type)
     if(type == "Fundacion" || type == "Rescatista"){
@@ -36,7 +67,7 @@ class RescueScreen extends React.Component {
               </TouchableOpacity>
             </View>
             <View style={[appStyle.lineBottom]}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate('RequestTemporaryHome')}>
                 <View style={{flexDirection:'row',padding:10,alignItems:'center'}}>
                   <Image
                     source={require('../../icons/rescue/house.png')}
@@ -78,7 +109,7 @@ class RescueScreen extends React.Component {
           <Text style={[appStyle.textBold,{alignSelf:'center',fontSize: 18}]}> ¿Deseas ayudar? </Text>
           <View style = {appStyle.lineTop}>
             <View style={[appStyle.lineBottom]}>
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('TemporaryHomeForm')}>
+              <TouchableOpacity onPress={() => this.getTemporaryHome()}>
                 <View style={{flexDirection:'row',padding:10,alignItems:'center'}}>
                   <Image
                     source={require('../../icons/rescue/house.png')}

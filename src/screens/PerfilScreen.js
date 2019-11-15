@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react';
-import { StyleSheet, Text,View,ActivityIndicator,ScrollView, TouchableOpacity, Alert} from 'react-native';
+import { StyleSheet, Dimensions,Text,View,ActivityIndicator,ScrollView, TouchableOpacity, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../components/Header';
 import Helpers from '../../lib/helpers'
@@ -11,7 +11,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import {API} from '../keys';
 import {Colors} from '../styles/colors'
 import SmallEvent from '../components/SmallEvent'
-import Calendar from '../components/Calendar'
+const {height, width} = Dimensions.get('window');
 class PerfilScreen extends PureComponent {
   _isMounted = false;
   constructor(props){
@@ -178,18 +178,14 @@ class PerfilScreen extends PureComponent {
             
             <Text style={styles.welcome}>PERFIL {this.props.user.nombre}</Text>
           </View>
-          <TouchableOpacity 
-              style={appStyle.buttonLarge2}
-              onPress={() => this.uploadProfile()}>
-              <Text style={appStyle.buttonLargeText2}> Editar imagen </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={appStyle.buttonLarge2}
-              onPress={() => console.log(this.signOut())}>
-              <Text style={appStyle.buttonLargeText2}> Cerrar sesion </Text>
-            </TouchableOpacity>
-            
+          <View style={{flexDirection:'row', justifyContent:'center'}}>
+                <TouchableOpacity style={[appStyle.buttonLarge2,{width:width*0.4}]} onPress={() =>  this.uploadProfile()}>
+                    <Text style={[appStyle.buttonLargeText2]}>Editar imagen</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[appStyle.buttonLarge2,{width:width*0.4}]} onPress={() => this.signOut()}>
+                    <Text style={[appStyle.buttonLargeText2]}>Cerrar sesion</Text>
+                </TouchableOpacity>                    
+            </View>
             {this.displayEvents(this.state.events)}
       </View>
     );
