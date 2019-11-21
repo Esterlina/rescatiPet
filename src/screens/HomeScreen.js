@@ -3,6 +3,9 @@ import {ScrollView,View,Image,ActivityIndicator} from 'react-native';
 import Header from '../components/Header';
 import {API} from '../keys';
 import Notice from '../components/Notice'
+import RequestHome from '../components/DetailRequestHome';
+import Adoption from '../components/DetailAdoption';
+import Campaign from '../components/DetailDonationCampaign';
 import {Colors} from '../styles/colors'
 import firebase from 'react-native-firebase'
 import type { Notification, NotificationOpen } from 'react-native-firebase';
@@ -14,7 +17,7 @@ export default class HomeScreen extends React.Component {
       'Setting a timer'
     ];
     this.state = {
-      notices:[], 
+      publications:[], 
       loading: true,
     }
   }
@@ -42,11 +45,11 @@ componentDidMount() {
         //const notification: Notification = notificationOpen.notification;  
       }
     });
-  return fetch(API+'notices')
+  return fetch(API + 'publications')
   .then( (response) => response.json() )
   .then( (responseJson ) => {
     this.setState({
-      notices: responseJson['notices'],
+      publications: responseJson['publicaciones'],
     },() => this.setState({loading: false}))
   })
   .catch((error) => {
@@ -63,15 +66,43 @@ componentDidMount() {
           <Header {...this.props} inbox='true'/> 
           {!this.state.loading ?
             <ScrollView style={{flex:1}}>
-              {this.state.notices.map((item) => {
+              {this.state.publications.map((item) => {
                 console.log(item)
-                if(item.tipe != "Adopcion"){
-                return (
-                  <Notice key={item.id} dataJson={item}
-                    navigation={this.props.navigation}
-                    /> 
-                  
-                )}
+                if(item.tipo_publicacion == "Notice"){
+                  if(item.tipo != "Adopcion"){
+                    return (
+                      <Notice key={item.publication_id} dataJson={item}
+                        navigation={this.props.navigation}
+                        /> 
+                    )
+                  }else if(item.tipo == "Adopcion"){
+                    return(
+                      <View key={item.publication_id} style={{marginHorizontal:5}}>
+                      <Adoption key={item.publication_id} adoption={item}
+                      navigation={this.props.navigation}
+                      /> 
+                    </View>
+                    )
+                  }
+                }
+                else if(item.tipo_publicacion == "RequestHome"){
+                  return(
+                    <View key={item.publication_id} style={{marginHorizontal:5}}>
+                      <RequestHome key={item.publication_id} request_home={item}
+                            navigation={this.props.navigation}
+                      /> 
+                    </View>
+                  )
+                }
+                else if(item.tipo_publicacion == "DonationCampaign"){
+                  return(
+                    <View key={item.publication_id} style={{marginHorizontal:5}}>
+                      <Campaign key={item.publication_id} donation_campaign={item}
+                            navigation={this.props.navigation}
+                      /> 
+                    </View>
+                  )
+                }
               })}
             </ScrollView>
             : 

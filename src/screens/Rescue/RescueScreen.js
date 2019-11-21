@@ -56,7 +56,7 @@ class RescueScreen extends React.Component {
               </TouchableOpacity>
             </View>
             <View style={[appStyle.lineBottom]}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate('CampaignForm')}>
                 <View style={{flexDirection:'row',padding:10,alignItems:'center'}}>
                   <Image
                     source={require('../../icons/rescue/donation.png')}

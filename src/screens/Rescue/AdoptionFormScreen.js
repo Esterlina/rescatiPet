@@ -373,7 +373,7 @@ renderMoreInformation() {
             value = {this.state.sterile}/>
         </View>
         <View style={{flexDirection:'row',width:width*0.42}}>
-          <Text style={[appStyle.textSemiBold,{alignSelf:'center'}]}>Microship</Text>
+          <Text style={[appStyle.textSemiBold,{alignSelf:'center'}]}>Microchip</Text>
           <Switch
               onValueChange={(value) =>
               this.setState({microship: value})

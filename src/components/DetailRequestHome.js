@@ -176,8 +176,8 @@ async shareToSocial(){
                 ref={(c) => { this._carousel = c; }}
                 data={this.state.images}
                 renderItem={this._renderItem}
-                sliderWidth={width*0.95}
-                itemWidth={width*0.95}
+                sliderWidth={width*0.92}
+                itemWidth={width*0.92}
               />
               : <ActivityIndicator size="large" color={Colors.violet} />}
             </View>

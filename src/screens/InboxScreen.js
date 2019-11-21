@@ -115,6 +115,11 @@ class InboxScreen extends React.Component {
         <Text style={{fontFamily: read? Fonts.OpenSansSemiBold : Fonts.OpenSansBold,fontSize:14}}>Solicitud SOS aceptada</Text>
       )
     }
+    if(type == "Up-Campaña"){
+      return(
+        <Text style={{fontFamily: read? Fonts.OpenSansSemiBold : Fonts.OpenSansBold,fontSize:14}}>Nuevo UP en campaña de donación</Text>
+      )
+    }
   }
   render(){ 
     Moment.locale('es')
