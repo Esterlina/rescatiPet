@@ -104,7 +104,10 @@ headerModal:{
     height:height*0.06,
     alignItems:'center',
     justifyContent:'center',
-    marginBottom:10
+    marginBottom:10,
+    position:'absolute',
+    top:15,
+    alignSelf:'center'
 },
 header:{
   backgroundColor:Colors.violet,

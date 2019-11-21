@@ -10,6 +10,7 @@ import DetailNotice from "./DetailNotice";
 import DetailAdoption from "./DetailAdoption";
 import DetailTemporaryHome from "./DetailTemporaryHome";
 import DetailRequestHome from "./DetailRequestHome";
+import DetailDonationCampaign from "./DetailDonationCampaign";
 import DetailEvent from "./DetailEvent";
 import Inbox from "../screens/InboxScreen"
 import Home from "../screens/HomeScreen";
@@ -99,6 +100,7 @@ import {
       DetailEvent,
       DetailTemporaryHome,
       DetailRequestHome,
+      DetailDonationCampaign,
       Inbox: Inbox,
     },{
       headerMode: 'none'

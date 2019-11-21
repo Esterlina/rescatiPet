@@ -308,7 +308,7 @@ async shareToSocial(){
                 {notice.collar || notice.ropa || notice.microship?
                   <View style={{flexDirection:'row'}}>
                     <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                    {notice.collar || notice.ropa? <Text>Lleva puesto </Text>: <Text>Tiene microship </Text> }
+                    {notice.collar || notice.ropa? <Text>Lleva puesto </Text>: <Text>Tiene microchip </Text> }
                     {notice.collar? <Text>Collar</Text> : null}
                     {notice.ropa? <Text> Ropa/chaleco</Text> : null}             
                   </View>
