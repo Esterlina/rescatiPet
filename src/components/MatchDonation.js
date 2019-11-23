@@ -14,15 +14,18 @@ import {Colors} from '../styles/colors';
 import appStyle from '../styles/app.style'
 import {connect} from 'react-redux';
 import NumericInput from 'react-native-numeric-input'
+import SelectProfile from '../components/SelectProfle'
+import { exportDefaultSpecifier } from '@babel/types';
 const {width,height} = Dimensions.get('window')
-
 class MatchDonation extends Component{
 
     constructor(props) {
         super(props);
         this.state = {
-            phone: this.props.user.telefono,
+            //phone: this.props.user.telefono,
             donated_items: [],
+            donor: '',
+            external_donor: false,
           };
       }
       componentDidMount(){
@@ -49,10 +52,26 @@ class MatchDonation extends Component{
         }
       }
 
-      validateDonation(){
+      validateDonation(up){
+        if(!up){
+            if(!this.state.external_donor && this.state.donor==''){
+                alert("Por favor, seleccione un donador.")
+                return false 
+            }
+            else if(this.state.external_donor && this.state.donor != ''){
+                this.setState({external_donor:false},() =>{
+                    alert("Por favor, solo ingresa una de las opciones de donadores (ingrese el usuario donador o marqué persona externa según corresponda).")
+                    return false
+                })
+            }
+        }
         for (i = 0; i < this.state.donated_items.length; i++) {
             if(this.state.donated_items[i].cantidad != 0){
-                this.sendMatch()
+                if(up){
+                    this.sendMatch()
+                }else{
+                    this.sendDonated()
+                }
                 return true
             }
         }
@@ -87,6 +106,38 @@ class MatchDonation extends Component{
             console.error(error);
         });
       }
+      sendDonated(){
+        this.setState({modalSend:true,loading:true})
+        fetch(API + '/donation_campaigns/up_donation', {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': this.state.token,
+        },
+        body: JSON.stringify({
+            campaign_id: this.props.campaign.id,
+            donated_items: this.state.donated_items,
+            donor_id:this.state.donor.id,
+            external_donor: this.state.external_donor
+        }), 
+        }).then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson);
+            Alert.alert(
+                'Donaciones actualizadas',
+                responseJson['mensaje'],
+                [{text: 'OK', onPress: () => this.props.update(false)}],
+                {cancelable:false}
+            )
+        }).catch((error) =>{
+            this.setState({response: error})
+            console.error(error);
+        });
+      }
+    updateDonor(donor){
+    this.setState({donor:donor})
+    }
     updateItemNumber(index,number){
         let items = this.state.donated_items
         item = {cantidad: number, item: items[index].item}
@@ -95,16 +146,21 @@ class MatchDonation extends Component{
     }  
     render(){
         campaign = this.props.campaign
+        if(campaign.usuario.id != this.props.user.id){up = true}else{up=false}
         console.log(this.props.user.telefono)
         return(
-            <View style={[appStyle.modalContainer,{height:height*0.6}]}>
+            <View style={[appStyle.modalContainer,{height:height*0.6,paddingVertical:0}]}>
             <View style={{justifyContent:'flex-end',marginBottom: 10,flex:1}}>
-                <View style={[appStyle.headerModal,{backgroundColor:'white'}]}>
-                    <Text style={appStyle.textTitle}>¡HE DONADO!</Text>
+                <View style={[appStyle.headerModal,{backgroundColor: Colors.violet,top:0,width:width-40}]}>
+                    <Text style={[appStyle.textTitle,{color:'white'}]}>{up? "¡He donado!" : "Actualizar donaciones"}</Text>
                 </View>
-                <View style={{marginHorizontal:15,position:'absolute',top:60}}>
+                <View style={{marginHorizontal:15,position:'absolute',top:50}}>
+                    {up?
                     <Text style={appStyle.textRegular,{textAlign:'justify'}}>Si haz realizado un aporte a esta campaña y la publicación no se encuentra actualizada, puedes enviar un UP para que el dueño edite la publicación.</Text>
-                    <ScrollView style={{alignContent:'center',marginVertical:20,height:height*0.2}}>
+                    :
+                    <Text style={appStyle.textRegular,{textAlign:'justify'}}>Para agregar una donación, ingrese las cantidades donadas por cada producto.</Text>
+                    }
+                    <ScrollView style={{alignContent:'center',marginVertical:10,height:(up? height*0.25 : height*0.15 ),backgroundColor:'white'}}>
                         {campaign.donation_items.map((item,index) => {
                             return(
                                 this.state.donated_items.length > 0?
@@ -126,15 +182,31 @@ class MatchDonation extends Component{
                             )
                         })}
                     </ScrollView>
+                    {up? null:
+                        <View>
+                            <Text style={[appStyle.textSemiBold]}>¿Quién realizó la donación?</Text>
+                            <SelectProfile type = {'user'} placeholder = {"Buscar usuario"} multiple={false} selectedItem={this.state.donor} update = {this.updateDonor.bind(this)}/>
+                            <View style={{flexDirection:'row',marginBottom:5,backgroundColor:'white'}}>
+                                <CheckBox
+                                    checked={this.state.external_donor}
+                                    onPress={() => this.setState({external_donor: !this.state.external_donor})}
+                                    checkedColor = {Colors.green}
+                                    size={25}
+                                    containerStyle = {{borderWidth:0,backgroundColor:'white',justifyContent:'center',margin:0,marginLeft:0,marginRight:5,padding:0}}
+                                    />
+                                <Text style={[appStyle.textRegular,{alignSelf:'center'}]}>Persona(s) externa a la aplicación.</Text>
+                            </View>
+                        </View>
+                    }
                 </View>
-                <View style={{justifyContent: 'center',flexDirection:'row', alignSelf: 'stretch'}}>
+                <View style={{justifyContent: 'center',flexDirection:'row', alignSelf: 'stretch',paddingBottom:10}}>
                     <TouchableOpacity style={[appStyle.buttonModal,appStyle.buttonsModal]}
                     onPress={() => this.props.update(false)}>
                         <Text style={appStyle.TextModalButton}>Cancelar</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[appStyle.buttonModal,appStyle.buttonsModal,{backgroundColor: Colors.primaryColor,borderWidth: 0}]}
-                        onPress={() => {this.validateDonation()}}>
-                        <Text style={[appStyle.TextModalButton,{color:'white'}]}>Enviar</Text>
+                    <TouchableOpacity style={[appStyle.buttonModal,appStyle.buttonsModal,{backgroundColor: Colors.violet,borderWidth: 0}]}
+                        onPress={() => {this.validateDonation(up)}}>
+                        <Text style={[appStyle.TextModalButton,{color:'white'}]}>{up? "Enviar": "Aceptar"}</Text>
                     </TouchableOpacity>
                 </View>
             </View>    

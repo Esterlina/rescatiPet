@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet,YellowBox, ActivityIndicator, Text,View, Dimensions,TouchableOpacity, ScrollView,AsyncStorage,Image} from 'react-native';
+import { Alert,StyleSheet,YellowBox, ActivityIndicator, Text,View, Dimensions,TouchableOpacity, ScrollView,AsyncStorage,Image} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Fonts} from '../utils/Fonts';
 import Header from '../components/Header';
@@ -14,6 +14,7 @@ import RNFetchBlob from 'react-native-fetch-blob';
 import Modal from "react-native-modal";
 import Match from '../components/MatchDonation'
 import {Colors} from '../styles/colors'
+import { API} from '../keys';
 import appStyle from '../styles/app.style'
 import {connect} from 'react-redux';
 const fs = RNFetchBlob.fs;
@@ -39,6 +40,7 @@ class DetailDonationCampaign extends React.Component {
       modalMatch:false,
       donation_campaign: (this.props.donation_campaign == undefined? this.props.navigation.getParam('donation_campaign') :  donation_campaign = this.props.donation_campaign),
       token:'',
+      modalDonation: false,
     };
 }
 componentDidMount(){ 
@@ -119,6 +121,33 @@ async shareToSocial(){
     console.log('Error =>', error);
     setResult('error: '.concat(getErrorString(error)));
   }
+}
+
+updateCampaign(value){
+  fetch(API + '/donation_campaigns/' + this.state.donation_campaign.id, {
+  method: 'PUT',
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    //'Authorization': this.state.token,
+  },
+  body: JSON.stringify({
+      state: value
+  }), 
+  }).then((response) => response.json())
+  .then((responseJson) => {
+    this.setState({donation_campaign: responseJson})
+      console.log(responseJson);
+      Alert.alert(
+          'Meta actualizada',
+          responseJson['mensaje'],
+          [{text: 'OK', onPress: () => this.props.update(false)}],
+          {cancelable:false}
+      )
+  }).catch((error) =>{
+      this.setState({response: error})
+      console.error(error);
+  });
 }
 
   render(){ 
@@ -214,19 +243,28 @@ async shareToSocial(){
             </View>
           </View>
           <View style={styles.socialButtons}>
-            {this.props.user.id != donation_campaign.usuario.id?
-              <TouchableOpacity style={styles.socialButton} onPress={() => this.setState({modalMatch:true})}>
-                <Icon name="hands-helping" size={18} color='#929292' regular/> 
-                <Text style={{color:'#929292'}}>¡He donado!</Text>
-              </TouchableOpacity>
-            : null }   
-            
+            <TouchableOpacity style={styles.socialButton} onPress={() => this.setState({modalMatch:true})}>
+              <Icon name="hands-helping" size={18} color='#929292' regular/> 
+                <Text style={{color:'#929292'}}>{this.props.user.id != donation_campaign.usuario.id?"¡He donado!":"Actualizar Donación"}</Text>
+            </TouchableOpacity>
             <TouchableOpacity style={styles.socialButton} onPress={() => this.share()}>
               <Icon name="share-square" size={18} color='#929292' regular/> 
               <Text style={{color:'#929292'}}>compartir</Text>
             </TouchableOpacity> 
           </View>
+          
         </View>
+        {this.props.user.id == donation_campaign.usuario.id && donation_campaign.meta_lograda && donation_campaign.estado == "Meta abierta"?
+          <View style={[appStyle.containerPublication,{padding:5}]}>
+            <Text>Al parecer haz llegado a la meta de donación, ¿Deseas cambiar el estado de la meta a lograda?</Text>
+            <View style={{justifyContent: 'center',flexDirection:'row', alignSelf: 'stretch'}}>
+                <TouchableOpacity style={[appStyle.buttonModal,appStyle.buttonsModal,{backgroundColor: Colors.violet,borderWidth: 0}]}
+                    onPress={() => this.updateCampaign(true)}>
+                    <Text style={[appStyle.TextModalButton,{color:'white'}]}>Aceptar</Text>
+                </TouchableOpacity>
+            </View>
+          </View>
+        :null}
       </ScrollView>
     </View>
     );

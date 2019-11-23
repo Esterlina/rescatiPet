@@ -155,7 +155,7 @@ async shareToSocial(){
         <Modal isVisible={this.state.modalMatch} style={{margin:20}}>
           <Match update = {this.updateModalMatch.bind(this)} notice = {adoption}/>
         </Modal>
-        <View style={appStyle.containerPublication}>
+        <View style={[appStyle.containerPublication,{marginTop:10}]}>
         <View style={appStyle.header}>
                 <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>En adopción</Text>
               </View>
