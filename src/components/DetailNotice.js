@@ -374,6 +374,7 @@ const styles = StyleSheet.create({
     },
     notice:{
       paddingTop:10,
+      marginTop:10,
       marginHorizontal:5,
       marginBottom:10,
       borderWidth: 1.8,

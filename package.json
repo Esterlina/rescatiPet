@@ -27,6 +27,7 @@
     "react-native-image-crop-picker": "^0.24.0",
     "react-native-maps": "^0.24.2",
     "react-native-modal": "^11.3.1",
+    "react-native-multiple-select": "^0.5.3",
     "react-native-numeric-input": "^1.8.3",
     "react-native-share": "^1.2.1",
     "react-native-snap-carousel": "^3.8.0",

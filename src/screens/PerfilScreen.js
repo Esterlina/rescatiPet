@@ -12,6 +12,7 @@ import {API} from '../keys';
 import {Colors} from '../styles/colors'
 import SmallEvent from '../components/SmallEvent'
 const {height, width} = Dimensions.get('window');
+import SelectProfile from '../components/SelectProfle'
 class PerfilScreen extends PureComponent {
   _isMounted = false;
   constructor(props){
@@ -24,7 +25,7 @@ class PerfilScreen extends PureComponent {
       user:{},
       events:[],
       loading: true,
-    }
+    };
     this.signOut = this.signOut.bind(this)
   }
   static navigationOptions = {
@@ -186,7 +187,8 @@ class PerfilScreen extends PureComponent {
                     <Text style={[appStyle.buttonLargeText2]}>Cerrar sesion</Text>
                 </TouchableOpacity>                    
             </View>
-            {this.displayEvents(this.state.events)}
+            
+            {this.displayEvents(this.state.events)}            
       </View>
     );
     

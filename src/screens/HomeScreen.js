@@ -9,6 +9,7 @@ import Campaign from '../components/DetailDonationCampaign';
 import {Colors} from '../styles/colors'
 import firebase from 'react-native-firebase'
 import type { Notification, NotificationOpen } from 'react-native-firebase';
+import Publication from '../components/SmallPublication'
 
 export default class HomeScreen extends React.Component {
   constructor(props) {
@@ -68,36 +69,27 @@ componentDidMount() {
             <ScrollView style={{flex:1}}>
               {this.state.publications.map((item) => {
                 console.log(item)
-                if(item.tipo_publicacion == "Notice"){
-                  if(item.tipo != "Adopcion"){
+                if(item.tipo_publicacion == "Notice" && item.tipo != 'Adopcion'){
+                  //if(item.tipo != "Adopcion"){
                     return (
                       <Notice key={item.publication_id} dataJson={item}
                         navigation={this.props.navigation}
                         /> 
                     )
-                  }else if(item.tipo == "Adopcion"){
-                    return(
+                  //}else{
+                   /* return(
                       <View key={item.publication_id} style={{marginHorizontal:5}}>
                       <Adoption key={item.publication_id} adoption={item}
                       navigation={this.props.navigation}
                       /> 
                     </View>
                     )
-                  }
+                  }*/
                 }
-                else if(item.tipo_publicacion == "RequestHome"){
+                else{
                   return(
                     <View key={item.publication_id} style={{marginHorizontal:5}}>
-                      <RequestHome key={item.publication_id} request_home={item}
-                            navigation={this.props.navigation}
-                      /> 
-                    </View>
-                  )
-                }
-                else if(item.tipo_publicacion == "DonationCampaign"){
-                  return(
-                    <View key={item.publication_id} style={{marginHorizontal:5}}>
-                      <Campaign key={item.publication_id} donation_campaign={item}
+                      <Publication key={item.publication_id} publication={item}
                             navigation={this.props.navigation}
                       /> 
                     </View>
