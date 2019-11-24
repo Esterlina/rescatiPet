@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView,View,Image,ActivityIndicator} from 'react-native';
+import {ScrollView,View,Image,ActivityIndicator,RefreshControl} from 'react-native';
 import Header from '../components/Header';
 import {API} from '../keys';
 import Notice from '../components/Notice'
@@ -20,6 +20,7 @@ export default class HomeScreen extends React.Component {
     this.state = {
       publications:[], 
       loading: true,
+      refreshing: false,
     }
   }
 static navigationOptions = {
@@ -46,27 +47,40 @@ componentDidMount() {
         //const notification: Notification = notificationOpen.notification;  
       }
     });
+  this.GetPublications()
+}
+GetPublications(){
   return fetch(API + 'publications')
   .then( (response) => response.json() )
   .then( (responseJson ) => {
     this.setState({
       publications: responseJson['publicaciones'],
-    },() => this.setState({loading: false}))
+    },() => this.setState({loading: false,refreshing:false}))
   })
   .catch((error) => {
     console.log("HA OCURRIDO UN ERROR DE CONEXION")
     console.log(error)
-    this.setState({loading: false})
+    this.setState({loading: false,refreshing:false})
   });
 }
-
+_onRefresh() {
+  //Clear old data of the list
+  this.setState({ loading:true,refreshing:true});
+  //Call the Service to get the latest data
+  this.GetPublications();
+}
   render(){ 
     
     return(
         <View style={{flex:1}}>
           <Header {...this.props} inbox='true'/> 
           {!this.state.loading ?
-            <ScrollView style={{flex:1}}>
+            <ScrollView style={{flex:1,marginTop:5}} refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this._onRefresh.bind(this)}
+              />
+            }>
               {this.state.publications.map((item) => {
                 console.log(item)
                 if(item.tipo_publicacion == "Notice" && item.tipo != 'Adopcion'){

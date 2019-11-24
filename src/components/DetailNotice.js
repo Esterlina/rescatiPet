@@ -19,6 +19,7 @@ import appStyle from '../styles/app.style'
 import {connect} from 'react-redux';
 import firebase from 'react-native-firebase'
 import { API} from '../keys';
+import Feedback from '../components/ModalFeedback'
 
 const fs = RNFetchBlob.fs;
 let imagePath = null;
@@ -43,11 +44,12 @@ class DetailNotice extends React.Component {
       loading: true,
       modalMatch:false,
       modalRequest:false,
+      modalFeedback:false,
       token:'',
+      notice: this.props.navigation.getParam('notice')
     };
 }
 componentDidMount(){
-  console.log("VOY A IMPRIMIR LO Q TRAIGO DE PROPS")
   console.log(this.props.request_sos)
   if(this.props.navigation.getParam('request_sos')){
     request = this.props.navigation.getParam('request_sos')
@@ -117,6 +119,12 @@ updateMatchRequest(request_id){
       accepted: false,
     }),
   });
+}
+updateFeedback(modalFeedback){
+  this.setState({modalFeedback: modalFeedback})
+}
+updateNotice(notice){
+  this.setState({notice: notice})
 }
 displayRequest(request_id,name){
   if(this.state.rejected == true){
@@ -198,10 +206,48 @@ async shareToSocial(){
     setResult('error: '.concat(getErrorString(error)));
   }
 }
+displayFeedbacks(notice){
+  return(
+    <View style={{marginHorizontal:10,marginBottom:10}}>
+      <View style={{alignSelf: 'center',backgroundColor: Colors.primaryColor,paddingHorizontal:10}}>
+            <Text style={[appStyle.buttonLargeText2]}>Hilo de conversación</Text>
+      </View>
+      <View style = {appStyle.lineTop}>
+        {notice.feedbacks.map((feedback,i) => {
+          return(
+            <View key={i} style={[appStyle.lineBottom,{padding:5}]}>
+              <View style={{flexDirection:'row'}}>
+                {notice.usuario.perfil?
+                <UserAvatar size="30" name={notice.usuario.nombre} src={notice.usuario.perfil}/>
+                :
+                <UserAvatar size="30" name={notice.usuario.nombre} colors={['#0ebda7','#ccc000', '#fafafa', '#ccaabb']}/>
+                }
+                <View style={{marginHorizontal: 10,alignSelf:'center'}}>
+                  <View style={{flexDirection:'row'}}>
+                    <Text style={appStyle.textSemiBold} numberOfLines={1}>
+                    {notice.usuario.nombre.length < 20
+                    ? `${notice.usuario.nombre}`
+                    : `${notice.usuario.nombre.substring(0, 21)}...`}</Text>
+                     <Text> - {feedback.hora} </Text>
+                  </View>
+                </View>
+              </View>
+
+              {feedback.motivo? 
+                <Text style={appStyle.textSemiBold}><Text style={{color: Colors.primaryColor}}>{feedback.estado? "Motivo (cierre):":"Motivo:"}</Text> {feedback.motivo}</Text>
+              :null}
+              <Text style={[appStyle.textRegular]}>{feedback.detalles}</Text>
+            </View>
+          )
+        })}
+      </View>
+    </View>
+  )
+}
 
   render(){ 
     Moment.locale('es')
-    const notice = this.props.navigation.getParam('notice')
+    const notice = this.state.notice
     const request_sos = this.props.navigation.getParam('request_sos')
     var date_notice = Moment(notice.hora_creacion).format('DD/MM/YYYY');
     var date = new Date();
@@ -223,6 +269,9 @@ async shareToSocial(){
         <Modal isVisible={this.state.modalRequest} style={{margin:20}}>
           <Match updateRequest = {this.updateRequest.bind(this)} update = {this.updateModalMatch.bind(this)} notice = {notice} request = {request_sos}/>
         </Modal>
+        <Modal isVisible={this.state.modalFeedback} style={{margin:20}}>
+          <Feedback update = {this.updateFeedback.bind(this)} updatePublication = {this.updateNotice.bind(this)} publication = {notice}/>
+        </Modal>
         <View style={styles.notice}>
           <View style={{paddingHorizontal:8}}>
             <View style={{flexDirection:'row',paddingTop:10,}}>
@@ -233,7 +282,7 @@ async shareToSocial(){
               }
               <View style={{marginHorizontal: 10}}>
                 <View style={{flexDirection:'row'}}>
-                  <Text style={styles.semiBo} numberOfLines={1}>
+                  <Text style={appStyle.textSemiBold} numberOfLines={1}>
                   {notice.usuario.nombre.length < 20
                   ? `${notice.usuario.nombre}`
                   : `${notice.usuario.nombre.substring(0, 21)}...`}</Text>
@@ -267,8 +316,8 @@ async shareToSocial(){
             </View>
             {notice.detalles ?  <Text style={[appStyle.textRegular,styles.parrafo]}>{notice.detalles}</Text> : null}
             <View style={[styles.parrafo]}>
-              {notice.visto? <Text>Visto durante el {Moment().format('YYYY') == Moment(notice.visto).format('YYYY')? <Text style={styles.semiBo}>{Moment(notice.visto).format('dddd D MMMM')}</Text>: <Text style={styles.semiBo}>{Moment(notice.visto).format('dddd D MMMM YYYY')}</Text>} cerca de las <Text style={styles.semiBo}>{Moment(notice.visto).format('HH:MM')}</Text> hrs. </Text> : null}
-              {notice.visto?<Text>Por <Text style={styles.semiBo}>{notice.direccion} </Text></Text>  : null} 
+              {notice.visto? <Text>Visto durante el {Moment().format('YYYY') == Moment(notice.visto).format('YYYY')? <Text style={appStyle.textSemiBold}>{Moment(notice.visto).format('dddd D MMMM')}</Text>: <Text style={appStyle.textSemiBold}>{Moment(notice.visto).format('dddd D MMMM YYYY')}</Text>} cerca de las <Text style={appStyle.textSemiBold}>{Moment(notice.visto).format('HH:MM')}</Text> hrs. </Text> : null}
+              {notice.visto?<Text>Por <Text style={appStyle.textSemiBold}>{notice.direccion} </Text></Text>  : null} 
             </View>
             <View style={styles.parrafo}>
               <Text style={[appStyle.textSemiBold,{fontSize:16,color:'#19c9d4'}]}>Características</Text> 
@@ -276,32 +325,32 @@ async shareToSocial(){
                 
                 <View style={{flexDirection:'row'}}>
                   <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                  <Text style={styles.semiBo}>{notice.animal}</Text>
+                  <Text style={appStyle.textSemiBold}>{notice.animal}</Text>
                   {notice.raza? <Text> {notice.raza}</Text> : null }
                 </View>
                 {notice.nombre?
                   <View style={{flexDirection:'row'}}>
                     <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                    <Text style={styles.semiBo}>Nombre: </Text>
+                    <Text style={appStyle.textSemiBold}>Nombre: </Text>
                     <Text>{notice.nombre}</Text>               
                   </View>
                 :null}
                 <View style={{flexDirection:'row'}}>
                   <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                  <Text style={styles.semiBo}>Sexo: {notice.sexo}</Text>
+                  <Text style={appStyle.textSemiBold}>Sexo: {notice.sexo}</Text>
                   {notice.edad? <Text>, {notice.edad}</Text> : null }
                 </View>
                 {notice.tamaño?
                   <View style={{flexDirection:'row'}}>
                     <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                    <Text style={styles.semiBo}>Tamaño: </Text>
+                    <Text style={appStyle.textSemiBold}>Tamaño: </Text>
                     <Text>{notice.tamaño}</Text>               
                   </View>
                 :null}
                 {notice.colores?
                   <View style={{flexDirection:'row'}}>
                     <Icon name="paw" size={16} color='#19c9d4' style={{marginRight:4}} regular/>
-                    <Text style={styles.semiBo}>Colores: </Text>
+                    <Text style={appStyle.textSemiBold}>Colores: </Text>
                     <Text>{notice.colores}</Text>               
                   </View>
                 :null}
@@ -317,7 +366,7 @@ async shareToSocial(){
                   <View style={{flexDirection:'row'}}>
                     <Icon name="first-aid" size={16} color='#ee1212' style={{marginRight:4}} regular/>
                     <Text>Encontrado/a en situacion de </Text>   
-                    <Text style={styles.semiBo}>{notice.emergencia}</Text>             
+                    <Text style={appStyle.textSemiBold}>{notice.emergencia}</Text>             
                   </View>
                 :null}
                 {notice.solicitud?
@@ -352,6 +401,15 @@ async shareToSocial(){
         {request_sos? 
           this.displayRequest(request_sos.id,notice.usuario.nombre)
         :null}
+        {notice.usuario.id == this.props.user.id?
+          <View >
+            <TouchableOpacity style={[appStyle.containerPublication,{borderColor: Colors.primaryColor,padding:4}]}
+                onPress={() => this.setState({modalFeedback:true})}>
+                <Text style={[appStyle.textSemiBold,{alignSelf:'center'}]}>+ Agregar feedback/ Cerrar caso</Text>
+            </TouchableOpacity>
+          </View>
+        :null}
+        {notice.feedbacks.length > 0? this.displayFeedbacks(notice) :null}
       </ScrollView>
     </View>
     );

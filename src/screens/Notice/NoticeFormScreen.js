@@ -90,7 +90,6 @@ reset(){
   this.props.navigation.dispatch(resetAction);
 };
 componentDidMount(){
-  this.reset();
   return fetch(API + 'notices/info_notice')
     .then((response) => response.json())
     .then((responseJson) => {
