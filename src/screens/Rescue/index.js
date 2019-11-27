@@ -7,6 +7,7 @@ import EventForm from './EventFormScreen';
 import TemporaryHomeForm from './TemporaryHomeFormScreen';
 import RequestTemporaryHome from './RequestTemporaryHomeScreen';
 import CampaignForm from './CampaignFormScreen'
+import RescuedForm from './RescuedFormScreen'
 export default createStackNavigator({
     Options,
     AdoptionForm,
@@ -14,7 +15,8 @@ export default createStackNavigator({
     EventForm,
     TemporaryHomeForm,
     RequestTemporaryHome,
-    CampaignForm
+    CampaignForm,
+    RescuedForm
 },
 {
     headerMode: 'none',

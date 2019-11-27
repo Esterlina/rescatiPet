@@ -133,6 +133,10 @@ input:{
   marginHorizontal:0,
   paddingVertical:1,
   paddingHorizontal:10,
+  color:'gray'
+},
+inputRight:{
+  width:width*0.65,position: 'absolute', right: 0, alignSelf:'center'
 },
 inputFilters:{
   height:30,

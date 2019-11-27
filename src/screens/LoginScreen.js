@@ -1,13 +1,11 @@
-import React,{PureComponent} from 'react';
+import React from 'react';
 import { View, Text,TouchableOpacity,Image, ImageBackground,KeyboardAvoidingView,TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { LoginManager, AccessToken,GraphRequest, GraphRequestManager } from "react-native-fbsdk";
 import firebase from 'react-native-firebase';
-import {API} from '../keys';
-import { connect } from 'react-redux'
 import authStyle from '../styles/auth.style'
 import appStyle from '../styles/app.style'
-class LoginScreen extends PureComponent {
+export default class LoginScreen extends React.Component {
   constructor(props){
     super(props)
     this.state={
@@ -35,7 +33,7 @@ class LoginScreen extends PureComponent {
     try{
       await firebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password)
       if (this._isMounted){
-        this.setState({response: 'Inicio de sensión exitoso.'},() => {this.firebaseToken();setTimeout(()=>{this.props.navigation.navigate('Dashboard')},1500)});
+        this.setState({response: 'Inicio de sensión exitoso.'},() => {this.props.navigation.navigate('AuthLoading',{token_device:this.state.token_device});});
       }
     }catch(error){
       if (this._isMounted){
@@ -65,9 +63,8 @@ class LoginScreen extends PureComponent {
     })
     .then((currentUser) => {
       console.log('FACEBOOK+firebase LOGIN CON USUARIO');
-      this.firebaseToken();
-      
-      setTimeout(()=>{this.props.navigation.navigate('Dashboard')},1500);
+      console.log("ENTRARE A LA PANTALLA DE CARGA")
+      this.props.navigation.navigate('AuthLoading',{picture: this.state.picture, token_device:this.state.token_device});
     })
     .catch((error) =>{
       console.log(error)
@@ -83,43 +80,7 @@ class LoginScreen extends PureComponent {
     let token_device = await firebase.messaging().getToken();
     this.setState({token_device:token_device})
   }
-  //Obetener Token de Firebase
-  async firebaseToken() {
-    const currentUser = firebase.auth().currentUser
-     if (currentUser) {
-      const idToken = await currentUser.getIdToken();
-      console.log("IMPRIMIRE EL TOKEN:");
-      console.log(idToken);
-      this.getUserData(idToken)
-    }
-  }
-  //Obtener datos del usuario
-  getUserData(idToken){
-    console.log("AHORA OBTENDRE LA DATA DEL USUARIO")
-    fetch(API + 'users/data_user', {
-      method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': idToken,
-      },
-      body: JSON.stringify({
-        profile_picture: this.state.picture
-      }),
-    })
-    .then((response) => response.json())
-    .then((responseJson) => {
-      let user = responseJson['usuario']
-      console.log(user)
-      this.setState({user: user},() => {this.props.updateUser(this.state.user)})
-    }).catch((error) =>{
-      console.error(error);
-    });
-  }
-  
-
-
-  render() {
+   render() {
     return (
       <ImageBackground
       style={authStyle.container}
@@ -190,17 +151,3 @@ const mapStateToProps = (state) => {
     user: state.userReducer,
   };
 };
-const mapDispatchToProps = (dispatch) => {
-  console.log("ENTRE AL DISPATCH PARA ACTUALIZAR USUARIO")
-  // Action
-    return {
-      // update user
-      updateUser: (user) => dispatch({
-        type: 'UPDATE_USER',
-        userReducer: user,
-       // payload: payload,
-      }),
-   };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);

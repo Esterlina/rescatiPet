@@ -99,6 +99,17 @@ class RescueScreen extends React.Component {
                 </View>
               </TouchableOpacity>
             </View>
+            <View style={[appStyle.lineBottom]}>
+              <TouchableOpacity  onPress={() => this.props.navigation.navigate('RescuedForm')}>
+                <View style={{flexDirection:'row',padding:10,alignItems:'center'}}>
+                  <Image
+                    source={require('../../icons/rescue/pelotas.png')}
+                    style= {{width:35,height:35,marginRight:10}}
+                  />
+                  <Text style={appStyle.textSemiBold}>Registrar rescatado</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       )

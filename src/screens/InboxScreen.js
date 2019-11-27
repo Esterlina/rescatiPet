@@ -29,9 +29,13 @@ class InboxScreen extends React.Component {
         this.arrayholder = [];
       }
   getInbox(){
+    console.log("VOY A IMPRIMIR EL ID DEL USUARIOOOOOO ")
+    console.log(this.props.user.id)
     return fetch(API+'matches/matches_recipients/' + this.props.user.id)
     .then( (response) => response.json() )
       .then( (responseJson ) => {
+        console.log("VOY A IMPRIMIR EL ID DEL USUARIOOOOOO 2")
+        console.log(this.props.user.id)
         this.setState({
           matches: responseJson['matches'],
           loading:false,
@@ -45,7 +49,7 @@ class InboxScreen extends React.Component {
     });
   }
   componentDidMount() {
-      this.getInbox()
+      this.getInbox();
   }
 
   updateModalMatch(modalMatch){
