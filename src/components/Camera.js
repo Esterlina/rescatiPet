@@ -5,8 +5,7 @@ import {Fonts} from '../utils/Fonts';
 import ImagePicker from 'react-native-image-crop-picker';
 import {Colors} from '../styles/colors'
 import appStyle from '../styles/app.style'
-import { tsParenthesizedType } from '@babel/types';
-
+import UserAvatar from 'react-native-user-avatar';
 const {height, width} = Dimensions.get('window');
 
 export default class Camera extends React.Component {
@@ -97,6 +96,7 @@ renderImage(image) {
   render(){    
     return(
       <View style={styles.container}>
+        {this.props.type != 'Perfil'? 
         <View style={styles.imagesContainer}>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             {this.props.images.length > 0 ? 
@@ -105,6 +105,17 @@ renderImage(image) {
             } 
           </ScrollView>
         </View>
+        :
+        <View style={[styles.imagesContainer, {borderWidth:0}]}>
+            {this.props.images.length > 0 ? 
+              this.props.images.map(i => <View key={i.uri}><UserAvatar size={this.props.size != undefined? size: width*0.4} name={'image'} src={i.uri}/></View>)
+              :
+              <View style={[styles.imageDefault,{width: this.props.size != undefined? size: width*0.4,height: this.props.size != undefined? size: width*0.4,borderRadius: this.props.size != undefined? (size)/2 : ((width*0.4)/2)}]}>
+                <Icon name="images" size={80} color="white" style={{marginRight:5}} regular/>
+              </View>
+            } 
+        </View>
+        }
         <View>
         {this.props.images.length > 0 ? 
           null:
@@ -115,7 +126,7 @@ renderImage(image) {
               </TouchableOpacity>
             </View>
           :
-          this.props.type == "Evento" ?
+          this.props.type == "Evento" || this.props.type == "Perfil"?
           <View>
               <TouchableOpacity style={[appStyle.buttonLarge2,{marginHorizontal:10}]} onPress={this.pickSingle.bind(this)}>
                 <Text style={appStyle.buttonLargeText2}>Seleccionar imagen</Text>
