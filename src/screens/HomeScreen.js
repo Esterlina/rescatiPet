@@ -100,7 +100,7 @@ _onRefresh() {
                     )
                   }*/
                 }
-                else{
+                else if(item.tipo_publicacion != "Event"){
                   return(
                     <View key={item.publication_id} style={{marginHorizontal:5}}>
                       <Publication key={item.publication_id} publication={item}

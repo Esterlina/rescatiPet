@@ -67,7 +67,7 @@ _renderItem = ( {item, index} ) => {
       <View style={styles.container}>
         <Header {...this.props} stack='true'/>
         <ScrollView>
-        <View style={[appStyle.containerPublication,{borderColor: Colors.primaryColor}]}>
+        <View style={[appStyle.containerPublication,{borderColor: Colors.primaryColor,marginTop:10}]}>
             <View style={styles.image}>
                 {this.state.loading?
                 <ActivityIndicator size="large" color= {Colors.primaryColor} />

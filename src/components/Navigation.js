@@ -12,6 +12,7 @@ import DetailTemporaryHome from "./DetailTemporaryHome";
 import DetailRequestHome from "./DetailRequestHome";
 import DetailDonationCampaign from "./DetailDonationCampaign";
 import DetailEvent from "./DetailEvent";
+import Rescued from "./PerfilRescued"
 import Inbox from "../screens/InboxScreen"
 import Home from "../screens/HomeScreen";
 import LoadingScreen from "../screens/LoadingScreen";
@@ -101,6 +102,7 @@ import {
       DetailTemporaryHome,
       DetailRequestHome,
       DetailDonationCampaign,
+      Rescued: Rescued,
       Inbox: Inbox,
     },{
       headerMode: 'none'
