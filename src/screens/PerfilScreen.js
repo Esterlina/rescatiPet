@@ -12,19 +12,20 @@ import {API} from '../keys';
 import {Colors} from '../styles/colors'
 import SmallEvent from '../components/SmallEvent'
 const {height, width} = Dimensions.get('window');
-import SelectProfile from '../components/SelectProfle'
+import {IndicatorViewPager, PagerTitleIndicator} from 'rn-viewpager';
 class PerfilScreen extends PureComponent {
   _isMounted = false;
   constructor(props){
     super(props)
     this.state={
       response: '',
-      dataSource:'',
       image:{},
       url_image: '',
       user:{},
       events:[],
-      loading: true,
+      rescueds:[],
+      loadingEvents: true,
+      loadingRescueds: true,
     };
     this.signOut = this.signOut.bind(this)
   }
@@ -34,19 +35,39 @@ class PerfilScreen extends PureComponent {
     )
   }
   componentDidMount(){
-    return fetch(API+'events/user/' + this.props.user.id)
-  .then( (response) => response.json() )
-  .then( (responseJson ) => {
-    this.setState({
-      events: responseJson['events'],
-    },() => this.setState({loading: false}))
-  })
-  .catch((error) => {
-    console.log("HA OCURRIDO UN ERROR DE CONEXION")
-    console.log(error)
-    this.setState({loading: false})
-  });
+    this.getEvents()
+    this.getRescueds()
   }
+
+  getEvents(){
+    return fetch(API+'events/user/' + this.props.user.id)
+    .then( (response) => response.json() )
+    .then( (responseJson ) => {
+      this.setState({
+        events: responseJson['events'],
+      },() => this.setState({loadingEvents: false}))
+    })
+    .catch((error) => {
+      console.log("HA OCURRIDO UN ERROR DE CONEXION")
+      console.log(error)
+      this.setState({loadingEvents: false})
+    });
+  }
+  getRescueds(){
+    return fetch(API+'rescueds/user/' + this.props.user.id)
+    .then( (response) => response.json() )
+    .then( (responseJson ) => {
+      this.setState({
+        rescueds: responseJson['rescueds'],
+      },() => this.setState({loadingRescueds: false}))
+    })
+    .catch((error) => {
+      console.log("HA OCURRIDO UN ERROR DE CONEXION")
+      console.log(error)
+      this.setState({loadingRescueds: false})
+    });
+  }
+
   async signOut(){
     this._isMounted = true;
     try{
@@ -139,11 +160,8 @@ class PerfilScreen extends PureComponent {
   displayEvents(events){
     if(this.props.user.tipo != "Normal"){
       return(
-        <View>
-          <View style={{margin:10}}>
-            <Text style={appStyle.textBold}>Eventos</Text>
-          </View>
-          {this.state.loading != true ?
+        <View style={{marginVertical:10}}>
+          {this.state.loadingEvents != true ?
             <ScrollView style={{height: 200, marginHorizontal:10}}>
               {events.map((event) => {
               console.log(event)
@@ -164,9 +182,37 @@ class PerfilScreen extends PureComponent {
       )
     }
   }
+  displayRescueds(rescueds){
+    if(this.props.user.tipo != "Normal"){
+      return(
+        <View style={{marginVertical:10}}>
+          {this.state.loadingRescueds != true ?
+            <ScrollView style={{height: 200, marginHorizontal:10}}>
+              {rescueds.map((rescued) => {
+              return (
+                <View key={rescued.id} style={[appStyle.containerPublication,{borderColor:Colors.primaryColor, padding:5}]}>
+                  <View style={{flexDirection:'row'}}>
+                  <UserAvatar size="50" name={rescued.nombre} src={rescued.image}/>
+                    <Text style={[appStyle.textSemiBold,{alignSelf:'center', marginLeft:10}]}>{rescued.nombre}</Text>
+                  </View>
+                  <TouchableOpacity style={{position:'absolute',width:40,right:0,height:height*0.1,justifyContent:'center'}} onPress={() =>  this.props.navigation.navigate('Rescued', { rescued_id: rescued.id})}>
+                      <Icon name="chevron-right" size={25} color={Colors.primaryColor} style={{alignSelf:'center'}}/>
+                  </TouchableOpacity>
+                </View>
+              )
+            })}
+            </ScrollView>
+            : 
+            <View style={{flex:1,justifyContent:'center'}}>
+              <ActivityIndicator size="large" color= {Colors.primaryColor} />
+            </View>
+          }
+        </View>
+      )
+    }
+  }
   render(){ 
     console.log(this.props.user.perfil)
-    console.log(this.state.events)
     return(
         <View style={{flex:1}}>
           <Header {...this.props} /> 
@@ -187,24 +233,53 @@ class PerfilScreen extends PureComponent {
                     <Text style={[appStyle.buttonLargeText2]}>Cerrar sesion</Text>
                 </TouchableOpacity>                    
             </View>
-            
-            {this.displayEvents(this.state.events)}            
+            <View style={{flex:1,marginHorizontal:5}}>
+                <IndicatorViewPager
+                    indicator={this._renderTitleIndicator()}
+                    style={{flex:1, paddingTop:20, backgroundColor:'white',flexDirection: 'column-reverse'}}
+                >
+                    <View style={{backgroundColor:'cadetblue'}}>
+                        <Text>publicaciones</Text>
+                    </View>
+                    <View>
+                        {this.displayEvents(this.state.events)}
+                    </View>
+                    <View>
+                        {this.displayRescueds(this.state.rescueds)}
+                    </View>
+                </IndicatorViewPager>
+                
+
+            </View>
+                
       </View>
     );
     
   }
+
+  _renderTitleIndicator() {
+    return <PagerTitleIndicator
+    titles={['Publicaciones', 'Eventos', 'Rescatados']}
+    style={styles.indicatorContainer}
+    trackScroll={true}
+    itemTextStyle={[appStyle.buttonLargeText2,{color: Colors.lightGray,textAlign: 'center'}]}
+    itemStyle={{width:width/3}}
+    selectedItemTextStyle={[appStyle.buttonLargeText2,{color: Colors.primaryColor,width:width/3,textAlign: 'center'}]}
+    selectedBorderStyle={styles.selectedBorderStyle}
+    />;
+}
+
 }
 
 const styles = StyleSheet.create({
-    welcome: {
-      fontSize: 20,
-      textAlign: 'center',
-      margin: 10,
-    },
-    instructions: {
-      textAlign: 'center',
-      color: '#333333',
-      marginBottom: 5,
+    indicatorContainer: {
+      backgroundColor: 'white',
+      width:width-10,
+      height: 30,
+  },
+    selectedBorderStyle: {
+        height: 3,
+        backgroundColor: Colors.primaryColor,
     },
   });
 

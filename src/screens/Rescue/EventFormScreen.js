@@ -50,7 +50,7 @@ uploadImage = async (uri,name)=> {
 }
 
 validate(){
-  if (this.state.image == []){
+  if (this.state.image.length == 0){
     alert("Debes subir una imagen para el evento")
     return false
   }
@@ -134,17 +134,17 @@ updateLocation(marker,address){
         <ScrollView style={{flex:1}}>
             <Modal isVisible={this.state.modalSend} style={{margin:20}}>
                 <View style={{backgroundColor:'white',height:height*0.27,borderRadius:8}}>
-                <View style={appStyle.headerModal}>
+                <View style={[appStyle.headerModal,{position:'absolute',top:0,width:width-40}]}>
                     <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>{this.state.loading? "Publicando aviso...": "Aviso publicado"}</Text>
                 </View>
                 {this.state.loading?
-                    <View style={{alignSelf:'center'}}>
+                    <View style={{alignSelf:'center',marginTop:50}}>
                     <Text style={{textAlign:'center',fontSize:16}}>Estamos publicando tu Evento.</Text>
                     <Text style={{textAlign:'center',fontSize:14,marginBottom:30}}>Por favor, espera unos segundos.</Text>
                     <ActivityIndicator size="large" color= {Colors.primaryColor} />
                     </View>
                 :
-                <View style={{marginBottom:30,alignSelf:'center'}}>
+                <View style={{marginBottom:30,alignSelf:'center',marginTop:50}}>
                     <Text style={{textAlign:'center',fontSize:16}}>¡Enhora buena!</Text>
                     <Text style={{textAlign:'center',fontSize:14}}>Tu evento ha sido publicado con exito.</Text>
                     <Text style={{textAlign:'center',fontSize:14}}>Ya puedes ir a hecharle un vistazo.</Text>
