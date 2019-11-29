@@ -185,7 +185,7 @@ class MatchDonation extends Component{
                     {up? null:
                         <View>
                             <Text style={[appStyle.textSemiBold]}>¿Quién realizó la donación?</Text>
-                            <SelectProfile type = {'user'} placeholder = {"Buscar usuario"} multiple={false} selectedItem={this.state.donor} update = {this.updateDonor.bind(this)}/>
+                            <SelectProfile type = {'user'} placeholder = {"Buscar usuario"} multiple={false} selectedItem={this.state.donor} update = {this.updateDonor.bind(this)} color = {Colors.primaryColor}/>
                             <View style={{flexDirection:'row',marginBottom:5,backgroundColor:'white'}}>
                                 <CheckBox
                                     checked={this.state.external_donor}

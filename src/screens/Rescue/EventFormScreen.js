@@ -14,6 +14,7 @@ import {Colors} from '../../styles/colors';
 import appStyle from '../../styles/app.style';
 import Moment from 'moment';
 import 'moment/locale/es'
+import SelectProfile from '../../components/SelectProfle'
 
 const {height, width} = Dimensions.get('window');
 export default class EventFormScreen extends React.Component {
@@ -35,13 +36,16 @@ export default class EventFormScreen extends React.Component {
       map: false,
       deadline:false,
       event:{},
-      token: ''
+      token: '',
+      rescueds:[]
     };
 }
 componentDidMount(){
     this.firebaseToken()
 }
-
+updateRescueds(rescueds){
+  this.setState({rescueds:rescueds})
+  }
 uploadImage = async (uri,name)=> {
   console.log("ESTOY SUBIENDO LA FOTO " + name);
   firebase.storage().ref(name).putFile(uri)
@@ -106,6 +110,7 @@ sendEvent(){
     end_date: this.state.end_date,
     end_time: this.state.end_time,
     details: this.state.details,
+    rescueds: this.state.rescueds
   }), 
 }).then((response) => response.json())
   .then((responseJson) => {
@@ -400,6 +405,10 @@ updateLocation(marker,address){
                 value = {this.state.details}
                 onChangeText={(value) => this.setState({details: value})}
                 ></TextInput>  
+                <View style={{marginTop:10}}>
+                    <Text style={[appStyle.textTitleCalipso,{fontSize:14}]}>Etiquetar a rescatado(s)</Text>  
+                    <SelectProfile type = {'rescued'} placeholder = {"Buscar rescatado"} multiple={true} selectedItem={this.state.rescueds} update = {this.updateRescueds.bind(this)} color = {Colors.primaryColor}/>
+                </View>
                 <TouchableOpacity 
                 style={[appStyle.buttonLarge]}
                 onPress={() => this.validate()}

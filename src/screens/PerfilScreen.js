@@ -192,7 +192,7 @@ class PerfilScreen extends PureComponent {
               return (
                 <View key={rescued.id} style={[appStyle.containerPublication,{borderColor:Colors.primaryColor, padding:5}]}>
                   <View style={{flexDirection:'row'}}>
-                  <UserAvatar size="50" name={rescued.nombre} src={rescued.image}/>
+                  <UserAvatar size="50" name={rescued.nombre} src={rescued.profile_picture}/>
                     <Text style={[appStyle.textSemiBold,{alignSelf:'center', marginLeft:10}]}>{rescued.nombre}</Text>
                   </View>
                   <TouchableOpacity style={{position:'absolute',width:40,right:0,height:height*0.1,justifyContent:'center'}} onPress={() =>  this.props.navigation.navigate('Rescued', { rescued_id: rescued.id})}>

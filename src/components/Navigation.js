@@ -12,6 +12,7 @@ import DetailTemporaryHome from "./DetailTemporaryHome";
 import DetailRequestHome from "./DetailRequestHome";
 import DetailDonationCampaign from "./DetailDonationCampaign";
 import DetailEvent from "./DetailEvent";
+import DetailStory from "./DetailStory";
 import Rescued from "./PerfilRescued"
 import Inbox from "../screens/InboxScreen"
 import Home from "../screens/HomeScreen";
@@ -102,6 +103,7 @@ import {
       DetailTemporaryHome,
       DetailRequestHome,
       DetailDonationCampaign,
+      DetailStory,
       Rescued: Rescued,
       Inbox: Inbox,
     },{

@@ -9,7 +9,7 @@ import Modal from "react-native-modal";
 import {Colors} from '../../styles/colors';
 import appStyle from '../../styles/app.style';
 import NumericInput from 'react-native-numeric-input'
-
+import SelectProfile from '../../components/SelectProfle'
 const {height, width} = Dimensions.get('window');
 export default class CampaignFormScreen extends React.Component {
   constructor(props) {
@@ -22,6 +22,7 @@ export default class CampaignFormScreen extends React.Component {
       items : [{quantity: 0, item: ''}],
       donation_campaign:{},
       token: '',
+      rescueds:[]
     };
 }
 
@@ -30,6 +31,9 @@ componentDidMount(){
   this.firebaseToken()
 }
 
+updateRescueds(rescueds){
+  this.setState({rescueds:rescueds})
+  }
 
 uploadImages = async (uri,name)=> {
   firebase.storage().ref(this.state.donation_campaign.img_dir + name).putFile(uri)
@@ -75,7 +79,8 @@ sendCampaign(){
   body: JSON.stringify({
     details: this.state.details,
     img_num: this.state.images.length,
-    donation_items: this.state.items
+    donation_items: this.state.items,
+    rescueds: this.state.rescueds
   }), 
 }).then((response) => response.json())
   .then((responseJson) => {
@@ -190,7 +195,11 @@ renderMoreInformation() {
               numberOfLines={5}
               value = {this.state.details}
               onChangeText={(value) => this.setState({details: value})}
-            ></TextInput>  
+            ></TextInput> 
+            <View style={{marginTop:10}}>
+                    <Text style={[appStyle.textTitleCalipso,{fontSize:14,color:Colors.violet}]}>Etiquetar a rescatado(s)</Text>  
+                    <SelectProfile type = {'rescued'} placeholder = {"Buscar rescatado"} multiple={true} selectedItem={this.state.rescueds} update = {this.updateRescueds.bind(this)} color = {Colors.violet}/>
+            </View>
             <TouchableOpacity 
               style={[appStyle.buttonLarge,{backgroundColor:Colors.violet}]}
               onPress={() => this.validate()}

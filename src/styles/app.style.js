@@ -164,5 +164,14 @@ inputArea:{
   },
   lineBottom:{
     borderBottomColor: Colors.lightGray, borderBottomWidth:1
+  },
+  tagRescued:{
+    alignSelf: 'flex-start',
+    padding:4,
+    borderWidth:1.3,
+    borderRadius:8,
+    borderColor:Colors.primaryColor,
+    marginVertical:4,
+    marginHorizontal:2
   }
   });

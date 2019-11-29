@@ -8,7 +8,7 @@ import firebase from 'react-native-firebase'
 import Modal from "react-native-modal";
 import {Colors} from '../../styles/colors';
 import appStyle from '../../styles/app.style';
-
+import SelectProfile from '../../components/SelectProfle'
 const {height, width} = Dimensions.get('window');
 export default class RequestTemporaryHome extends React.Component {
   constructor(props) {
@@ -30,10 +30,12 @@ export default class RequestTemporaryHome extends React.Component {
       times: [],
       request_home:{},
       token: '',
+      rescueds:[]
     };
-}
-
-;
+};
+updateRescueds(rescueds){
+  this.setState({rescueds:rescueds})
+  }
 componentDidMount(){
   this.firebaseToken()
   return fetch(API + 'temporary_homes/info')
@@ -126,6 +128,7 @@ sendRequestHome(){
     time: this.state.time,
     details: this.state.details,
     img_num: this.state.images.length,
+    rescueds: this.state.rescueds
   }), 
 }).then((response) => response.json())
   .then((responseJson) => {
@@ -281,6 +284,10 @@ renderMoreInformation() {
               value = {this.state.details}
               onChangeText={(value) => this.setState({details: value})}
             ></TextInput>  
+            <View style={{marginTop:10}}>
+                    <Text style={[appStyle.textTitleCalipso,{fontSize:14,color: Colors.violet}]}>Etiquetar a rescatado(s)</Text>  
+                    <SelectProfile type = {'rescued'} placeholder = {"Buscar rescatado"} multiple={true} selectedItem={this.state.rescueds} update = {this.updateRescueds.bind(this)} color = {Colors.violet}/>
+            </View>
             <TouchableOpacity 
               style={[appStyle.buttonLarge,{backgroundColor:Colors.violet}]}
               onPress={() => this.validate()}
