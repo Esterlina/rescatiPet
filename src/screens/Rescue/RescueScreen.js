@@ -45,7 +45,7 @@ class RescueScreen extends React.Component {
           <Text style={[appStyle.textBold,{alignSelf:'center',fontSize: 18}]}> Publicar </Text>
           <View style = {appStyle.lineTop}>
             <View style={[appStyle.lineBottom]}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate('StoryForm')}>
                 <View style={{flexDirection:'row',padding:10,alignItems:'center'}}>
                   <Image
                     source={require('../../icons/rescue/notepad.png')}

@@ -375,7 +375,7 @@ renderMoreInformation() {
                     <Text style={{textAlign:'center',fontSize:16}}>¡Enhora buena!</Text>
                     <Text style={{textAlign:'center',fontSize:14}}>Tu rescatado ha sido registrado con exito.</Text>
                     <TouchableOpacity style={[appStyle.buttonModal,{width:width*0.3,alignSelf:'center'}]}
-                    onPress={() =>this.setState({modalSend:false } ,()=>{this.props.navigation.navigate('Home')}) }>
+                    onPress={() =>this.setState({modalSend:false } ,()=>{this.props.navigation.navigate('Rescued',{rescued: this.state.rescued})}) }>
                     <Text style={{fontSize:16,textAlign:'center'}}>Aceptar</Text>
                     </TouchableOpacity>
                 </View>

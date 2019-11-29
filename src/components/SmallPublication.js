@@ -66,12 +66,16 @@ openDetail(type){
     if(type == "RequestHome"){
         this.props.navigation.navigate('DetailRequestHome', { request_home: this.props.publication})
     }
+    if(type == "Story"){
+      this.props.navigation.navigate('DetailStory', { story: this.props.publication})
+  }
   
 }
 
 displayTitle(type){
     if(type == "DonationCampaign"){return "Campaña de donación"}
     if(type == "Notice"){return "En adopción"}
+    if(type == "Story"){return "Historia"}
     if(type == "RequestHome"){return "Se busca hogar temporal"}
 }
 
@@ -122,9 +126,18 @@ displayIcon(type){
               />
         )
     }
+    if(type == 'Story'){
+      return(
+          <Image
+              source={require('../icons/rescue/notepad.png')}
+              style= {styles.icon}
+            />
+      )
+  }
 }
   render(){ 
     const publication = this.props.publication
+    const type = publication.tipo_publicacion
     Moment.locale('es')
     var date_publication = Moment(publication.hora_creacion).format('DD/MM/YYYY');
     var date = new Date();
@@ -138,8 +151,8 @@ displayIcon(type){
     }
     return(
       <View style={{flex:1}}>
-        <View style={appStyle.containerPublication}>
-            <View style={appStyle.header}>
+        <View style={[appStyle.containerPublication,{borderColor: type == "Story"? Colors.primaryColor : Colors.violet}]}>
+            <View style={[appStyle.header,{backgroundColor: type == "Story"? Colors.primaryColor: Colors.violet}]}>
                 <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>{this.displayTitle(publication.tipo_publicacion)}</Text>
               </View>
             <View style={{paddingHorizontal:8}}>
@@ -158,10 +171,10 @@ displayIcon(type){
                 </View>
                 <View style={[appStyle.textRegular,{flexDirection:'row'}]}>
                   <Text style={appStyle.textRegular}>{date_create} - </Text>
-                  {this.displayInfo(publication.tipo_publicacion)}
+                  {this.displayInfo(type)}
                 </View>
               </View>
-              {this.displayIcon(publication.tipo_publicacion)}
+              {this.displayIcon(type)}
             </View>
             <View style={appStyle.carousel}>
               {!this.state.loading ?
@@ -179,8 +192,8 @@ displayIcon(type){
             </ScrollView>
             </View>
             <TouchableOpacity 
-              style={[appStyle.buttonLarge2,{backgroundColor:Colors.violet,marginBottom:10}]}
-              onPress={() => {this.openDetail(publication.tipo_publicacion)}}
+              style={[appStyle.buttonLarge2,{backgroundColor:type == "Story"? Colors.primaryColor:Colors.violet,marginBottom:10}]}
+              onPress={() => {this.openDetail(type)}}
             >
               <Text style={appStyle.buttonLargeText2}> Ver detalles </Text>
             </TouchableOpacity>  

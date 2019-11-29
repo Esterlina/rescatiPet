@@ -46,13 +46,13 @@ class PerfilRescued extends React.Component {
     rescued  = this.state.rescued
     return(
         <View style={{flex:1}}>
-          <Header {...this.props} /> 
+          <Header stack={'true'} {...this.props} /> 
           {!this.state.loading ?
             <View>
                 <View style={{backgroundColor:Colors.primaryColor,height:90,}}></View>
                 <View style={{position: 'absolute',justifyContent: 'center'}}>
                   <View style={{alignItems:'center',margin:10}}>
-                      <UserAvatar size="140" name={rescued.nombre} src={rescued.image}/>
+                      <UserAvatar size="140" name={rescued.nombre} src={rescued.profile_picture}/>
                       <View style={{marginVertical:5,alignItems:'center'}}>
                         <View style={{flexDirection:'row'}}>
                           <Text style={[appStyle.textBold,{fontSize:18,alignSelf:'flex-end'}]}>{rescued.nombre}</Text>
@@ -67,7 +67,7 @@ class PerfilRescued extends React.Component {
                             <Text style={appStyle.textRegular}> 452 </Text>
                             <Icon name="heart" size={20} color='#d85a49' style={{marginRight:4}} regular/>
                             <Text> - </Text>
-                            <View style={[styles.tagState,{backgroundColor:rescued.state == "En rehabilitación"? Colors.primaryColor:Colors.violet}]}>
+                            <View style={[styles.tagState,{backgroundColor:rescued.estado == "En rehabilitación"? Colors.primaryColor:Colors.violet}]}>
                               <Text style={[appStyle.textSemiBold,{color:'white'}]}>{rescued.estado}</Text>
                             </View>
                           </View> 
