@@ -83,20 +83,20 @@ displayInfo(type){
   publication = this.props.publication
     if(type == "DonationCampaign"){
         return(
-            <Text style={appStyle.textSemiBold}>{this.props.publication.estado}</Text>
+            <Text style={appStyle.textSemiBold}> - {this.props.publication.estado}</Text>
         )
     }
     if((type == "Notice" && this.props.publication.estado == 'Abierto') || type == "RequestHome"){
         return(
             <Text style={appStyle.textRegular}>{(publication.comuna + ", " + publication.provincia).length < 24
-            ? `${(publication.comuna + ", " + publication.provincia)}`
-            : `${(publication.comuna + ", " + publication.provincia).substring(0, 21)}...`}
+            ? ` - ${(publication.comuna + ", " + publication.provincia)}`
+            : ` - ${(publication.comuna + ", " + publication.provincia).substring(0, 21)}...`}
             </Text>
         )
     }
     if(type == "Notice" && this.props.publication.estado != 'Abierto'){
         return(
-            <Text style={[appStyle.textSemiBold,{color: Colors.violet}]}>Adoptado</Text>
+            <Text style={[appStyle.textSemiBold,{color: Colors.violet}]}> - Adoptado</Text>
         )
     }
 }
@@ -170,7 +170,7 @@ displayIcon(type){
                   : `${publication.usuario.nombre.substring(0, 21)}...`}</Text>
                 </View>
                 <View style={[appStyle.textRegular,{flexDirection:'row'}]}>
-                  <Text style={appStyle.textRegular}>{date_create} - </Text>
+                  <Text style={appStyle.textRegular}>{date_create}</Text>
                   {this.displayInfo(type)}
                 </View>
               </View>

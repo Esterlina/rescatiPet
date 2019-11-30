@@ -3,9 +3,6 @@ import {ScrollView,View,Image,ActivityIndicator,RefreshControl} from 'react-nati
 import Header from '../components/Header';
 import {API} from '../keys';
 import Notice from '../components/Notice'
-import RequestHome from '../components/DetailRequestHome';
-import Adoption from '../components/DetailAdoption';
-import Campaign from '../components/DetailDonationCampaign';
 import {Colors} from '../styles/colors'
 import firebase from 'react-native-firebase'
 import type { Notification, NotificationOpen } from 'react-native-firebase';
