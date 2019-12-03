@@ -9,6 +9,7 @@ import io.invertase.firebase.storage.RNFirebaseStoragePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import io.github.elyx0.reactnativedocumentpicker.DocumentPickerPackage;
 import cl.json.RNSharePackage;
 import com.RNFetchBlob.RNFetchBlobPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
@@ -53,7 +54,8 @@ public class MainApplication extends Application implements ReactApplication {
           new VectorIconsPackage(),
           new MapsPackage(),
           new PickerPackage(),
-          new RNGestureHandlerPackage()
+          new RNGestureHandlerPackage(),
+          new DocumentPickerPackage()
       );
     }
 

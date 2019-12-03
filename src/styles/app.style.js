@@ -67,7 +67,7 @@ export default StyleSheet.create({
     marginVertical:10
    },
    textTitle:{
-    fontSize: 24,
+    fontSize: 20,
     color: 'gray',
     fontFamily: Fonts.OpenSansBold
   },
@@ -159,6 +159,9 @@ inputArea:{
     paddingVertical:1,
     paddingHorizontal:10,
   },
+  two:{
+    maxHeight:200,
+  },
   lineTop:{
     borderTopWidth:1, borderTopColor: Colors.lightGray, marginTop: 10
   },
@@ -173,5 +176,29 @@ inputArea:{
     borderColor:Colors.primaryColor,
     marginVertical:4,
     marginHorizontal:2
-  }
+  },
+  pickersInfo:{
+    flexDirection:'row',
+    justifyContent: 'space-between',
+    marginBottom:8,
+    marginHorizontal:5
+  },
+  moreInformation:{
+    backgroundColor: Colors.primaryColor,
+    marginTop:10,
+    marginVertical:2,
+    padding:2,
+    borderRadius:4
+  },
+  pickerContainer:{
+    borderWidth: 1.3,
+    borderColor: Colors.primaryColor,
+    borderRadius: 8,
+    width: width*0.42,
+  },
+  picker:{
+    height: 28,
+    width: width*0.42,
+    color: 'gray',
+    },
   });

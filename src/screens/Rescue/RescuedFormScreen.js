@@ -72,7 +72,7 @@ updateImage(images){
 async uploadImage(uri) {
   console.log("ESTOY SUBIENDO LA FOTO " );
   const name = "rescued_" + this.state.rescued.id
-  firebase.storage().ref("images/profiles/rescueds/" + name ).putFile(uri)
+  firebase.storage().ref("images/profiles/rescueds/" + name + "/profile_picture").putFile(uri)
   .then(file => {
     Helpers.getImageUrl(file.ref, (imageUrl)=>{
       this.setState({

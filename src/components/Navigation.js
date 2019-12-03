@@ -13,6 +13,7 @@ import DetailRequestHome from "./DetailRequestHome";
 import DetailDonationCampaign from "./DetailDonationCampaign";
 import DetailEvent from "./DetailEvent";
 import DetailStory from "./DetailStory";
+import BackgroundForm from "./BackgroundForm";
 import Rescued from "./PerfilRescued"
 import Inbox from "../screens/InboxScreen"
 import Home from "../screens/HomeScreen";
@@ -105,6 +106,7 @@ import {
       DetailDonationCampaign,
       DetailStory,
       Rescued: Rescued,
+      BackgroundForm: BackgroundForm,
       Inbox: Inbox,
     },{
       headerMode: 'none'
