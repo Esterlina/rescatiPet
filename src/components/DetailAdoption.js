@@ -16,7 +16,6 @@ import Match from '../components/Match'
 import {Colors} from '../styles/colors'
 import appStyle from '../styles/app.style'
 import {connect} from 'react-redux';
-import firebase from 'react-native-firebase'
 const fs = RNFetchBlob.fs;
 let imagePath = null;
 const {height, width} = Dimensions.get('window');

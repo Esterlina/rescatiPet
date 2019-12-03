@@ -187,7 +187,7 @@ class PerfilScreen extends PureComponent {
       return(
         <View style={{marginVertical:10}}>
           {this.state.loadingRescueds != true ?
-            <ScrollView style={{height: 200, marginHorizontal:10}}>
+            <ScrollView style={{flexGrow:1,marginHorizontal:10}}>
               {rescueds.map((rescued) => {
               return (
                 <View key={rescued.id} style={[appStyle.containerPublication,{borderColor:Colors.primaryColor, padding:5}]}>
