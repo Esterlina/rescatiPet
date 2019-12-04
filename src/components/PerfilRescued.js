@@ -110,22 +110,48 @@ class PerfilRescued extends React.Component {
       this.setState({background:this.props.navigation.getParam('background'),loadingBackground:false},()=>{this.getDocuments();this.getImages()})
     }
   }
-
-  getPublications(){
-    return fetch(API+'publications/rescued/' + this.state.rescued.id)
-    .then( (response) => response.json() )
-    .then( (responseJson ) => {
-      this.setState({
-        publications: responseJson['publicaciones'],
-      },() => this.setState({loadingPublications: false}))
-    })
-    .catch((error) => {
-      console.log("HA OCURRIDO UN ERROR DE CONEXION")
-      console.log(error)
-      this.setState({loadingPublications: false})
-    });
+  checkFollow() {
+    var i;
+    for (i = 0; i < this.state.rescued.seguidores.length; i++) {
+        if (this.state.rescued.seguidores[i].id === this.props.user.id) {
+            return true;
+        }
+    }
+    return false;
   }
-  download(url,name){
+follow(){
+    fetch(API + 'rescueds/' + this.state.rescued.id + "/follow", {
+    method: 'PUT',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        user_id: this.props.user.id,
+        follow: !this.checkFollow(),
+    }), 
+    }).then((response) => response.json())
+    .then((responseJson) => {
+        this.setState({rescued:responseJson})
+    }).catch((error) =>{
+        console.error(error);
+    });
+}
+getPublications(){
+  return fetch(API+'publications/rescued/' + this.state.rescued.id)
+  .then( (response) => response.json() )
+  .then( (responseJson ) => {
+    this.setState({
+      publications: responseJson['publicaciones'],
+    },() => this.setState({loadingPublications: false}))
+  })
+  .catch((error) => {
+    console.log("HA OCURRIDO UN ERROR DE CONEXION")
+    console.log(error)
+    this.setState({loadingPublications: false})
+  });
+}
+download(url,name){
     const { config, fs } = RNFetchBlob
     let DownloadDir = fs.dirs.DownloadDir
     let options = {
@@ -302,8 +328,11 @@ displayBackground(background,rescued){
                           </View>
                         </View>
                           <View style={{flexDirection:'row',marginTop:4}}>
-                            <Text style={appStyle.textRegular}> 452 </Text>
-                            <Icon name="heart" size={20} color='#d85a49' style={{marginRight:4}} regular/>
+                            <Text style={appStyle.textRegular}> {rescued.seguidores.length} </Text>
+                            <TouchableOpacity onPress={() => this.follow()}>
+                              {this.checkFollow() ? <Icon name="heart" size={20} color='#d85a49' style={{marginRight:4}} solid/>:
+                              <Icon name="heart" size={20} color='#d85a49' style={{marginRight:4}} regular/>}
+                            </TouchableOpacity>
                             <Text> - </Text>
                             <View style={[styles.tagState,{backgroundColor:rescued.estado == "En rehabilitación"? Colors.primaryColor:Colors.violet}]}>
                               <Text style={[appStyle.textSemiBold,{color:'white'}]}>{rescued.estado}</Text>
