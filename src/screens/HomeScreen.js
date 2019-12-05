@@ -83,7 +83,7 @@ _onRefresh() {
                 if(item.tipo_publicacion == "Notice" && item.tipo != 'Adopcion'){
                   //if(item.tipo != "Adopcion"){
                     return (
-                      <Notice key={item.publication_id} dataJson={item}
+                      <Notice key={item.publication_id} notice={item}
                         navigation={this.props.navigation}
                         /> 
                     )

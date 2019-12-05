@@ -2,11 +2,11 @@ import { createStackNavigator } from 'react-navigation'
 
 import Search from './SearchScreen';
 import TemporaryHomes from './TemporaryHomes'
-import RequestHomes from './RequestHomes'
+import NoticeSearch from './NoticeSearch'
 export default createStackNavigator({
     Search,
     TemporaryHomes,
-    RequestHomes
+    NoticeSearch
 },
 {
     headerMode: 'none',
