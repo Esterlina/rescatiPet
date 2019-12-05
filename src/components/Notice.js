@@ -31,7 +31,7 @@ export default class Notice extends React.Component {
     };
 }
 componentWillMount(){ 
-  notice = this.props.dataJson  
+  notice = this.props.notice 
   for (i=0; i < notice.img_num ; i++) {
     try{
       let url = notice.img_dir + 'image_' + i + '.jpg'
@@ -48,7 +48,7 @@ componentWillMount(){
   } 
 }
 openDetail(){
-  this.props.navigation.navigate('DetailNotice', { notice: this.props.dataJson})
+  this.props.navigation.navigate('DetailNotice', { notice: this.props.notice})
 }
 _renderItem = ( {item, index} ) => {
   console.log("rendering,", index, item)
@@ -59,7 +59,7 @@ _renderItem = ( {item, index} ) => {
   );
 }
   render(){ 
-    const notice = this.props.dataJson
+    const notice = this.props.notice
     Moment.locale('es')
     var date_notice = Moment(notice.hora_creacion).format('DD/MM/YYYY');
     var date = new Date();
