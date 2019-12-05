@@ -309,7 +309,7 @@ displayBackground(background,rescued){
     rescued  = this.state.rescued
     return(
         <View style={{flex:1}}>
-          <NavigationEvents onDidFocus={() => {console.log('I am triggered');this.getPerfil()}} />
+          <NavigationEvents onDidFocus={() => {this.getPerfil()}} />
           <Header stack={'true'} {...this.props} /> 
           {!this.state.loading ?
             <View>
