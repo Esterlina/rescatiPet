@@ -6,12 +6,15 @@ import Helpers from '../../lib/helpers'
 import firebase from 'react-native-firebase'
 import {connect} from 'react-redux'
 import UserAvatar from 'react-native-user-avatar';
+import { Avatar } from 'react-native-elements'
 import appStyle from '../styles/app.style'
 import ImagePicker from 'react-native-image-crop-picker';
 import {API} from '../keys';
 import {Colors} from '../styles/colors'
 import SmallEvent from '../components/SmallEvent'
 const {height, width} = Dimensions.get('window');
+import Publication from '../components/SmallPublication'
+import Notice from '../components/Notice'
 import {IndicatorViewPager, PagerTitleIndicator} from 'rn-viewpager';
 class PerfilScreen extends PureComponent {
   _isMounted = false;
@@ -19,13 +22,16 @@ class PerfilScreen extends PureComponent {
     super(props)
     this.state={
       response: '',
-      image:{},
+      image: '',
       url_image: '',
       user:{},
+      publications:[],
       events:[],
       rescueds:[],
       loadingEvents: true,
       loadingRescueds: true,
+      loadingPublications:true,
+      loading:false,
     };
     this.signOut = this.signOut.bind(this)
   }
@@ -35,10 +41,26 @@ class PerfilScreen extends PureComponent {
     )
   }
   componentDidMount(){
-    this.getEvents()
-    this.getRescueds()
+    this.getPublications()
+    if(this.props.user.tipo != "Normal"){
+      this.getEvents()
+      this.getRescueds()
+    }
   }
-
+  getPublications(){
+    return fetch(API + 'publications/user/' + this.props.user.id)
+    .then( (response) => response.json() )
+    .then( (responseJson ) => {
+      this.setState({
+        publications: responseJson['publicaciones'],
+      },() => this.setState({loadingPublications: false}))
+    })
+    .catch((error) => {
+      console.log("HA OCURRIDO UN ERROR DE CONEXION")
+      console.log(error)
+      this.setState({loadingPublications: false})
+    });
+  }
   getEvents(){
     return fetch(API+'events/user/' + this.props.user.id)
     .then( (response) => response.json() )
@@ -68,24 +90,7 @@ class PerfilScreen extends PureComponent {
     });
   }
 
-  async signOut(){
-    this._isMounted = true;
-    try{
-      console.log("VOY A DESLOGEARME")
-      await firebase.auth().signOut()
-      if (this._isMounted){
-        this.setState({response: 'Sesión cerrada con exito.'})
-        console.log(this.state.response)
-       // this.props.authLogout();
-        setTimeout(()=>{this.props.navigation.navigate('Auth')},1500)
-      }
-    }catch(error){
-      if (this._isMounted){
-        this.setState({response:error.toString()})
-        console.log(this.state.response)
-      }
-    }
-  }
+
   pickSingle() {
     ImagePicker.openPicker({
       width: 200,
@@ -157,15 +162,44 @@ class PerfilScreen extends PureComponent {
   componentWillUnmount() {
     this._isMounted = false;
   }
+
+  displayPublications(publications){
+      return(
+        <View style={{marginVertical:10}}>
+          {this.state.loadingpublications != true ?
+            <ScrollView style={{flexGrow:1}}>
+              {publications.map((publication) => {
+              if(publication.tipo_publicacion == "Notice" && publication.tipo != 'Adopcion'){
+                  return (
+                    <Notice key={publication.publication_id} notice={publication}
+                      navigation={this.props.navigation}
+                      /> 
+                  )
+              }
+              else{
+                return(
+                    <Publication key={publication.publication_id} publication={publication}
+                          navigation={this.props.navigation}
+                    /> 
+                )
+              }
+            })}
+            </ScrollView>
+            : 
+            <View style={{flex:1,justifyContent:'center'}}>
+              <ActivityIndicator size="large" color= {Colors.primaryColor} />
+            </View>
+          }
+        </View>
+      )
+  }
   displayEvents(events){
     if(this.props.user.tipo != "Normal"){
       return(
         <View style={{marginVertical:10}}>
           {this.state.loadingEvents != true ?
-            <ScrollView style={{height: 200, marginHorizontal:10}}>
+            <ScrollView style={{flexGrow:1, marginHorizontal:10}}>
               {events.map((event) => {
-              console.log(event)
-              console.log("ya CARGUE EL EVENTO")
               return (
                 <SmallEvent key={event.id} event={event}
                 navigation={this.props.navigation}
@@ -212,46 +246,53 @@ class PerfilScreen extends PureComponent {
     }
   }
   render(){ 
-    console.log(this.props.user.perfil)
+    console.log("IMPRIMIRE EL VALOR DE LA FOTO DE PERFIL")
+    console.log(this.props.user.profile_picture)
     return(
         <View style={{flex:1}}>
-          <Header {...this.props} /> 
+          <Header {...this.props} signout={true}/> 
+          {!this.state.loading ?
+          <View>
+          <View style={{backgroundColor:Colors.primaryColor,height:90,}}></View>
+          <View style={{position: 'absolute',justifyContent: 'center'}}>
           <View style={{alignItems:'center'}}>
-            {this.props.user.perfil || this.state.image? 
-            <UserAvatar size="100" name={this.props.user.nombre} src={this.state.image? this.state.image.uri:this.props.user.perfil}/>
+            {this.props.user.profile_picture || this.state.image? 
+            <Avatar rounded size={140} source={{ uri: (this.state.image != "" ? this.state.image.uri : this.props.user.profile_picture) }}  containerStyle={{borderWidth:3,borderColor:'white'}} iconStyle={{}} editButton={{ name: 'mode-edit', type: 'material', color: '#fff', underlayColor: '#000' }} showEditButton/>
             :
-            <UserAvatar size="100" name={this.props.user.nombre} colors={[ '#ccaabb']} />
+            <Avatar rounded size={140} title={this.props.user.nombre[0]}  containerStyle={{borderWidth:3,borderColor:'white'}} showEditButton/>
             }
             
-            <Text style={styles.welcome}>PERFIL {this.props.user.nombre}</Text>
+            <Text style={[appStyle.textBold,{fontSize:16,alignSelf:'center'}]}>{this.props.user.nombre}</Text>
           </View>
-          <View style={{flexDirection:'row', justifyContent:'center'}}>
-                <TouchableOpacity style={[appStyle.buttonLarge2,{width:width*0.4}]} onPress={() =>  this.uploadProfile()}>
-                    <Text style={[appStyle.buttonLargeText2]}>Editar imagen</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[appStyle.buttonLarge2,{width:width*0.4}]} onPress={() => this.signOut()}>
-                    <Text style={[appStyle.buttonLargeText2]}>Cerrar sesion</Text>
-                </TouchableOpacity>                    
-            </View>
             <View style={{flex:1,marginHorizontal:5}}>
+              {this.props.user.tipo != "Normal"?
                 <IndicatorViewPager
-                    indicator={this._renderTitleIndicator()}
-                    style={{flex:1, paddingTop:20, backgroundColor:'white',flexDirection: 'column-reverse'}}
+                indicator={this._renderTitleIndicator()}
+                style={{flex:1, paddingTop:20, backgroundColor:'white',flexDirection: 'column-reverse'}}
                 >
-                    <View style={{backgroundColor:'cadetblue'}}>
-                        <Text>publicaciones</Text>
-                    </View>
-                    <View>
-                        {this.displayEvents(this.state.events)}
-                    </View>
-                    <View>
-                        {this.displayRescueds(this.state.rescueds)}
-                    </View>
+                  <View>
+                      {this.displayPublications(this.state.publications)}
+                  </View>
+                  <View>
+                      {this.displayEvents(this.state.events)}
+                  </View>
+                  <View>
+                      {this.displayRescueds(this.state.rescueds)}
+                  </View>
                 </IndicatorViewPager>
-                
-
+              :
+              <View style={{marginVertical:15,paddingBottom:30}}>
+                <Text style={[appStyle.buttonLargeText2,{color: Colors.primaryColor,width:width/3,textAlign: 'center'}]}>Publicaciones</Text>
+                {this.displayPublications(this.state.publications)}
+              </View>
+              }
+              </View>
             </View>
-                
+          </View>
+          : 
+          <View style={{flex:1,justifyContent:'center'}}>
+            <ActivityIndicator size="large" color= {Colors.primaryColor} />
+          </View> }   
       </View>
     );
     

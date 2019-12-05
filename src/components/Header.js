@@ -8,6 +8,7 @@ import {
 } from 'react-native'
 import {Colors} from '../styles/colors'
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import firebase from 'react-native-firebase'
 const {width,height} = Dimensions.get('window')
 export default class Header extends Component{
 
@@ -26,6 +27,24 @@ export default class Header extends Component{
     openInbox(){
         this.props.navigation.navigate('Inbox')
     }
+    async signOut(){
+        this._isMounted = true;
+        try{
+          console.log("VOY A DESLOGEARME")
+          await firebase.auth().signOut()
+          if (this._isMounted){
+            this.setState({response: 'Sesión cerrada con exito.'})
+            console.log(this.state.response)
+           // this.props.authLogout();
+            setTimeout(()=>{this.props.navigation.navigate('Auth')},1500)
+          }
+        }catch(error){
+          if (this._isMounted){
+            this.setState({response:error.toString()})
+            console.log(this.state.response)
+          }
+        }
+      }
     render(){
         console.log(this.props.home)
         const { goBack } = this.props.navigation;
@@ -73,7 +92,20 @@ export default class Header extends Component{
                         />
                     </TouchableWithoutFeedback>
                     :   null
-                }                                    
+                }
+                {this.props.signout?
+                    <TouchableWithoutFeedback
+                        onPress={() => this.signOut()}>
+                        <Icon
+                            style ={styles.icon}
+                            name="sign-out-alt"
+                            color= "white"
+                            size={22}
+                            solid
+                        />
+                    </TouchableWithoutFeedback>
+                    :   null
+                }                                 
                 </View>
         )
     }

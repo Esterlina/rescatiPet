@@ -44,9 +44,9 @@ componentDidMount() {
         //const notification: Notification = notificationOpen.notification;  
       }
     });
-  this.GetPublications()
+  this.getPublications()
 }
-GetPublications(){
+getPublications(){
   return fetch(API + 'publications')
   .then( (response) => response.json() )
   .then( (responseJson ) => {
@@ -64,7 +64,7 @@ _onRefresh() {
   //Clear old data of the list
   this.setState({ loading:true,refreshing:true});
   //Call the Service to get the latest data
-  this.GetPublications();
+  this.getPublications();
 }
   render(){ 
     

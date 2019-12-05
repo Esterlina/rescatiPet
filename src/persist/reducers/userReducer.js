@@ -17,7 +17,7 @@ const userReducer = (state = initialState, action) => {
         email: action.userReducer.email,
         telefono: action.userReducer.telefono,
         tipo: action.userReducer.tipo,
-        perfil: action.userReducer.perfil
+        profile_picture: action.userReducer.profile_picture
       };
     default:
       return state;
