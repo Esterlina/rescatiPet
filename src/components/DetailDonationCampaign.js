@@ -177,6 +177,7 @@ updateCampaign(value){
             </View>
           <View style={{paddingHorizontal:8}}>
             <View style={{flexDirection:'row',paddingTop:10,}}>
+            <TouchableOpacity style={{flexDirection:'row'}} onPress={() => {donation_campaign.usuario.id == this.props.user.id? this.props.navigation.navigate('Perfil'):this.props.navigation.navigate('User', { user_id: donation_campaign.usuario.id})}}>
               {donation_campaign.usuario.perfil?
               <UserAvatar size="45" name={donation_campaign.usuario.nombre} src={donation_campaign.usuario.perfil}/>
               :
@@ -193,6 +194,7 @@ updateCampaign(value){
                   <Text style={appStyle.textRegular}>{date_create} - <Text style={appStyle.textSemiBold}>{donation_campaign.estado}</Text></Text>
                 </View>
               </View>
+              </TouchableOpacity>
               <Image
                 source={require('../icons/rescue/donation.png')}
                 style= {{width:35,height:35,right:0,top:10, position:'absolute'}}

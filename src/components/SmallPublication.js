@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet,YellowBox, ActivityIndicator, Text,View, Modal, Dimensions,TouchableOpacity, ScrollView,TextInput,Picker,Image} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Fonts} from '../utils/Fonts';
-import Tag from '../components/Tag';
+import {connect} from 'react-redux'
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import UserAvatar from 'react-native-user-avatar';
 import Helpers from '../../lib/helpers'
@@ -21,7 +21,7 @@ console.warn = message => {
   }
 };
 
-export default class SmallPublication extends React.Component {
+class SmallPublication extends React.Component {
   constructor(props) {
     super(props);
         
@@ -156,7 +156,7 @@ displayIcon(type){
                 <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>{this.displayTitle(publication.tipo_publicacion)}</Text>
               </View>
             <View style={{paddingHorizontal:8}}>
-            <View style={{flexDirection:'row',paddingTop:10}}>
+            <TouchableOpacity style={{flexDirection:'row',paddingTop:10}} onPress={() => {publication.usuario.id == this.props.user.id? this.props.navigation.navigate('Perfil'):this.props.navigation.navigate('User', { user_id: publication.usuario.id})}}>
             {publication.usuario.perfil?
               <UserAvatar size="45" name={publication.usuario.nombre} src={publication.usuario.perfil}/>
               :
@@ -175,7 +175,7 @@ displayIcon(type){
                 </View>
               </View>
               {this.displayIcon(type)}
-            </View>
+            </TouchableOpacity>
             <View style={appStyle.carousel}>
               {!this.state.loading ?
               <Carousel
@@ -222,3 +222,12 @@ const styles = StyleSheet.create({
         width:35,height:35,right:0,top:10, position:'absolute'
     }
 });
+
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.userReducer,
+  };
+}
+
+export default connect(mapStateToProps)(SmallPublication);

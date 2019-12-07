@@ -12,6 +12,7 @@ import 'moment/locale/es'
 import { Colors } from '../styles/colors';
 import appStyle from '../styles/app.style';
 const {height, width} = Dimensions.get('window');
+import {connect} from 'react-redux'
 
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
@@ -21,7 +22,7 @@ console.warn = message => {
   }
 };
 
-export default class Notice extends React.Component {
+class Notice extends React.Component {
   constructor(props) {
     super(props);
         
@@ -74,7 +75,7 @@ _renderItem = ( {item, index} ) => {
     return(
       <View style={{flex:1}}>
         <View style={styles.notice}>
-            <View style={{flexDirection:'row',paddingTop:10}}>
+            <TouchableOpacity style={{flexDirection:'row',paddingTop:10}} onPress={() => {notice.usuario.id == this.props.user.id? this.props.navigation.navigate('Perfil'):this.props.navigation.navigate('User', { user_id: notice.usuario.id})}}>
               {notice.usuario.perfil?
               <UserAvatar size="40" name={notice.usuario.nombre} src={notice.usuario.perfil}/>
               :
@@ -98,7 +99,7 @@ _renderItem = ( {item, index} ) => {
                 </View>
               </View>
               <Tag type={notice.tipo}/>
-            </View>
+            </TouchableOpacity>
             
             <View style={appStyle.carousel}>
               {!this.state.loading ?
@@ -148,3 +149,11 @@ const styles = StyleSheet.create({
       width:width * 0.9,
     },
 });
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.userReducer,
+  };
+}
+
+export default connect(mapStateToProps)(Notice);

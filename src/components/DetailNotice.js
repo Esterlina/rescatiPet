@@ -275,6 +275,7 @@ displayFeedbacks(notice){
         <View style={styles.notice}>
           <View style={{paddingHorizontal:8}}>
             <View style={{flexDirection:'row',paddingTop:10,}}>
+            <TouchableOpacity style={{flexDirection:'row'}} onPress={() => {notice.usuario.id == this.props.user.id? this.props.navigation.navigate('Perfil'):this.props.navigation.navigate('User', { user_id: notice.usuario.id})}}>
               {notice.usuario.perfil?
               <UserAvatar size="45" name={notice.usuario.nombre} src={notice.usuario.perfil}/>
               :
@@ -295,6 +296,7 @@ displayFeedbacks(notice){
                 }
                 </View>
               </View>
+              </TouchableOpacity>
               <Tag type={notice.tipo}/>
             </View>  
             <View style={styles.carousel}>

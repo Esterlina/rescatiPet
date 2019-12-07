@@ -160,6 +160,7 @@ async shareToSocial(){
               </View>
           <View style={{paddingHorizontal:8}}>
             <View style={{flexDirection:'row',paddingTop:10,}}>
+            <TouchableOpacity style={{flexDirection:'row'}} onPress={() => {adoption.usuario.id == this.props.user.id? this.props.navigation.navigate('Perfil'):this.props.navigation.navigate('User', { user_id: adoption.usuario.id})}}>
               {adoption.usuario.perfil?
               <UserAvatar size="45" name={adoption.usuario.nombre} src={adoption.usuario.perfil}/>
               :
@@ -182,6 +183,7 @@ async shareToSocial(){
                 }
                 </View>
               </View>
+              </TouchableOpacity>
               <Image
                 source={require('../icons/rescue/adoption.png')}
                 style= {{width:35,height:35,right:0,top:10, position:'absolute'}}
