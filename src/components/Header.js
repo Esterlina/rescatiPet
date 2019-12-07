@@ -5,6 +5,7 @@ import {
     StyleSheet,
     Dimensions,
     TouchableWithoutFeedback,
+    TouchableOpacity
 } from 'react-native'
 import {Colors} from '../styles/colors'
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -18,6 +19,7 @@ export default class Header extends Component{
           stack:this.props.navigation.state.stack,
           inbox:this.props.navigation.state.inbox,
         }
+        this.signOut = this.signOut.bind(this)
       }
     renderIcon(){
         if(this.props.stack == 'true')
@@ -94,7 +96,7 @@ export default class Header extends Component{
                     :   null
                 }
                 {this.props.signout?
-                    <TouchableWithoutFeedback
+                    <TouchableOpacity
                         onPress={() => this.signOut()}>
                         <Icon
                             style ={styles.icon}
@@ -103,7 +105,7 @@ export default class Header extends Component{
                             size={22}
                             solid
                         />
-                    </TouchableWithoutFeedback>
+                    </TouchableOpacity>
                     :   null
                 }                                 
                 </View>

@@ -17,9 +17,9 @@ import { API} from '../keys';
 import {Colors} from '../styles/colors';
 import appStyle from '../styles/app.style'
 import { CheckBox } from 'react-native-elements'
-
+import {connect} from 'react-redux';
 const {height,width} = Dimensions.get('window')
-export default class ModalMatch extends Component{
+class ModalMatch extends Component{
 
     constructor(props) {
         super(props);
@@ -181,7 +181,7 @@ export default class ModalMatch extends Component{
                     <SmallNotice request_sos = {match.solicitud} notice = {match.notice} navigation={this.props.navigation} update = {this.props.update.bind(this)}/>
                 :null}
                 <View style={{flex:1,marginHorizontal:15}}>
-                    <View style={{flexDirection:'row'}}>
+                    <TouchableOpacity style={{flexDirection:'row'}} onPress={() => {this.props.update(false);match.emisor.id == this.props.user.id? this.props.navigation.navigate('Perfil'):this.props.navigation.navigate('User', { user_id: match.emisor.id})}}>
                         {match.emisor.perfil?
                         <UserAvatar size="60" name={match.emisor.nombre} src={match.emisor.perfil}/>
                         :
@@ -193,7 +193,7 @@ export default class ModalMatch extends Component{
                                 {match.hora_creacion}
                             </Text>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                     <ScrollView style={{height:height*0.22,padding:5}}>
                         <View style={{marginBottom:5}}>
                             <Text style={[appStyle.textRegular,{textAlign:'justify'}]}>{match.mensaje}</Text>
@@ -231,3 +231,9 @@ export default class ModalMatch extends Component{
 }
 
 
+const mapStateToProps = (state) => {
+    return {
+      user: state.userReducer,
+    };
+  };
+  export default connect(mapStateToProps)(ModalMatch);

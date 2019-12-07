@@ -14,7 +14,8 @@ import DetailDonationCampaign from "./DetailDonationCampaign";
 import DetailEvent from "./DetailEvent";
 import DetailStory from "./DetailStory";
 import BackgroundForm from "./BackgroundForm";
-import Rescued from "./PerfilRescued"
+import Rescued from "./PerfilRescued";
+import User from "./PerfilUser";
 import Inbox from "../screens/InboxScreen"
 import Home from "../screens/HomeScreen";
 import LoadingScreen from "../screens/LoadingScreen";
@@ -106,6 +107,7 @@ import {
       DetailDonationCampaign,
       DetailStory,
       Rescued: Rescued,
+      User: User,
       BackgroundForm: BackgroundForm,
       Inbox: Inbox,
     },{

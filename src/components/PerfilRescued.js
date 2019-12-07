@@ -33,10 +33,6 @@ class PerfilRescued extends React.Component {
     };
   }
 
-  componentDidMount(){
-    this.getPerfil()
-  }
-  
   componentWillUnmount() {
     this._isMounted = false;
   }
@@ -64,7 +60,9 @@ class PerfilRescued extends React.Component {
     this.setState({loadingFiles: false})
   }
   getImages(){
+    console.log("ESTOY EN GET IMAGES")
     if(this.state.images.length == 0){
+      console.log("ENTRE A RECOGER LA IMAGEN Y EL LENGTH ES: " + this.state.images.length)
       for (i=0; i < this.state.background.img_num ; i++) {
         try{
           let path = this.state.background.img_dir + 'image_' + i + '.jpg'
@@ -94,6 +92,7 @@ class PerfilRescued extends React.Component {
   }
   getBackground(){
     if (this.props.navigation.getParam('background') == undefined){
+      console.log("ENTRE A BUSCAR EL BACKGROUND PORQ ES UNDIFINED")
       return fetch(API+'rescueds/' + this.state.rescued.id + "/background")
         .then( (response) => response.json() )
         .then( (responseJson ) => {
@@ -107,6 +106,7 @@ class PerfilRescued extends React.Component {
         this.setState({loadingBackground: false})
         });
     }else{
+      console.log("EL BACKGROUND FUE ENVIADOOOOOOOOOOOO")
       this.setState({background:this.props.navigation.getParam('background'),loadingBackground:false},()=>{this.getDocuments();this.getImages()})
     }
   }

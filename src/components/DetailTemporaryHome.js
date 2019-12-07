@@ -62,6 +62,7 @@ stateTemporaryHome(){
         <View style={appStyle.containerPublication}>
           <View style={{paddingHorizontal:8}}>
             <View style={{flexDirection:'row',paddingTop:10,}}>
+            <TouchableOpacity style={{flexDirection:'row'}} onPress={() => {temporary_home.usuario.id == this.props.user.id? this.props.navigation.navigate('Perfil'):this.props.navigation.navigate('User', { user_id: temporary_home.usuario.id})}}>
               {temporary_home.usuario.perfil?
               <UserAvatar size="45" name={temporary_home.usuario.nombre} src={temporary_home.usuario.perfil}/>
               :
@@ -82,6 +83,7 @@ stateTemporaryHome(){
                   </Text>          
                 </View>
               </View>
+              </TouchableOpacity>
               <Image
                 source={require('../icons/rescue/house.png')}
                 style= {{width:35,height:35,right:0,top:10, position:'absolute'}}

@@ -149,6 +149,7 @@ async shareToSocial(){
             </View>
           <View style={{paddingHorizontal:8}}>
             <View style={{flexDirection:'row',paddingTop:10,}}>
+            <TouchableOpacity style={{flexDirection:'row'}} onPress={() => {request_home.usuario.id == this.props.user.id? this.props.navigation.navigate('Perfil'):this.props.navigation.navigate('User', { user_id: request_home.usuario.id})}}>
               {request_home.usuario.perfil?
               <UserAvatar size="45" name={request_home.usuario.nombre} src={request_home.usuario.perfil}/>
               :
@@ -165,6 +166,7 @@ async shareToSocial(){
                   <Text style={appStyle.textRegular}>{date_create} </Text>
                 </View>
               </View>
+              </TouchableOpacity>
               <Image
                 source={require('../icons/rescue/house.png')}
                 style= {{width:35,height:35,right:0,top:10, position:'absolute'}}
