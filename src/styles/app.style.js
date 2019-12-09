@@ -30,6 +30,10 @@ export default StyleSheet.create({
     justifyContent:'center',
     height: 30,
   },
+  borderGray:{
+    borderWidth:1,borderColor:Colors.gray,borderRadius:8,
+    backgroundColor:'white'
+  },
   buttonLargeText2:{
     color:'white',
     fontSize:16,
