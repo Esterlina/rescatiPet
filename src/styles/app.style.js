@@ -205,4 +205,16 @@ inputArea:{
     width: width*0.42,
     color: 'gray',
     },
+    buttonMap:{
+      width:80,
+      alignSelf: 'flex-end',
+      borderBottomWidth: 1.3,
+      borderColor: Colors.primaryColor,
+      marginTop:5,
+    },
+    mapClose:{
+      position: 'absolute',
+      margin:15,
+      alignSelf: 'flex-start'
+    },
   });
