@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text,View,Image,TouchableOpacity} from 'react-native';
+import { StyleSheet, Text,View,Image,TouchableOpacity,Dimensions} from 'react-native';
 import {API} from '../../keys';
 import Header from '../../components/Header';
 import {connect} from 'react-redux'
 import appStyle from '../../styles/app.style'
-
+const {height, width} = Dimensions.get('window');
 class RescueScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -142,11 +142,29 @@ class RescueScreen extends React.Component {
               </TouchableOpacity>
             </View>
           </View>
-      </View>
+        </View>
       )
     }
   }   
-
+  displayRequest(type){
+    return(
+    <View style={{position:'absolute',bottom:20,alignSelf:'center',width: width-30}}>
+      {type == "Normal"? 
+      <View style={[appStyle.lineTop,appStyle.lineBottom,]}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('UserRequest')}>
+          <View style={{flexDirection:'row',padding:10,alignItems:'center'}}>
+            <Image
+              source={require('../../icons/rescue/human.png')}
+              style= {{width:35,height:35,marginRight:10}}
+            />
+            <Text style={appStyle.textSemiBold}>Solicitar perfil Rescatista/Fundación</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+      :null}
+    </View>
+    )
+  }
   render(){ 
     return(
         <View style={styles.container}>
@@ -154,6 +172,7 @@ class RescueScreen extends React.Component {
           <View style={{marginTop:10}}>
             {this.options(this.props.user.tipo)}
           </View>
+          {this.displayRequest(this.props.user.tipo)}
       </View>
     );
     
