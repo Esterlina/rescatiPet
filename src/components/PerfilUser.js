@@ -268,14 +268,14 @@ class PerfilUser extends React.Component {
   render(){ 
     return(
         <View style={{flex:1}}>
-          <NavigationEvents onDidFocus={() => {console.log("RENDERIZANDO SCREEN DESDE CERO");this.setState({loading:true,modalReputation:false},()=>{this.componentDidMount()});}} />
+          <NavigationEvents onDidFocus={() => {console.log("RENDERIZANDO SCREEN DESDE CERO");this.setState({modalReputation:false},()=>{this.componentDidMount()});}} />
           <Modal isVisible={this.state.modalReputation} style={{margin:20}}>
             {this.state.modalRating? this.displayRating():this.displayReputation()}
           </Modal>
           <Modal isVisible={this.state.modalReport} style={{margin:20}}>
             {this.displayReport()}
           </Modal>
-          <Header {...this.props} signout={this.state.user.id == this.props.user.id? true:false}/> 
+          <Header {...this.props} signout={this.state.user.id == this.props.user.id? true:false} stack={'true'}/> 
           {!this.state.loading ?
           <View>
           <View style={{backgroundColor:Colors.primaryColor,height:90,justifyContent:'flex-end'}}>
@@ -299,7 +299,7 @@ class PerfilUser extends React.Component {
               </View>
             </View>
           </View>
-          <View style={{position: 'absolute',justifyContent: 'center'}}>
+          <View style={{position: 'absolute',justifyContent: 'center',alignSelf:'center'}}>
           <View style={{alignItems:'center'}} onLayout={(event) => {
             var {x, y, width, height} = event.nativeEvent.layout;
             this.setState({componentHeight: event.nativeEvent.layout.height})
@@ -363,8 +363,8 @@ class PerfilUser extends React.Component {
               <Text includeFontPadding={false} style={[appStyle.textRegular,{textAlign:'justify',zIndex:-100}]}>{this.state.user.detalles}</Text>
               </View>
           </View>
-            <View style={{flex:0,marginHorizontal:5,height:this.state.user.id == this.props.user.id?height-this.state.componentHeight-90:height-this.state.componentHeight-40}}>
-              {this.state.user.tipo != "Normal"?
+            <View style={{flex:1,marginHorizontal:5,height:this.state.user.id == this.props.user.id?height-this.state.componentHeight-90:height-this.state.componentHeight-40}}>
+              {this.state.user.tipo != "Normal" && this.state.user.tipo != 'Admin'?
                 <IndicatorViewPager
                 indicator={this._renderTitleIndicator()}
                 style={{flex:1, backgroundColor:'white',flexDirection: 'column-reverse'}}
@@ -372,9 +372,11 @@ class PerfilUser extends React.Component {
                   <View>
                       {this.displayPublications(this.state.publications)}
                   </View>
+                  {this.state.user.tipo == 'Fundacion'? 
                   <View>
                       {this.displayEvents(this.state.events)}
                   </View>
+                  :null}
                   <View>
                       {this.displayRescueds(this.state.rescueds)}
                   </View>
@@ -609,11 +611,11 @@ displayReport(){
 
   _renderTitleIndicator() {
     return <PagerTitleIndicator
-    titles={['Publicaciones', 'Eventos', 'Rescatados']}
+    titles={this.state.user.tipo == 'Fundacion'? ['Publicaciones', 'Eventos', 'Rescatados']:['Publicaciones','Rescatados']}
     style={styles.indicatorContainer}
     trackScroll={true}
     itemTextStyle={[appStyle.buttonLargeText2,{color: Colors.lightGray,textAlign: 'center'}]}
-    itemStyle={{width:width/3}}
+    itemStyle={{width:this.state.user.tipo == 'Fundacion'? width/3 : width/2}}
     selectedItemTextStyle={[appStyle.buttonLargeText2,{color: Colors.primaryColor,width:width/3,textAlign: 'center'}]}
     selectedBorderStyle={styles.selectedBorderStyle}
     />;
