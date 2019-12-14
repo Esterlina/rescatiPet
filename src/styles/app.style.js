@@ -90,6 +90,15 @@ export default StyleSheet.create({
     width:width*0.35,
     alignItems:'center'
 },
+ buttonRequest:{
+  backgroundColor: Colors.primaryColor,
+  width:width*0.4,
+  alignItems:'center',
+  paddingVertical:5,
+  paddingHorizontal:10,
+  marginHorizontal:10,
+  borderRadius: 8,
+ },
 TextModalButton:{
     fontSize:18,
     color:'gray',

@@ -162,6 +162,19 @@ class RescueScreen extends React.Component {
         </TouchableOpacity>
       </View>
       :null}
+      {type == "Admin"? 
+        <View style={[appStyle.lineTop,appStyle.lineBottom,]}>
+          <TouchableOpacity onPress={() => this.props.navigation.navigate('Requests')}>
+            <View style={{flexDirection:'row',padding:10,alignItems:'center'}}>
+              <Image
+                source={require('../../icons/rescue/human.png')}
+                style= {{width:35,height:35,marginRight:10}}
+              />
+              <Text style={appStyle.textSemiBold}>Ver solicitudes usuarios</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      :null}
     </View>
     )
   }

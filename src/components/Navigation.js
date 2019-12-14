@@ -13,6 +13,7 @@ import DetailRequestHome from "./DetailRequestHome";
 import DetailDonationCampaign from "./DetailDonationCampaign";
 import DetailEvent from "./DetailEvent";
 import DetailStory from "./DetailStory";
+import Requests from './UserRequests';
 import BackgroundForm from "./BackgroundForm";
 import Rescued from "./PerfilRescued";
 import User from "./PerfilUser";
@@ -109,6 +110,7 @@ import {
       Rescued: Rescued,
       User: User,
       BackgroundForm: BackgroundForm,
+      Requests: Requests,
       Inbox: Inbox,
     },{
       headerMode: 'none'

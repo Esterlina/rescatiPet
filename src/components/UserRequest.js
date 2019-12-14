@@ -15,16 +15,42 @@ class UserRequest extends React.Component {
     this.isMounted = true;
     this.state = {
       loading: true,
+      loadingRequest:false,
       user_request: this.props.user_request
     };
 }
 
+  updateRequest(request){
+    console.log("VOY A APROBAR/RECHAZAR A LA SOLICITUD" + this.state.user_request.id)
+    this.setState({loadingRequest:true})
+    fetch(API + 'users/' + this.state.user_request.id + '/update_request', {
+    method: 'PUT',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        request: request,
+      })
+  }).then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({user_request: responseJson['solicitud']},()=>{
+        console.log("VOY A HACER UN UPDATE AL ARRAY DE AFUERA NO ENTIENDO NADAA")
+        this.setState({loadingRequest:false})
+      });
+    }).catch((error) =>{
+      console.error(error);
+    });
+  }
 
   render(){ 
     user_request = this.state.user_request
     return(
       <View style={styles.container}>
         <ScrollView>
+        {user_request.user_id == this.props.user.id? 
+        <Text style={[appStyle.textSemiBold,{marginBottom:10,marginHorizontal:10}]}>Usted ya ha enviado una solicitud.</Text>
+        :null}
         <View style={[appStyle.containerPublication,{borderColor:Colors.primaryColor}]}>
           <View style={{paddingHorizontal:8}}>
             <View style={{flexDirection:'row',paddingTop:10,}}>
@@ -58,10 +84,10 @@ class UserRequest extends React.Component {
             <View style={styles.parrafo}>
              <Text style={[appStyle.textSemiBold,{fontSize:16,color: Colors.primaryColor}]}>Solicitud</Text> 
               <View style={styles.parrafo}>
-                <Text style={appStyle.textSemiBold}>Estado: <Text style={[appStyle.textRegular,{color: Colors.primaryColor}]}>{user_request.estado}</Text></Text>
+                <Text style={appStyle.textSemiBold}>Estado: <Text style={[appStyle.textRegular,{color: user_request.estado == 'Rechazada'? Colors.red : (user_request.estado == "Pendiente"? Colors.primaryColor : Colors.green)}]}>{user_request.estado}</Text></Text>
                 <Text style={appStyle.textSemiBold}>Rol solicitado: <Text style={[appStyle.textRegular]}>{user_request.rol_solicitado}</Text></Text>
                 <Text style={[appStyle.textSemiBold,{fontSize:16,color: Colors.primaryColor,marginVertical:5}]}>Experiencia</Text> 
-                {user_request.length == 0?
+                {user_request.situaciones.length == 0?
                 <Text>El usuario no seleccionó tener experiencia en las situaciones presentadas</Text>
                 :
                 user_request.situaciones.map((situacion,i) => {
@@ -73,7 +99,7 @@ class UserRequest extends React.Component {
                     )
                 })
                 }
-                <Text style={[appStyle.textSemiBold,{fontSize:16,color: Colors.primaryColor,marginVertical:5}]}>Contacto</Text> 
+                    <Text style={[appStyle.textSemiBold,{fontSize:16,color: Colors.primaryColor,marginVertical:5}]}>Contacto</Text> 
                     <View style={{flexDirection:'row',marginVertical:2}}>
                         <Icon name="envelope" size={18} color={Colors.gray} style={{marginRight:8}} regular/>
                         <Text style={appStyle.textRegular}>{user_request.email}</Text>
@@ -82,10 +108,33 @@ class UserRequest extends React.Component {
                         <Icon name="phone" size={18} color={Colors.gray} style={{marginRight:8}} solid/>
                         <Text style={appStyle.textRegular}>{user_request.telefono}</Text>
                     </View>
+                    <Text style={[appStyle.textSemiBold,{fontSize:16,color: Colors.primaryColor,marginVertical:5}]}>Motivos</Text>
+                    <Text style={[appStyle.textRegular]}>{user_request.motivo}</Text>
                 </View> 
             </View>
           </View>
         </View>
+        {!this.state.loadingRequest && this.props.user.tipo == 'Admin'?
+          user_request.estado == "Pendiente"?
+          <View style={{justifyContent: 'center',flexDirection:'row',marginBottom:20}}>
+              <TouchableOpacity style={[appStyle.buttonRequest,{backgroundColor:Colors.red}]}
+              onPress={() => this.updateRequest(false)}>
+                  <Text style={[appStyle.TextModalButton,{color:'white'}]}>Rechazar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[appStyle.buttonRequest]}
+                  onPress={() => this.updateRequest(true)}>
+                  <Text style={[appStyle.TextModalButton,{color:'white'}]}>Aceptar</Text>
+              </TouchableOpacity>
+          </View>
+          :null
+      :
+      <View style={{justifyContent: 'center',flexDirection:'row',marginBottom:20}}>
+          <ActivityIndicator size="large" color={Colors.primaryColor} />
+      </View>
+      }
+        <View >
+
+        </View> 
       </ScrollView>
     </View>
     );
