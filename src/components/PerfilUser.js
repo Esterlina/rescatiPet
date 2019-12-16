@@ -319,7 +319,7 @@ class PerfilUser extends React.Component {
               <View style={{alignItems:'center',marginHorizontal:10,paddingBottom:5}}>
               <View style={{flexDirection:'row'}}>
               {this.state.user.tipo != 'Admin' && this.state.user.tipo != 'Normal'?
-                <TouchableOpacity  style={{alignSelf:'center',flexDirection:'row'}}  onPress={() => {this.state.user.reputacion != "0"? this.setState({modalReputation:true}):console.log("NO HAY NADA QUE MOSTRAR")}}>
+                <TouchableOpacity  style={{alignSelf:'center',flexDirection:'row'}}  onPress={() => {this.state.user.reputacion.rating != "0"? this.setState({modalReputation:true}):console.log("NO HAY NADA QUE MOSTRAR")}}>
                   <Text style={[appStyle.textSemiBold]}>{this.state.user.reputacion.rating}</Text>
                   <Icon name="star" size={18} color='#ffd21c' style={{marginHorizontal:4}} solid/>
                   <Text style={[appStyle.textRegular],{alignSelf:'center'}}>{this.state.user.reputacion.rating != "0"? "("+this.state.user.reputacion.comentarios.length.toString()+")" :"(0)"}</Text>

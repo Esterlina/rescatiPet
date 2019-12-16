@@ -17,6 +17,7 @@ import Requests from './UserRequests';
 import BackgroundForm from "./BackgroundForm";
 import Rescued from "./PerfilRescued";
 import User from "./PerfilUser";
+import Settings from './SettingsUser';
 import Inbox from "../screens/InboxScreen"
 import Home from "../screens/HomeScreen";
 import LoadingScreen from "../screens/LoadingScreen";
@@ -109,6 +110,7 @@ import {
       DetailStory,
       Rescued: Rescued,
       User: User,
+      Settings: Settings,
       BackgroundForm: BackgroundForm,
       Requests: Requests,
       Inbox: Inbox,
