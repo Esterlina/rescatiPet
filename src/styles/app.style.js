@@ -226,4 +226,19 @@ inputArea:{
       margin:15,
       alignSelf: 'flex-start'
     },
+    sexCircle:{
+      width:20,height:20,borderRadius:10,marginLeft:5,
+      alignItems:'center',justifyContent:'center',alignSelf:'center'
+    },
+    tagState:{
+      borderRadius:4,alignSelf:'center',marginLeft:6,
+      paddingHorizontal:5,
+    },
+    searchInput:{
+      height:30,
+      borderWidth:1,
+      borderBottomWidth:1,
+      borderColor: Colors.lightGray,
+      backgroundColor:'white'
+  },
   });

@@ -69,6 +69,7 @@ validate(){
     body: JSON.stringify({
         phone: this.state.settings.telefono,
         situations: this.state.settings.situaciones,
+        animals: this.state.settings.animales,
         available_sos: this.state.settings.sos_habilitado,
         new_address:this.state.new_address,
         lat: this.state.marker.latitude,
@@ -90,6 +91,12 @@ validate(){
     //index = colors.findIndex(item => item.id === color.id);
     situations[index].experiencia = !this.state.settings.situaciones[index].experiencia
     this.setState(prevState => ({settings: {...prevState.settings, situaciones: situations}}))
+  }
+  updateAnimal(index){
+    const animals = this.state.settings.animales.slice() //copy the array
+    //index = colors.findIndex(item => item.id === color.id);
+    animals[index].experiencia = !this.state.settings.animales[index].experiencia
+    this.setState(prevState => ({settings: {...prevState.settings, animales: animals}}))
   }
   render(){ 
     settings = this.state.settings
@@ -259,6 +266,34 @@ validate(){
                         </View>
                         )
                     })}
+                    <Text style={[appStyle.textTitleCalipso]}>Afinidad</Text>
+                {this.state.settings.animales.map((animal,index)=>{
+                    return(
+                        <View key={animal.id} style={{flexDirection:'row', marginVertical:10}}>
+                        <Text style={[appStyle.textSemiBold,{alignSelf:'center'}]}>{animal.nombre}</Text>
+                        <View style={{flexDirection:'row',position:'absolute', right:-10,alignSelf:'center'}}>
+                            <CheckBox
+                            title='Sí'
+                            checked={animal.experiencia}
+                            onPress={() => this.updateAnimal(index)}
+                            textStyle = {[appStyle.textRegular,{fontWeight:'400', marginLeft:0}]}
+                            checkedColor = {Colors.primaryColor}
+                            fontFamily = {Fonts.OpenSansSemiBold}
+                            containerStyle = {{borderWidth:0,backgroundColor:'white',height:34,justifyContent:'center',margin:0,padding:0}}
+                            />
+                            <CheckBox
+                            title='No'
+                            checked={!animal.experiencia}
+                            onPress={() =>  this.updateAnimal(index)}
+                            textStyle = {[appStyle.textRegular,{fontWeight:'400', marginLeft:0}]}
+                            checkedColor = {Colors.primaryColor}
+                            fontFamily = {Fonts.OpenSansSemiBold}
+                            containerStyle = {{borderWidth:0,backgroundColor:'white',height:34,justifyContent:'center',margin:0,padding:0}}
+                            />
+                        </View>
+                    </View>
+                    )
+                })}
                     <View style={{flexDirection:'row',marginTop:15}}>
                         <Text style={[appStyle.textSemiBold,{alignSelf:'center'}]}>Recibir notificaciones sos</Text>
                         <Switch

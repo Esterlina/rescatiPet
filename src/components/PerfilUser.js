@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react';
-import { StyleSheet, Dimensions,Text,View,ActivityIndicator,ScrollView, TouchableOpacity, Alert, TextInput, Picker} from 'react-native';
+import { StyleSheet, Dimensions,Text,View,ActivityIndicator,ScrollView, TouchableOpacity, Alert, TextInput, Image, TouchableNativeFeedback, TouchableHighlight} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Header from '../components/Header';
 import Helpers from '../../lib/helpers'
@@ -38,6 +38,7 @@ class PerfilUser extends React.Component {
       modalReputation:false,
       modalRating:false,
       modalReport:false,
+      modalUsers:0,
       componentHeight:0,
       token: '',
       comment: '',
@@ -269,6 +270,9 @@ class PerfilUser extends React.Component {
     return(
         <View style={{flex:1}}>
           <NavigationEvents onDidFocus={() => {console.log("RENDERIZANDO SCREEN DESDE CERO");this.setState({modalReputation:false},()=>{this.componentDidMount()});}} />
+          <Modal isVisible={this.state.modalUsers == 0?false:true} style={{margin:20}}>
+            {this.displayFollow()}
+          </Modal>
           <Modal isVisible={this.state.modalReputation} style={{margin:20}}>
             {this.state.modalRating? this.displayRating():this.displayReputation()}
           </Modal>
@@ -278,37 +282,36 @@ class PerfilUser extends React.Component {
           <Header {...this.props} signout={this.state.user.id == this.props.user.id? true:false} stack={'true'}/> 
           {!this.state.loading ?
           <View>
-          <View style={{backgroundColor:Colors.primaryColor,height:90,justifyContent:'flex-end'}}>
-            <View  style={{height:60,paddingVertical:10,flexDirection:'row',justifyContent:'space-between'}}>
-              <View style={{width:width*0.5-70,height:40,alignItems:'center'}}>
-                {this.state.user.tipo != 'Admin' &&  this.state.user.tipo != 'Normal'?
-                <View style={{alignItems:'center'}}>
-                  <Icon name="paw" size={25} color='white' regular/>
-                  <Text style={[appStyle.buttonLargeText2]}>{this.state.user.rescatados}</Text>
-                </View>
-                :
-                <View style={{alignItems:'center'}}>
-                  <Icon name="user-friends" size={25} color='white' regular/>
-                  <Text style={[appStyle.buttonLargeText2]}>{this.state.user.seguidos.usuarios.length + this.state.user.seguidos.rescatados.length}</Text>
-                </View>
-                }
-              </View>
-              <View style={{width:width*0.5-70,height:40,alignItems:'center'}}>
-                <Icon name="user" size={25} color='white' solid/>
-                <Text style={[appStyle.buttonLargeText2]}>{this.state.user.seguidores.length}</Text>
-              </View>
-            </View>
-          </View>
+          <View style={{backgroundColor:Colors.primaryColor,height:90,justifyContent:'flex-end'}}></View>
           <View style={{position: 'absolute',justifyContent: 'center',alignSelf:'center'}}>
           <View style={{alignItems:'center'}} onLayout={(event) => {
             var {x, y, width, height} = event.nativeEvent.layout;
             this.setState({componentHeight: event.nativeEvent.layout.height})
             }} >
-            {this.state.user.profile_picture || this.state.image? 
-            <Avatar rounded size={140} source={{ uri: (this.state.image != "" ? this.state.image.uri : this.state.user.profile_picture) }}  containerStyle={{borderWidth:3,borderColor:'white'}} iconStyle={{}} showEditButton={this.state.user.id == this.props.user.id? true:false} onEditPress={() => this.uploadProfile()}/>
-            :
-            <Avatar rounded size={140} title={this.state.user.nombre[0]}  containerStyle={{borderWidth:3,borderColor:'white'}} showEditButton={this.state.user.id == this.props.user.id? true:false} onEditPress={() => this.uploadProfile()}/>
-            }
+            <View style={{flexDirection:'row'}}>
+              <View style={{width:width*0.5-70,height:40,marginTop:35,alignItems:'center'}}>
+                {this.state.user.tipo != 'Admin' &&  this.state.user.tipo != 'Normal' && this.state.user.id != this.props.user.id?
+                  <View style={{alignItems:'center'}}>
+                    <Icon name="paw" size={25} color='white' regular/>
+                    <Text style={[appStyle.buttonLargeText2]}>{this.state.user.rescatados}</Text>
+                  </View>
+                  :
+                  <TouchableOpacity style={{alignItems:'center'}} onPress={() => {this.state.user.seguidos.usuarios.length + this.state.user.seguidos.rescatados.length > 0? this.setState({modalUsers:1}):null} }>
+                    <Icon name="user-friends" size={25} color='white' regular/>
+                    <Text style={[appStyle.buttonLargeText2]}>{this.state.user.seguidos.usuarios.length + this.state.user.seguidos.rescatados.length}</Text>
+                  </TouchableOpacity>
+                }
+              </View>
+              {this.state.user.profile_picture || this.state.image? 
+                <Avatar rounded size={140} source={{ uri: (this.state.image != "" ? this.state.image.uri : this.state.user.profile_picture) }}  containerStyle={{borderWidth:3,borderColor:'white'}} iconStyle={{}} showEditButton={this.state.user.id == this.props.user.id? true:false} onEditPress={() => this.uploadProfile()}/>
+                :
+                <Avatar rounded size={140} title={this.state.user.nombre[0]}  containerStyle={{borderWidth:3,borderColor:'white'}} showEditButton={this.state.user.id == this.props.user.id? true:false} onEditPress={() => this.uploadProfile()}/>
+              }
+              <TouchableOpacity onPress={() => {this.state.user.seguidores.length>0? this.setState({modalUsers:2}):null}} style={{width:width*0.5-70,height:40,alignItems:'center',marginTop:35}}  >
+                  <Icon name="user" size={25} color='white' solid/>
+                  <Text style={[appStyle.buttonLargeText2]}>{this.state.user.seguidores.length}</Text>
+              </TouchableOpacity>
+            </View>
             <View style={{flexDirection:'row'}}>  
               <Text style={[appStyle.textBold,{fontSize:16,alignSelf:'center'}]}>{this.state.user.nombre}</Text>
               {this.state.user.tipo != 'Admin' &&  this.state.user.tipo != 'Normal'?
@@ -363,6 +366,7 @@ class PerfilUser extends React.Component {
               <Text includeFontPadding={false} style={[appStyle.textRegular,{textAlign:'justify',zIndex:-100}]}>{this.state.user.detalles}</Text>
               </View>
           </View>
+          
             <View style={{flex:1,marginHorizontal:5,height:this.state.user.id == this.props.user.id?height-this.state.componentHeight-90:height-this.state.componentHeight-40}}>
               {this.state.user.tipo != "Normal" && this.state.user.tipo != 'Admin'?
                 <IndicatorViewPager
@@ -389,6 +393,7 @@ class PerfilUser extends React.Component {
               }
               </View>
             </View>
+            
           </View>
           : 
           <View style={{flex:1,justifyContent:'center'}}>
@@ -498,7 +503,98 @@ displayRescueds(rescueds){
     )
   }
 }
-
+displayUsers(users){
+return(
+  <View style={[appStyle.lineTop,{marginTop:0}]}>
+    {users.map((user) => {
+      return (
+          <View key={user.id} style={[appStyle.lineBottom,{padding:5}]}>
+            <View style={{flexDirection:'row'}}>
+              <UserAvatar size="50" name={user.nombre} src={user.profile_picture}/>
+              <View style={{flexDirection:'column', alignSelf:'center'}}>
+                <View style={{flexDirection:'row'}}>
+                  <Text style={[appStyle.textSemiBold,{alignSelf:'center', marginLeft:10}]}>{user.nombre}</Text>
+                </View>
+              </View>
+            </View>
+            <TouchableOpacity style={{position:'absolute',width:40,right:0,height:height*0.1,justifyContent:'center'}} onPress={() =>{this.setState({modalUsers:0}, () => {user.id == this.props.user.id? this.props.navigation.navigate('Perfil'):this.props.navigation.navigate('User', { user_id: user.id})})} }>
+                <Icon name="chevron-right" size={25} color={Colors.primaryColor} style={{alignSelf:'center'}}/>
+            </TouchableOpacity>
+          </View>
+        )
+    })}
+  </View> 
+)
+}
+displayFollow(){
+    if(this.state.modalUsers > 0){
+      const users = this.state.modalUsers == 1? this.state.user.seguidos.usuarios:this.state.user.seguidores
+      return(
+        <View style={{backgroundColor:'white',height:height*0.72,borderRadius:8}}>
+              <View style={[appStyle.headerModal,{position:'absolute',top:0,width:width-40}]}>
+                <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>{this.state.modalUsers == 1? "Seguidos":"Seguidores"}</Text>
+              </View>
+              <ScrollView style={{marginTop:40,height:height*0.45}}>
+                {this.state.modalUsers == 1?
+                <IndicatorViewPager
+                indicator={this._followeeIndicator()}
+                style={{height:height*0.54, backgroundColor:'white',flexDirection: 'column-reverse'}}
+                >
+                  <View>
+                    {users.length == 0?
+                      <View style={{justifyContent:'center',alignItems:'center',marginHorizontal:20}}>
+                        <Icon name="user-slash" size={70} color={"gray"} style= {{marginBottom:20,marginTop:height*0.15}} regular/>
+                        <Text style={[appStyle.textBold,{fontSize:16,textAlign:'center'}]}>No hay usuarios seguidos</Text>
+                      </View>
+                    : this.displayUsers(users)}
+                  </View>
+                  <View>
+                  {this.state.user.seguidos.rescatados.length == 0?
+                      <View style={{justifyContent:'center',alignItems:'center',marginHorizontal:20}}>
+                        <Image
+                        source={require('../icons/search/no-pets-1.png')}
+                        style= {{width: height*0.15,height:height*0.15,marginBottom:20,marginTop:height*0.15}}
+                        />
+                        
+                        <Text style={[appStyle.textBold,{fontSize:16,textAlign:'center'}]}>No hay rescatados seguidos</Text>
+                      </View>
+                    :
+                    <View style={[appStyle.lineTop,{marginTop:0}]}>
+                      {this.state.user.seguidos.rescatados.map((rescued) => {
+                        return (
+                            <View key={rescued.id} style={[appStyle.lineBottom,{padding:5}]}>
+                              <View style={{flexDirection:'row'}}>
+                                <UserAvatar size="50" name={rescued.nombre} src={rescued.profile_picture}/>
+                                <View style={{flexDirection:'column', alignSelf:'center'}}>
+                                  <View style={{flexDirection:'row'}}>
+                                    <Text style={[appStyle.textSemiBold,{alignSelf:'center', marginLeft:10}]}>{rescued.nombre}</Text>
+                                  </View>
+                                </View>
+                              </View>
+                              <TouchableOpacity style={{position:'absolute',width:40,right:0,height:height*0.1,justifyContent:'center'}} onPress={() => {this.setState({modalUsers:0}, () => {this.props.navigation.navigate('Rescued', { rescued_id: rescued.id})})}}>
+                                  <Icon name="chevron-right" size={25} color={Colors.primaryColor} style={{alignSelf:'center'}}/>
+                              </TouchableOpacity>
+                            </View>
+                          )
+                      })}
+                    </View> }
+                  </View>
+                </IndicatorViewPager>
+                :this.displayUsers(users)}
+              </ScrollView>
+              <View style={{justifyContent:'flex-end',marginBottom: 10,flex:1}}>
+                <View style={{justifyContent: 'center',flexDirection:'row', alignSelf: 'stretch'}}>
+                <TouchableOpacity style={[appStyle.buttonModal,appStyle.buttonsModal]}
+                    onPress={() => this.setState({modalUsers:0})}>
+                      <Text style={appStyle.TextModalButton}>Cerrar</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>     
+            </View>
+      )
+    }
+    return true
+}
 displayReputation(){
   if(!this.state.loading && this.state.modalReputation){
     let comments = this.state.user.reputacion.comentarios
@@ -620,6 +716,18 @@ displayReport(){
     selectedBorderStyle={styles.selectedBorderStyle}
     />;
   }
+  _followeeIndicator() {
+    return <PagerTitleIndicator
+    titles={["Usuarios","Rescatados"]}
+    style={styles.indicatorContainer}
+    trackScroll={true}
+    itemTextStyle={[appStyle.buttonLargeText2,{color: Colors.lightGray,textAlign: 'center'}]}
+    itemStyle={{width:(width-40)/2}}
+    selectedItemTextStyle={[appStyle.buttonLargeText2,{color: Colors.primaryColor,width:(width-40)/2,textAlign: 'center'}]}
+    selectedBorderStyle={styles.selectedBorderStyle}
+    />;
+  }
+
   ratingCompleted = (rating) => { this.setState({rating:rating});}
   displayRating(){
     if(this.state.modalRating){

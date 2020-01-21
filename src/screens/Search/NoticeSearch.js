@@ -160,7 +160,7 @@ getNotices(){
                                 this.setState({animal_type: itemValue})
                                 }>
                                 <Picker.Item key={0} color= "#a0a0a0" label="Animal" value="" />
-                                {this.state.animal_types.map( animal_type => (<Picker.Item key={animal_type} color="gray" label={animal_type} value={animal_type} />))}              
+                                {this.state.animal_types.map( animal_type => (<Picker.Item key={animal_type.id} color="gray" label={animal_type.name} value={animal_type.name} />))}              
                             </Picker>
                         </View>
                     </View>

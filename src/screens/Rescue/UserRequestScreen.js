@@ -30,6 +30,7 @@ class UserRequestScreen extends React.Component {
       modalSend:false,
       roles:[],
       situations:[],
+      animals:[],
       comment:'' ,
       token:''     
     };
@@ -54,7 +55,7 @@ getInfo(){
       .then((response) => response.json())
       .then((responseJson) => {
       this.setState({
-        situations: responseJson['situaciones'],roles:responseJson['roles']});
+        situations: responseJson['situaciones'],roles:responseJson['roles'],animals: responseJson['animales']});
       })
       .catch((error) =>{
       console.error(error);
@@ -92,6 +93,7 @@ sendRequest(){
       role: this.state.role,
       phone: this.state.phone,
       situations: this.state.situations,
+      animals: this.state.animals,
       available_sos: this.state.available_sos,
       comment: this.state.comment,
     }), 
@@ -122,6 +124,13 @@ updateSituation(index){
     //index = colors.findIndex(item => item.id === color.id);
     situations[index].experiencia = !this.state.situations[index].experiencia
     this.setState({situations: situations}) 
+  }
+
+  updateAnimal(index){
+    const animals = this.state.animals.slice() //copy the array
+    //index = colors.findIndex(item => item.id === color.id);
+    animals[index].experiencia = !this.state.animals[index].experiencia
+    this.setState({animals: animals}) 
   }
   displayForm(){
       console.log("Imprimiré las situaciones")
@@ -239,6 +248,34 @@ updateSituation(index){
                     </View>
                     )
                 })}
+                <Text style={[appStyle.textTitleCalipso]}>Afinidad</Text>
+                {this.state.animals.map((animal,index)=>{
+                    return(
+                        <View key={animal.id} style={{flexDirection:'row', marginVertical:10}}>
+                        <Text style={[appStyle.textSemiBold,{alignSelf:'center'}]}>{animal.nombre}</Text>
+                        <View style={{flexDirection:'row',position:'absolute', right:-10,alignSelf:'center'}}>
+                            <CheckBox
+                            title='Sí'
+                            checked={animal.experiencia}
+                            onPress={() => this.updateAnimal(index)}
+                            textStyle = {[appStyle.textRegular,{fontWeight:'400', marginLeft:0}]}
+                            checkedColor = {Colors.primaryColor}
+                            fontFamily = {Fonts.OpenSansSemiBold}
+                            containerStyle = {{borderWidth:0,backgroundColor:'white',height:34,justifyContent:'center',margin:0,padding:0}}
+                            />
+                            <CheckBox
+                            title='No'
+                            checked={!animal.experiencia}
+                            onPress={() =>  this.updateAnimal(index)}
+                            textStyle = {[appStyle.textRegular,{fontWeight:'400', marginLeft:0}]}
+                            checkedColor = {Colors.primaryColor}
+                            fontFamily = {Fonts.OpenSansSemiBold}
+                            containerStyle = {{borderWidth:0,backgroundColor:'white',height:34,justifyContent:'center',margin:0,padding:0}}
+                            />
+                        </View>
+                    </View>
+                    )
+                })}
                 <Text style={[appStyle.textTitleCalipso]}>Motivo</Text>
                 <View style={{flexDirection:'row'}}>
                     <Text style={[appStyle.textSemiBold,{alignSelf:'center'}]}>¿Qué tipo de perfil solicitas?</Text>
@@ -329,7 +366,7 @@ updateSituation(index){
                         <Text style={{textAlign:'center',fontSize:16}}>¡Enhora buena!</Text>
                         <Text style={{textAlign:'center',fontSize:14}}>La solicitud fue enviada con exito. Ya puedes revisar el estado de tu solicitud.</Text>
                         <TouchableOpacity style={[appStyle.buttonModal,{width:width*0.3,alignSelf:'center'}]}
-                            onPress={() =>this.setState({modalSend:false }) }>
+                            onPress={() =>this.setState({modalSend:false,loading:false }) }>
                             <Text style={{fontSize:16,textAlign:'center'}}>Aceptar</Text>
                         </TouchableOpacity>
                     </View>
