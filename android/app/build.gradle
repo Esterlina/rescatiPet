@@ -108,6 +108,17 @@ android {
         versionCode 1
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
+    }
+    signingConfigs {
+        release {
+            //if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
+                storeFile file("my-release-key.keystore")
+                storePassword "rescatipetApp"
+                keyAlias "my-key-alias"
+                keyPassword "rescatipetApp"
+            //}
+        }
     }
     splits {
         abi {
@@ -121,6 +132,7 @@ android {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
     // applicationVariants are e.g. debug, release
@@ -139,11 +151,23 @@ android {
 }
 
 dependencies {
-    implementation project(':react-native-image-crop-picker')
+    implementation project(':react-native-firebase')
     implementation project(':react-native-gesture-handler')
+    implementation project(':react-native-share')
+    implementation project(':react-native-fetch-blob')
+    implementation project(':react-native-fbsdk')
+    implementation project(':react-native-vector-icons')
+    implementation project(':react-native-maps')
+    implementation project(':react-native-image-crop-picker')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation "com.google.firebase:firebase-messaging:19.0.0"
+    implementation "com.google.firebase:firebase-auth:17.0.0"
+    implementation 'com.google.firebase:firebase-storage:19.1.0'
+ //   implementation 'com.google.firebase:firebase-notifications:+'
+    implementation "com.google.firebase:firebase-core:17.0.0"
+    compile project(':react-native-document-picker')
 }
 
 // Run this once to be able to run the application with BUCK
@@ -152,3 +176,5 @@ task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.compile
     into 'libs'
 }
+
+apply plugin: 'com.google.gms.google-services'

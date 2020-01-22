@@ -1,132 +1,153 @@
 import React from 'react';
-import { View, StyleSheet, Text,TouchableOpacity,Image, ImageBackground,Dimensions, Button,TextInput } from 'react-native';
+import { View, Text,TouchableOpacity,Image, ImageBackground,KeyboardAvoidingView,TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {Fonts} from '../utils/Fonts';
-const {height, width} = Dimensions.get('window');
-
+import { LoginManager, AccessToken,GraphRequest, GraphRequestManager } from "react-native-fbsdk";
+import firebase from 'react-native-firebase';
+import authStyle from '../styles/auth.style'
+import appStyle from '../styles/app.style'
 export default class LoginScreen extends React.Component {
-  constructor(){
-    super()
+  constructor(props){
+    super(props)
+    this.state={
+      email : '',
+      password: '',
+      response: '',
+      picture: '',
+      token_device:'',
+    }
+    this.login = this.login.bind(this)
+    this.fbAuth = this.fbAuth.bind(this)
+  }
+  
+  _isMounted = false;
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+  componentDidMount(){
+    console.log("PRIMERO OBTENDRE EL TOKEN")
+    this.getTokenDevice();
+  }
+  //Login con correo
+  async login(){
+    this._isMounted = true;
+    try{
+      await firebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password)
+      if (this._isMounted){
+        this.setState({response: 'Inicio de sensión exitoso.'},() => {this.props.navigation.navigate('AuthLoading',{token_device:this.state.token_device});});
+      }
+    }catch(error){
+      if (this._isMounted){
+        this.setState({response:error.toString()});
+        console.log(this.state.response);
+      }
+    }
   }
 
-  go(){
-    this.props.navigation.navigate('Dashboard');  
-  }
-  registro(){
-    this.props.navigation.navigate('Register');  
+  //Login con Facebook
+  async fbAuth(){
+    LoginManager
+    .logInWithPermissions(['public_profile','email'])
+    .then((result) => {
+      if (result.isCancelled){
+        return alert("Login fue cancelado");
+      }
+      console.log("LOGIN DE FB FUNCIONO CON PERMISOS");
+      return AccessToken.getCurrentAccessToken();
+    })
+    .then(data =>{
+      const credential = firebase.auth.FacebookAuthProvider.credential(data.accessToken);
+      console.log("IMPRIMIRE AL TOKEN DE Fb?????")
+      console.log(data.accessToken);
+      this.getPicture(data.accessToken)
+      return firebase.auth().signInWithCredential(credential)
+    })
+    .then((currentUser) => {
+      console.log('FACEBOOK+firebase LOGIN CON USUARIO');
+      console.log("ENTRARE A LA PANTALLA DE CARGA")
+      this.props.navigation.navigate('AuthLoading',{picture: this.state.picture, token_device:this.state.token_device});
+    })
+    .catch((error) =>{
+      console.log(error)
+    })
   }
 
-  render() {
+  async getPicture(token){
+      const response =  await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=picture.type(large)`);
+      const picture = await response.json();
+      this.setState({picture: picture.picture.data.url})
+  }
+  async getTokenDevice(){
+    let token_device = await firebase.messaging().getToken();
+    this.setState({token_device:token_device})
+  }
+   render() {
     return (
       <ImageBackground
-      style={styles.container}
+      style={authStyle.container}
       source={require('../icons/fondo.png')}
       >
-        <Image
-            source={require('../icons/rescatipeticon.png')}
-        />
-        <Image
-          style={styles.iconLogin} 
-          source={require('../icons/RescatiPet1.png')}
-        />
-      <View style={styles.formLogin}>
-        <View style={styles.labelLogin}>
-          <View style={styles.iconLabel}>
-            <Icon name="user" size={32} color="#E9FFFC"/>
+        <KeyboardAvoidingView behavior="position">
+          <View style={{alignItems:'center'}}>
+              <Image
+                source={require('../icons/rescatipeticon.png')}/>
+              <Image
+                style={authStyle.iconLogin} 
+                source={require('../icons/RescatiPet1.png')}/>
           </View>
-          
-          <TextInput
-            style={styles.input}
-            placeholder = {'Correo electronico'}
-            placeholderTextColor = {'gray'}
-            onChangeText={(value) => this.setState({pass: value})}                         
-          /> 
-        </View>
-        <View style={styles.labelLogin}>
-          <View style={styles.iconLabel}>
-            <Icon name="lock" size={32} color="#E9FFFC"/>
+          <View style={authStyle.formLogin}>
+            <View style={authStyle.labelLogin}>
+              <View style={authStyle.iconLabel}>
+                <Icon name="user" size={32} color="#E9FFFC"/>
+              </View>
+              <TextInput
+                style={authStyle.input}
+                placeholder = {'Correo electronico'}
+                placeholderTextColor = {'gray'}
+                onChangeText={(email) => this.setState({email})}/> 
+            </View>
+            <View style={authStyle.labelLogin}>
+              <View style={authStyle.iconLabel}>
+                <Icon name="lock" size={32} color="#E9FFFC"/>
+              </View>
+              <TextInput
+                style={authStyle.input}
+                placeholder = {'Contraseña'}
+                placeholderTextColor = {'gray'}
+                secureTextEntry = {true}
+                onChangeText={(password) => this.setState({password})}/> 
+            </View>
+            <TouchableOpacity 
+              style={appStyle.buttonLarge}
+              onPress={() => this.login()}>
+              <Text style={authStyle.text}> Ingresar </Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+                style={appStyle.buttonLarge}
+                onPress={() => this.props.navigation.navigate('Register')}
+                >
+                <Text style={authStyle.text}> Registrarme </Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+                style={[appStyle.buttonLarge,authStyle.social]}
+                onPress={() => this.fbAuth()}
+                >
+                <View style={{flexDirection:'row'}}>
+                  <Icon name="facebook-square" size={32} color="white"/>
+                  <Text style={[authStyle.text,{fontSize:21}]}> Ingresar con Facebook </Text>
+                </View> 
+            </TouchableOpacity>
           </View>
-          <TextInput
-            style={styles.input}
-            placeholder = {'Contraseña'}
-            placeholderTextColor = {'gray'}
-            secureTextEntry = {true}
-            onChangeText={(value) => this.setState({pass: value})}                         
-          /> 
-        </View>
-        
-        <TouchableOpacity 
-          style={styles.buttonLogin}
-          onPress={() => this.go()}
-          >
-          <Text style={styles.text}> Ingresar </Text>
-      </TouchableOpacity>
-      <TouchableOpacity 
-          style={styles.buttonLogin}
-          onPress={() => this.registro()}
-          >
-          <Text style={styles.text}> Registrarme </Text>
-      </TouchableOpacity>
-
-      </View>
-      
+        </KeyboardAvoidingView>
       </ImageBackground>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    padding: 30,
-    paddingTop: 70
-},
-iconLogin:{
- width: width*0.7,
- height: 45,
- marginTop:10,
- marginBottom: 10,
-},
-formLogin: {
-  paddingVertical:20,
-},
-iconLabel:{
-  width: 50,
-  backgroundColor:'#66D2C5',
-  borderBottomLeftRadius: 8,
-  borderTopLeftRadius: 8,
-  alignItems: "center",
-  justifyContent:'center',
-},
-labelLogin:{
-  width:width*0.8,
-  backgroundColor:'#E9FFFC',
-  borderRadius:8,
-  flexDirection: 'row',
-  marginBottom: 10,
-},
-buttonLogin:{
-  marginTop: 10,
-  backgroundColor:'#66D2C5',
-  borderRadius: 8,
-  alignItems: "center",
-  justifyContent:'center',
-  height: 45,
-},
-
-  text: {
-    color: 'white',
-    alignSelf: 'center',
-    fontSize:26,
-    fontFamily: Fonts.OpenSansBold
-  },
-  input:{
-    width:width*0.6,
-    height:40,
-    fontSize:18,
-    marginVertical: 3,
-    paddingLeft: 10,
-    color:'gray'
-},
-});
+const mapStateToProps = (state) => {
+  console.log('State:');
+  console.log(state);  // Redux Store --> Component
+  console.log(state.userReducer)
+  return {
+    user: state.userReducer,
+  };
+};

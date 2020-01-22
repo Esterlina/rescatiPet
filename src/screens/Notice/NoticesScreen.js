@@ -4,11 +4,17 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {Fonts} from '../../utils/Fonts';
 import Header from '../../components/Header';
 const {height, width} = Dimensions.get('window');
+import {Colors} from '../../styles/colors';
+import appStyle from '../../styles/app.style'
 
-export default class NoticeScreen extends React.Component {
+export default class NoticesScreen extends React.Component {
   openFormNotice(type_notice){
-    //this.props.navigation.navigate('Form');  
-    this.props.navigation.navigate('Form', { type: type_notice})
+    console.log(type_notice);
+    if(type_notice == 'SOS'){
+      this.props.navigation.navigate('Form', { type: type_notice, info: false})
+    }else{
+      this.props.navigation.navigate('Form', { type: type_notice, info: true})
+    }
   }
   openForo(){
     this.props.navigation.navigate('Login')
@@ -16,14 +22,14 @@ export default class NoticeScreen extends React.Component {
   render(){ 
     
     return(
-        <View style={styles.container}>
+        <View style={{flex: 1}}>
           <Header {...this.props}/> 
           <View style={styles.noticesTitle}>
-            <Text style={styles.title}>Publicar Aviso</Text>
-            <Text style={styles.text}>¿Qué tipo de aviso deseas realizar?</Text>
+            <Text style={appStyle.textTitle}>Publicar Aviso</Text>
+            <Text style={appStyle.textRegular}>¿Qué tipo de aviso deseas realizar?</Text>
           </View>
           <View style={[styles.notices,{marginTop:10}]}>
-          <TouchableOpacity onPress={() => this.openFormNotice('busqueda')}>
+          <TouchableOpacity onPress={() => this.openFormNotice('Busqueda')}>
                 <View style={styles.notice}>
                   <Image
                     style={styles.noticeIcon} 
@@ -32,7 +38,7 @@ export default class NoticeScreen extends React.Component {
                   <Text style={[styles.noticeTitle,{color:'#ffd492'}]}>Aviso de Búsqueda</Text>
                 </View>
               </TouchableOpacity>   
-              <TouchableOpacity onPress={() => this.openFormNotice('emergencia')}>
+              <TouchableOpacity onPress={() => this.openFormNotice('SOS')}>
                 <View style={styles.notice}>
                   <Image
                     style={styles.noticeIcon} 
@@ -44,7 +50,7 @@ export default class NoticeScreen extends React.Component {
               
           </View>
           <View style={styles.notices}>
-          <TouchableOpacity onPress={() => this.openFormNotice('hallazgo')}>
+          <TouchableOpacity onPress={() => this.openFormNotice('Hallazgo')}>
                 <View style={styles.notice}>
                 <Image
                     style={styles.noticeIcon}
@@ -72,12 +78,8 @@ export default class NoticeScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#F5FCFF',
-    },
     noticesTitle:{
-      paddingTop:25,
+      marginTop:10,
       paddingBottom:10,
       marginHorizontal:20,
       paddingHorizontal:10,
@@ -89,15 +91,12 @@ const styles = StyleSheet.create({
       paddingHorizontal:10,
       alignItems: 'center',
       flexDirection: 'row',
-      
-      //backgroundColor:'red',
       height: height*0.32
     },
     notice:{
-      //backgroundColor:'green',
       borderWidth: 1.3,
-    borderColor: '#d6d7da',
-    borderRadius: 4,
+      borderColor: Colors.lightGray,
+      borderRadius: 4,
       marginHorizontal:10,
       paddingHorizontal:4,
       paddingVertical:4,
@@ -117,14 +116,4 @@ const styles = StyleSheet.create({
       marginBottom:4,
       fontFamily: Fonts.OpenSansBold
     },
-    title:{
-      fontSize: 24,
-      color: 'gray',
-      fontFamily: Fonts.OpenSansBold
-    },
-    text:{
-      fontSize: 14,
-      color: 'gray',
-      fontFamily: Fonts.OpenSans
-    }
   });
