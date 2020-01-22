@@ -246,6 +246,8 @@ displayFeedbacks(notice){
 }
 
   render(){ 
+    console.log("VOY A VER QUE WEAAAAAAAAAA")
+    console.log(this.state.notice.publication_id)
     Moment.locale('es')
     const notice = this.state.notice
     const request_sos = this.props.navigation.getParam('request_sos')
@@ -270,7 +272,7 @@ displayFeedbacks(notice){
           <Match updateRequest = {this.updateRequest.bind(this)} update = {this.updateModalMatch.bind(this)} notice = {notice} request = {request_sos}/>
         </Modal>
         <Modal isVisible={this.state.modalFeedback} style={{margin:20}}>
-          <Feedback update = {this.updateFeedback.bind(this)} updatePublication = {this.updateNotice.bind(this)} publication = {notice}/>
+          <Feedback update = {this.updateFeedback.bind(this)} updatePublication = {this.updateNotice.bind(this)} publication = {this.state.notice}/>
         </Modal>
         <View style={styles.notice}>
           <View style={{paddingHorizontal:8}}>

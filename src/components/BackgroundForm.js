@@ -69,12 +69,12 @@ async getPathForFirebaseStorage (uri) {
         return filePath
     }else{return uri}
 }
-uploadImage = async (uri,name)=> {
-    console.log("INGRESAR EL ARCHIVO " + name)
-    firebase.storage().ref(this.state.background.img_dir + name).putFile(uri)
-    .then(file => file.ref)
-    .catch((error) => {console.log(error);})
-} 
+
+
+
+
+uploadImages = (uri, name) => firebase.storage().ref(this.state.background.img_dir + name).putFile(uri)
+
 uploadDocument = async (uri,name,i)=> {
     console.log("INGRESAR EL ARCHIVO " + name)
     const fileUri = await this.getPathForFirebaseStorage(uri)
@@ -149,15 +149,18 @@ sendBackground(){
                 this.setState({loading:false})
             }else{
                 this.state.images.map((item,i) => {
-                    this.uploadImage(item.uri,"image_" + i + ".jpg")
-                    if (i == this.state.images.length -1){
-                        this.setState({upload_images:true},()=>{
-                            if(this.state.upload_files){
-                                this.setState({loading:false})
-                            }
-                        })
-                    }
-                })
+                    this.uploadImages(item.uri, "image_" + i + ".jpg").then(file => {
+                      if (file.ref) {
+                        if (i == this.state.images.length - 1) {
+                            this.setState({upload_images:true},()=>{
+                                if(this.state.upload_files){
+                                    this.setState({loading:false})
+                                }
+                            })
+                        }
+                      }
+                    })
+                })              
                 this.state.files.map((item,i) => {
                     this.uploadDocument(item.uri,item.name,i)
                     if (i == this.state.files.length -1){

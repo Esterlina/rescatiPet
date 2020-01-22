@@ -4,12 +4,14 @@ import {API} from '../../keys';
 import Header from '../../components/Header';
 import {connect} from 'react-redux'
 import appStyle from '../../styles/app.style'
+import {Colors} from '../../styles/colors'
 const {height, width} = Dimensions.get('window');
 class RescueScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       temporary_home:{},
+      options:false,
     };
 }
   getTemporaryHome(){
@@ -67,15 +69,25 @@ class RescueScreen extends React.Component {
               </TouchableOpacity>
             </View>
             <View style={[appStyle.lineBottom]}>
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('RequestTemporaryHome')}>
+              <TouchableOpacity onPress={() => this.setState({options:true})}>
                 <View style={{flexDirection:'row',padding:10,alignItems:'center'}}>
                   <Image
                     source={require('../../icons/rescue/house.png')}
                     style= {{width:35,height:35,marginRight:10}}
                   />
-                  <Text style={appStyle.textSemiBold}>Solicitar hogar temporal</Text>
+                  <Text style={appStyle.textSemiBold}>Hogar temporal</Text>
                 </View>
               </TouchableOpacity>
+              {this.state.options?
+                <View style={{position:'absolute',top:0,right:0,backgroundColor:'white',width:120,borderWidth:0.5,borderColor:Colors.lightGray}}>
+                  <TouchableOpacity style={{borderBottomWidth:0.5,borderColor:Colors.lightGray}} onPress={() => {this.setState({options:false},() => this.getTemporaryHome())}}>
+                    <Text style={[appStyle.textRegular,{padding:4,alignSelf:'center'}]}>Disponer hogar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity  onPress={() => {this.setState({options:false},() => this.props.navigation.navigate('RequestTemporaryHome'))}}>
+                    <Text style={[appStyle.textRegular,{padding:4,alignSelf:'center'}]}>Solicitar hogar</Text>
+                  </TouchableOpacity>
+                </View>
+              :null}
             </View>
             <View style={[appStyle.lineBottom]}>
               <TouchableOpacity  onPress={() => this.props.navigation.navigate('AdoptionForm')}>

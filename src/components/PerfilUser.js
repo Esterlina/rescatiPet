@@ -28,6 +28,9 @@ class PerfilUser extends React.Component {
       image: '',
       url_image: '',
       user:{},
+      name:'',
+      phone: '',
+      detail: '',
       publications:[],
       events:[],
       rescueds:[],
@@ -38,6 +41,7 @@ class PerfilUser extends React.Component {
       modalReputation:false,
       modalRating:false,
       modalReport:false,
+      modalEdit:false,
       modalUsers:0,
       componentHeight:0,
       token: '',
@@ -71,9 +75,13 @@ class PerfilUser extends React.Component {
     })
     .then( (response) => response.json() )
     .then( (responseJson ) => {
+      user = responseJson['usuario']
       this.setState({
-        user: responseJson['usuario'],
-        loading:false
+        user: user,
+        loading:false,
+        name: user.nombre,
+        phone: user.telefono,
+        detail: user.detalles 
       },() => {this.getPerfil()})
     })
     .catch((error) => {
@@ -154,7 +162,7 @@ class PerfilUser extends React.Component {
     Helpers.getImageUrl(file.ref, (imageUrl)=>{
       this.setState({
         url_image: imageUrl
-      },()=> {this.getUserData()})
+      },()=> {this.updateUserData()})
     });})
     .catch(error => console.log(error));
   }
@@ -171,7 +179,7 @@ class PerfilUser extends React.Component {
       this.setState({token: idToken},() => {this.getUser()})
     }
   }
-  getUserData(){
+  updateUserData(){
     fetch(API + 'users/' + this.state.user.id, {
       method: 'PUT',
       headers: {
@@ -180,14 +188,19 @@ class PerfilUser extends React.Component {
         'Authorization': this.state.token,
       },
       body: JSON.stringify({
-        profile_picture: this.state.url_image
+        profile_picture: this.state.url_image,
+        name: this.state.name,
+        phone: this.state.phone,
+        detail: this.state.detail,
       }),
     })
     .then((response) => response.json())
     .then((responseJson) => {
       let user = responseJson['usuario']
-      this.setState({user: user},() => {this.props.updateUser(this.state.user)})
+      this.setState({user: user,name: user.nombre, detail: user.detalles,phone: user.telefono,loading:false,modalEdit:false},() => {this.props.updateUser(this.state.user)})
     }).catch((error) =>{
+      alert(error)
+      this.setState({modalEdit:false,loading:false})
       console.error(error);
     });
   }
@@ -279,6 +292,9 @@ class PerfilUser extends React.Component {
           <Modal isVisible={this.state.modalReport} style={{margin:20}}>
             {this.displayReport()}
           </Modal>
+          <Modal isVisible={this.state.modalEdit} style={{margin:20}}>
+            {this.displayEdit()}
+          </Modal>
           <Header {...this.props} signout={this.state.user.id == this.props.user.id? true:false} stack={'true'}/> 
           {!this.state.loading ?
           <View>
@@ -359,7 +375,7 @@ class PerfilUser extends React.Component {
                 </View>
                 </View>
               : 
-                <TouchableOpacity style={[appStyle.buttonLarge2,{width:120,marginTop:0}]} onPress={() =>{console.log(this.state.componentHeight)}}>
+                <TouchableOpacity style={[appStyle.buttonLarge2,{width:120,marginTop:0}]} onPress={() =>{this.setState({modalEdit:true})}}>
                   <Text style={[appStyle.buttonLargeText2]}>Editar perfil</Text>
                 </TouchableOpacity>}
               </View>
@@ -703,7 +719,69 @@ displayReport(){
           </View>
     )}
   }
-
+  displayEdit(){
+    if(this.state.modalEdit){
+      return(
+        <View style={{backgroundColor:'white',height:this.state.loading?height*0.3 :this.props.user.tipo != "Normal"? height*0.52 : height*0.35,borderRadius:8}}>
+              <View style={[appStyle.headerModal,{position:'absolute',top:0,width:width-40}]}>
+                <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>Editar perfil</Text>
+              </View>
+                {this.state.loading?
+                <View style={{justifyContent:'center',alignItems:'center',margin:10,marginTop:50}}>
+                  <Text style={[appStyle.textSemiBold,{fontSize:16,marginBottom:20,alignSelf:'center'}]}>Actualizando perfil ... </Text>
+                  <ActivityIndicator size="large" color= {Colors.primaryColor}/>
+                </View>
+              :
+              <View style={{margin:10,marginTop:50}}>
+                <View style={{flexDirection:'row', marginVertical:10}}>
+                    <Text style={appStyle.textSemiBold}>Nombre</Text>
+                    <TextInput
+                    style = {[appStyle.input, appStyle.inputRight,{borderColor:Colors.lightGray}]}
+                    value={this.state.name}
+                    onChangeText={(value) => this.setState({name: value})}                         
+                    /> 
+                </View>
+                <View style={{flexDirection:'row', marginVertical:10}}>
+                    <Text style={appStyle.textSemiBold}>Teléfono</Text>
+                    <TextInput
+                    style = {[appStyle.input, appStyle.inputRight,{borderColor:Colors.lightGray}]}
+                    value={this.state.phone}
+                    onChangeText={(value) => this.setState({phone: value})}                         
+                    /> 
+                </View>
+                {this.props.user.tipo != "Normal"?
+                  <View>
+                    <Text style={[appStyle.textSemiBold,{marginTop:5}]}>Descripción</Text>
+                    <TextInput
+                      style = {[appStyle.inputArea, appStyle.textRegular,{maxHeight:height*0.25}]}
+                      multiline={true}
+                      maxLength = {120}
+                      numberOfLines={5}
+                      value = {this.state.detail}
+                      onChangeText={(value) => {this.setState({detail: value})}}
+                    ></TextInput>
+                  </View>
+                :null}
+              </View>
+              }
+              {!this.state.loading?
+              <View style={{justifyContent:'flex-end',marginBottom: 10,flex:1}}>
+                <View style={{justifyContent: 'center',flexDirection:'row', alignSelf: 'stretch'}}>
+                <TouchableOpacity style={[appStyle.buttonModal,appStyle.buttonsModal]}
+                    onPress={() => this.setState({modalEdit:false})}>
+                      <Text style={appStyle.TextModalButton}>Cerrar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[appStyle.buttonModal,appStyle.buttonsModal,{backgroundColor: Colors.primaryColor,borderWidth: 0}]}
+                    onPress={() => {this.setState({loading:true},()=>{this.updateUserData()})}}>
+                      <Text style={[appStyle.TextModalButton,{color:'white'}]}>Aceptar</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>  
+              :null
+              }   
+            </View>
+      )}
+    }
 
   _renderTitleIndicator() {
     return <PagerTitleIndicator

@@ -109,7 +109,10 @@ displayIcon(type){
                     {this.displayIcon(type)}
                 </View>
                 <View style={{justifyContent:'center'}}>
-                    <Text style={[appStyle.textSemiBold,{textAlign:'left',fontSize:16}]}>{this.displayTitle(type)}</Text>
+                    <Text style={[appStyle.textSemiBold,{textAlign:'left',fontSize:16}]}>
+                    {this.displayTitle(type).length < 24
+                    ? `${this.displayTitle(type)}`
+                    : `${this.displayTitle(type).substring(0, 21)}...`}</Text>
                     <Text style={[appStyle.textRegular],{textAlign:'left'}}>{date_create}</Text>
                 </View>
                 

@@ -7,6 +7,7 @@ import { Avatar } from 'react-native-elements'
 import appStyle from '../styles/app.style'
 import {API} from '../keys';
 import {Colors} from '../styles/colors'
+import {Fonts} from '../utils/Fonts'
 const {height, width} = Dimensions.get('window');
 import Publication from './XS_Publication'
 import Notice from './Notice'
@@ -14,6 +15,8 @@ import {IndicatorViewPager, PagerTitleIndicator} from 'rn-viewpager';
 import {NavigationEvents} from 'react-navigation';
 import Helpers from '../../lib/helpers'
 import RNFetchBlob from 'react-native-fetch-blob';
+import Modal from "react-native-modal";
+import { CheckBox } from 'react-native-elements'
 
 class PerfilRescued extends React.Component {
   _isMounted = false;
@@ -30,6 +33,9 @@ class PerfilRescued extends React.Component {
       loadingBackground:true,
       loadingFiles: true,
       loadingImages: true,
+      options:false,
+      new_status: '',
+      modalStatus: false,
     };
   }
 
@@ -45,7 +51,23 @@ class PerfilRescued extends React.Component {
       this.getBackground();
     }
   }
-
+  update(){
+    fetch(API + 'rescueds/' + this.state.rescued.id, {
+    method: 'PUT',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        status: this.state.new_status,
+    }), 
+    }).then((response) => response.json())
+    .then((responseJson) => {
+        this.setState({loading:false, modalStatus:false, new_status:'', rescued:responseJson})
+    }).catch((error) =>{
+        console.error(error);
+    });
+  }
   getDocuments(){
     if(this.state.files.length == 0){
       for (i=0; i < this.state.background.file_num ; i++) {
@@ -307,9 +329,57 @@ displayBackground(background,rescued){
 }
   render(){ 
     rescued  = this.state.rescued
+    statusList = ["En rehabilitación", "Rehabilitado", "En adopción","Adoptado"]
     return(
         <View style={{flex:1}}>
           <NavigationEvents onDidFocus={() => {this.getPerfil()}} />
+          <Modal isVisible={this.state.modalStatus} style={{margin:20}}>
+          <View style={{backgroundColor:'white',height:this.state.loading?height*0.3 :height*0.45,borderRadius:8}}>
+            <View style={[appStyle.headerModal,{position:'absolute',top:0,width:width-40}]}>
+              <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>Cambiar estado</Text>
+            </View>
+              {this.state.loading?
+              <View style={{justifyContent:'center',alignItems:'center',margin:10,marginTop:50}}>
+                <Text style={[appStyle.textSemiBold,{fontSize:16,marginBottom:20,alignSelf:'center'}]}>Actualizando estado ... </Text>
+                <ActivityIndicator size="large" color= {Colors.primaryColor}/>
+              </View>
+            :
+            <View style={[appStyle.lineTop,{margin:10,marginTop:50}]}>
+              {statusList.map((status,i) => {
+                return(
+                  <View key={i} style={[appStyle.lineBottom]}>
+                  <View style={{flexDirection:'row',marginVertical:10}}>
+                    <Text style={[appStyle.textRegular]}>{status}</Text>
+                    <TouchableOpacity style={{position:'absolute',right:10}} onPress={() => {this.setState({new_status: status})}}>
+                      {(this.state.new_status == "" && status == rescued.estado) || (this.state.new_status == status) ?
+                      <Icon name="dot-circle" size={20} color={Colors.primaryColor} solid/>
+                      :
+                      <Icon name="dot-circle" size={20} color={Colors.gray} regular/>
+                    }
+                    </TouchableOpacity>
+                  </View>
+                  </View>
+                )
+              })}
+            </View>
+            }
+            {!this.state.loading?
+            <View style={{justifyContent:'flex-end',marginBottom: 10,flex:1}}>
+              <View style={{justifyContent: 'center',flexDirection:'row', alignSelf: 'stretch'}}>
+              <TouchableOpacity style={[appStyle.buttonModal,appStyle.buttonsModal]}
+                  onPress={() => this.setState({modalStatus:false,new_status:''})}>
+                    <Text style={appStyle.TextModalButton}>Cerrar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[appStyle.buttonModal,appStyle.buttonsModal,{backgroundColor: Colors.primaryColor,borderWidth: 0}]}
+                  onPress={() => {this.setState({loading:true},() => {this.update()})}}>
+                    <Text style={[appStyle.TextModalButton,{color:'white'}]}>Aceptar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>  
+            :null
+            }   
+          </View>
+          </Modal>
           <Header stack={'true'} {...this.props} /> 
           {!this.state.loading ?
             <View>
@@ -334,9 +404,27 @@ displayBackground(background,rescued){
                               <Icon name="heart" size={20} color='#d85a49' style={{marginRight:4}} regular/>}
                             </TouchableOpacity>
                             <Text> - </Text>
-                            <View style={[styles.tagState,{backgroundColor:rescued.estado == "En rehabilitación"? Colors.primaryColor:Colors.violet}]}>
+                            <View style={[styles.tagState,{backgroundColor:(rescued.estado == "En rehabilitación" || rescued.estado == "Rehabilitado")? Colors.primaryColor:Colors.violet}]}>
                               <Text style={[appStyle.textSemiBold,{color:'white'}]}>{rescued.estado}</Text>
                             </View>
+                            <View>
+                            {rescued.rescatista.id == this.props.user.id?
+                              <View>
+                                <TouchableOpacity style={[appStyle.buttonLarge2,{width:25,marginTop:0,marginHorizontal:2,borderRadius:4,height:20,backgroundColor:(rescued.estado == "En rehabilitación" || rescued.estado == "Rehabilitado")? Colors.primaryColor:Colors.violet}]} onPress={() => {this.setState({options:!this.state.options})}}>
+                                  <Icon name="sort-down" size={20} color={'white'} style={{alignSelf:'center',justifyContent:'center',bottom:3}} solid/>
+                                </TouchableOpacity>
+                                {this.state.options?
+                                <View style={{position:'absolute',zIndex:9999,top:32,right:0,backgroundColor:'white',width:120,borderWidth:0.5,borderColor:Colors.lightGray}}>
+                                  <TouchableOpacity  onPress={() => {this.setState({options:false,modalStatus:true})}}>
+                                    <Text style={[appStyle.textRegular,{padding:4,alignSelf:'center'}]}>Cambiar estado</Text>
+                                  </TouchableOpacity>
+                                </View>
+                                :null}
+                              </View>
+                            :null
+                            }
+                            
+                          </View>
                           </View> 
                           <Text style={[appStyle.textSemiBold]}>Rescatado por {rescued.rescatista.nombre}</Text>
                           <View style={{flexDirection:'row',flexWrap:'wrap'}}>

@@ -53,7 +53,7 @@ stateTemporaryHome(){
             <TouchableOpacity style={[appStyle.buttonLarge2,{width:width*0.4}]} onPress={() => this.stateTemporaryHome()}>
                 <Text style={[appStyle.buttonLargeText2]}>{temporary_home.disponible? "Deshabilitar" : "Habilitar" }</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[appStyle.buttonLarge2,{width:width*0.4}]} onPress={() => console.log("VISTA EDITAR")}>
+            <TouchableOpacity style={[appStyle.buttonLarge2,{width:width*0.4}]} onPress={() => this.props.navigation.navigate('TemporaryHomeForm',{edit: true, editHome: temporary_home})}>
                 <Text style={[appStyle.buttonLargeText2]}>Editar</Text>
             </TouchableOpacity>                    
           </View>

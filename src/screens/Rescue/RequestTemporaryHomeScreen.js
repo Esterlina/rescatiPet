@@ -70,13 +70,8 @@ getComunasByRegion(){
   }
 }
 
-uploadImages = async (uri,name)=> {
-  console.log("ESTOY SUBIENDO LA FOTO " + name);
-  firebase.storage().ref(this.state.request_home.img_dir + name).putFile(uri)
-  .then(file => file.ref)
-  .catch(error => console.log(error));
-}
 
+uploadImages = (uri, name) => firebase.storage().ref(this.state.request_home.img_dir + name).putFile(uri)
 async firebaseToken() {
   const currentUser = firebase.auth().currentUser
 
@@ -136,18 +131,25 @@ sendRequestHome(){
     this.setState({request_home: responseJson},()=>{
         console.log("IMPRIMIRE EL RESULTADO")
         console.log(this.state.request_home)
-        this.state.images.map((item,i) => {
-          this.uploadImages(item.uri,"image_" + i + ".jpg")
-          if (i == this.state.images.length -1){
-            console.log("lA ULTIMA IMAGEN ES ");
-            console.log(i)
-            this.setState({loading:false})
-          }
-        }) 
+        this.waitImages()
     });   
   }).catch((error) =>{
     console.error(error);
   });
+}
+
+waitImages(){
+  this.state.images.map((item,i) => {
+    this.uploadImages(item.uri, "image_" + i + ".jpg").then(file => {
+      if (file.ref) {
+        if (i == this.state.images.length - 1) {
+          console.log("LA ULTIMA IMAGEN ES ");
+          console.log(i);
+          this.setState({loading:false})
+        }
+      }
+    })
+  })
 }
 
 updateImages(images){
@@ -247,17 +249,17 @@ renderMoreInformation() {
         <Modal isVisible={this.state.modalSend} style={{margin:20}}>
           
             <View style={{backgroundColor:'white',height:height*0.27,borderRadius:8}}>
-              <View style={appStyle.headerModal}>
+              <View style={[appStyle.headerModal,{position:'absolute',top:0,width:width-40}]}>
                 <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>{this.state.loading? "Publicando aviso...": "Aviso publicado"}</Text>
               </View>
               {this.state.loading?
-                <View style={{alignSelf:'center'}}>
+                <View style={{alignSelf:'center',top:40}}>
                   <Text style={{textAlign:'center',fontSize:16}}>Estamos publicando tu aviso.</Text>
                   <Text style={{textAlign:'center',fontSize:14,marginBottom:30}}>Por favor, espera unos segundos.</Text>
                   <ActivityIndicator size="large" color= {Colors.primaryColor} />
                 </View>
               :
-              <View style={{marginBottom:30,alignSelf:'center'}}>
+              <View style={{marginBottom:30,alignSelf:'center',top:40}}>
                 <Text style={{textAlign:'center',fontSize:16}}>¡Enhora buena!</Text>
                 <Text style={{textAlign:'center',fontSize:14}}>Tu aviso de adopción ha sido publicado con exito.</Text>
                 <Text style={{textAlign:'center',fontSize:14}}>Ya puedes ir a hecharle un vistazo.</Text>
