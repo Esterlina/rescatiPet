@@ -131,6 +131,7 @@ class Match extends Component{
                         </View>
                         <TextInput
                             style = {[appStyle.inputArea,appStyle.textRegular,{textAlignVertical:'center',width:width*0.56,marginVertical:20}]}
+                            value = {this.state.phone}
                             onChangeText={(value) => this.setState({phone: value})}
                             placeholder = {this.state.phone? this.state.phone:'9'}
                             placeholderTextColor = {'gray'}                         

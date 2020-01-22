@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {
     Image,
+    Text,
     View,
     StyleSheet,
     Dimensions,
@@ -10,14 +11,17 @@ import {
 import {Colors} from '../styles/colors'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import firebase from 'react-native-firebase'
+import { API} from '../keys';
+import {connect} from 'react-redux';
+import {NavigationEvents} from 'react-navigation';
 const {width,height} = Dimensions.get('window')
-export default class Header extends Component{
-
+class Header extends Component{
     constructor(props) {
         super(props);
         this.state = {
           stack:this.props.navigation.state.stack,
           inbox:this.props.navigation.state.inbox,
+          notifications: 0,
         }
         this.signOut = this.signOut.bind(this)
       }
@@ -28,6 +32,26 @@ export default class Header extends Component{
     }
     openInbox(){
         this.props.navigation.navigate('Inbox')
+    }
+    componentDidMount(){
+        console.log("VOY A BUSCAR LAS NOTIFICACIONES")
+        if(this.props.inbox === 'true'){
+            console.log("voy a buscar lasnotifiacionesssssss ")
+            return fetch(API + 'users/' + this.props.user.id + '/notifications')
+            .then( (response) => response.json() )
+            .then( (responseJson ) => {
+                console.log("LA NOTIFICACION DELA API ES ")
+                console.log(responseJson)
+                this.setState({
+                    notifications: responseJson['notificaciones'],
+                })
+            })
+            .catch((error) => {
+                console.log("HA OCURRIDO UN ERROR DE CONEXION")
+                console.log(error)
+                this.setState({notifications:0})
+            });
+        }
     }
     async signOut(){
         this._isMounted = true;
@@ -49,11 +73,16 @@ export default class Header extends Component{
       }
     render(){
         console.log(this.props.home)
+        console.log("LAS NOTIFICACIONES SON:")
+        console.log(this.state.notifications)
+        console.log("DEL USUARIO " + this.props.user.id)
         const { goBack } = this.props.navigation;
         return(
             
                 <View style={styles.container}> 
+                <NavigationEvents onDidFocus={() => {console.log("RENDERIZANDO SCREEN DESDE CERO EN HEADER");this.componentDidMount()}} />
                     { this.props.stack === 'true' ?
+                        <View style={{position:'absolute',left:0}}>
                         <TouchableWithoutFeedback
                         onPress={() =>{this.props.home? this.props.navigation.navigate(this.props.home) :goBack()} }>
                             <Icon
@@ -63,18 +92,9 @@ export default class Header extends Component{
                                 size={24}
                             />
                         </TouchableWithoutFeedback>
+                        </View>
                         :   
-                        <TouchableWithoutFeedback
-                            onPress={() => {
-                            const { navigate } = this.props.navigation.openDrawer();
-                            }}>
-                            <Icon
-                                style ={styles.icon}
-                                name="bars"
-                                color= "white"
-                                size={20}
-                            />
-                        </TouchableWithoutFeedback>
+                        null
                     }    
                     <View style={styles.title}>
                         <Image
@@ -83,19 +103,30 @@ export default class Header extends Component{
                         />  
                     </View>
                 {this.props.inbox === 'true'?
-                    <TouchableWithoutFeedback
-                        onPress={() => this.openInbox()}>
-                        <Icon
-                            style ={styles.icon}
-                            name="bell"
-                            color= "white"
-                            size={22}
-                            solid
-                        />
-                    </TouchableWithoutFeedback>
+                    <View style={{position:'absolute',right:0,flexDirection:'row',height:40}}>
+                        <View style={{alignSelf:'center',justifyContent:'center'}}>
+                        <TouchableWithoutFeedback
+                            
+                            onPress={() => this.openInbox()}>
+                            <Icon
+                                style ={styles.icon}
+                                name="bell"
+                                color= "white"
+                                size={22}
+                                solid
+                            />
+                        </TouchableWithoutFeedback>
+                        </View>
+                        {this.state.notifications > 0? 
+                        <View style={[styles.circle,{backgroundColor: 'red',position:'absolute',right:2,top:1}]}>
+                            <Text style={{color:'white'}}>{this.state.notifications}</Text>
+                        </View>
+                        :null}
+                    </View>
                     :   null
                 }
                 {this.props.signout?
+                    <View style={{position:'absolute',right:0}}>
                     <TouchableOpacity
                         onPress={() => this.signOut()}>
                         <Icon
@@ -106,9 +137,10 @@ export default class Header extends Component{
                             solid
                         />
                     </TouchableOpacity>
+                    </View>
                     :   null
                 }                                 
-                </View>
+            </View>
         )
     }
 }
@@ -119,8 +151,9 @@ const styles = StyleSheet.create({
        height:20,
     },
     title:{
-        width:width*0.75,
+       // width:width*0.75,
         alignItems: 'center',
+        alignSelf:'center',
         justifyContent: 'center',
     },
     container:{
@@ -128,11 +161,22 @@ const styles = StyleSheet.create({
         height:40,
         alignItems: 'center',
         flexDirection: 'row',
+        justifyContent:'center'
         //marginBottom:10,
     },
     icon: {
         paddingHorizontal:15,
 
     },
+    circle:{
+        width:25,height:25,borderRadius:13,
+        alignItems:'center',justifyContent:'center',alignSelf:'center'
+      }
 })
 
+const mapStateToProps = (state) => {
+    return {
+      user: state.userReducer,
+    };
+  };
+  export default connect(mapStateToProps)(Header);

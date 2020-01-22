@@ -15,6 +15,7 @@ import {Colors} from '../styles/colors';
 import appStyle from '../styles/app.style'
 import {connect} from 'react-redux';
 import { CheckBox } from 'react-native-elements'
+import {NavigationEvents,NavigationActions} from 'react-navigation';
 const {width,height} = Dimensions.get('window')
 
 class ModalFeedback extends Component{
@@ -31,6 +32,7 @@ class ModalFeedback extends Component{
           };
       }
       componentDidMount(){
+        console.log("COMPONEN DID MOUNT D EFEEDBACK")
         return fetch(API + 'publications/possible_motives/' + this.props.publication.publication_id)
         .then((response) => response.json())
         .then((responseJson) => {
@@ -98,16 +100,21 @@ class ModalFeedback extends Component{
       }
 
     render(){
+      console.log("PROBANDO LAS COSASSSSSSSSSSSSSSS")
+      console.log(this.props.publication)
+      console.log(this.props.publication.publication_id)
+      console.log(this.state.motives)
         return(
             
             <View style={[appStyle.modalContainer,{height:height*0.6,paddingVertical:0}]}>
+              <NavigationEvents onDidFocus={() => {console.log("RENDERIZANDO SCREEN DESDE CERO");this.setState({loading:true},()=>{this.componentDidMount()});}} />
             {!this.state.loading?
             <View style={{justifyContent:'flex-end',marginBottom: 10,flex:1}}>
                 <View style={[appStyle.headerModal,{backgroundColor: Colors.primaryColor,top:0,width:width-40}]}>
                     <Text style={[appStyle.textTitle,{color:'white'}]}>Agregar Feedback</Text>
                 </View>
                 <View style={{marginHorizontal:15,position:'absolute',top:50}}>
-                    {publication.state != "Cerrado" ?
+                    {this.props.publication.estado != "Cerrado" ?
                     <View>
                         <Text style={[appStyle.textSemiBold,{textAlign:'justify'}]}>¿Desea cerrar el caso?</Text>
                         <View style={{flexDirection:'row',marginVertical:5, alignSelf:'stretch'}}>

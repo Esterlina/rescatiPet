@@ -46,12 +46,8 @@ componentDidMount(){
 updateRescueds(rescueds){
   this.setState({rescueds:rescueds})
   }
-uploadImage = async (uri,name)=> {
-  console.log("ESTOY SUBIENDO LA FOTO " + name);
-  firebase.storage().ref(name).putFile(uri)
-  .then(file => file.ref)
-  .catch(error => console.log(error));
-}
+
+uploadImage = (uri, name) => firebase.storage().ref(name).putFile(uri)
 
 validate(){
   if (this.state.image.length == 0){
@@ -116,8 +112,11 @@ sendEvent(){
   .then((responseJson) => {
     console.log(responseJson);
     this.setState({event: responseJson},()=>{
-        this.uploadImage(this.state.image[0].uri, this.state.event.image + ".jpg");
-        this.setState({loading:false})
+      this.uploadImage(this.state.image[0].uri, this.state.event.image + ".jpg").then(file => {
+        if (file.ref) {
+            this.setState({loading:false})
+        }
+      })
     });   
     
   }).catch((error) =>{
@@ -140,7 +139,7 @@ updateLocation(marker,address){
             <Modal isVisible={this.state.modalSend} style={{margin:20}}>
                 <View style={{backgroundColor:'white',height:height*0.27,borderRadius:8}}>
                 <View style={[appStyle.headerModal,{position:'absolute',top:0,width:width-40}]}>
-                    <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>{this.state.loading? "Publicando aviso...": "Aviso publicado"}</Text>
+                    <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>{this.state.loading? "Publicando evento...": "Evento publicado"}</Text>
                 </View>
                 {this.state.loading?
                     <View style={{alignSelf:'center',marginTop:50}}>

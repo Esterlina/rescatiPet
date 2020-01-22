@@ -121,15 +121,9 @@ getRaceBySpecie(){
   }
 }
 
-uploadImages = async (uri,name)=> {
-  console.log("ESTOY SUBIENDO LA FOTO " + name);
-  //const response = await fetch(uri);
-  //const blob = await response.blob();
-  firebase.storage().ref(this.state.notice.img_dir + name).putFile(uri)
-  .then(file => file.ref)
-  .catch(error => console.log(error));
-  //return ref.put(blob);
-}
+
+uploadImages = (uri, name) => firebase.storage().ref(this.state.notice.img_dir + name).putFile(uri)
+
 validate(){
   if (this.state.images.length == 0){
     alert("Debes subir al menos una imagen")
@@ -195,16 +189,7 @@ sendNotice(){
   .then((responseJson) => {
     console.log(responseJson);
     this.setState({notice: responseJson},()=>{
-      this.state.images.map((item,i) => {
-        this.uploadImages(item.uri,"image_" + i + ".jpg")
-        if (i == this.state.images.length -1){
-          console.log("lA ULTIMA IMAGEN ES ");
-          console.log(i)
-          this.reset();
-          this.setState({loading:false})
-        }
-      }       
-      )
+      this.waitImages()
     });
   console.log(this.state.notice.img_dir);
   console.log(this.state.notice)
@@ -213,6 +198,21 @@ sendNotice(){
     console.error(error);
   });
 }
+
+waitImages(){
+  this.state.images.map((item,i) => {
+    this.uploadImages(item.uri, "image_" + i + ".jpg").then(file => {
+      if (file.ref) {
+        if (i == this.state.images.length - 1) {
+          console.log("LA ULTIMA IMAGEN ES ");
+          console.log(i);
+          this.setState({loading:false})
+        }
+      }
+    })
+  })
+}
+
 changeColor(color){
   const colors = this.state.colorList.slice() //copy the array
   index = colors.findIndex(item => item.id === color.id);
@@ -398,17 +398,17 @@ renderMoreInformation() {
         <Modal isVisible={this.state.modalSend} style={{margin:20}}>
           
             <View style={{backgroundColor:'white',height:height*0.27,borderRadius:8}}>
-              <View style={appStyle.headerModal}>
+              <View style={[appStyle.headerModal,{position:'absolute',top:0,width:width-40}]}>
                 <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>{this.state.loading? "Publicando aviso...": "Aviso publicado"}</Text>
               </View>
               {this.state.loading?
-                <View style={{alignSelf:'center'}}>
+                <View style={{alignSelf:'center',top:40}}>
                   <Text style={{textAlign:'center',fontSize:16}}>Estamos publicando tu aviso.</Text>
                   <Text style={{textAlign:'center',fontSize:14,marginBottom:30}}>Por favor, espera unos segundos.</Text>
                   <ActivityIndicator size="large" color= {Colors.primaryColor} />
                 </View>
               :
-              <View style={{marginBottom:30,alignSelf:'center'}}>
+              <View style={{marginBottom:30,alignSelf:'center',top:40}}>
                 <Text style={{textAlign:'center',fontSize:16}}>¡Enhora buena!</Text>
                 <Text style={{textAlign:'center',fontSize:14}}>Tu aviso de adopción ha sido publicado con exito.</Text>
                 <Text style={{textAlign:'center',fontSize:14}}>Ya puedes ir a hecharle un vistazo.</Text>
@@ -423,10 +423,10 @@ renderMoreInformation() {
         <Modal isVisible={this.state.modalColors}
           hasBackdrop={true} style={{margin:20}}> 
           <View style={{backgroundColor:'white',height:height*0.65,borderRadius:8}}>
-            <View style={appStyle.headerModal}>
+            <View style={[appStyle.headerModal,{position:'absolute',top:0,width:width-40}]}>
               <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>Seleccione los colores</Text>
             </View>
-            <ScrollView>
+            <ScrollView style={{top:50}}>
               { this.state.colorList.map( color => (
                 <TouchableOpacity  key={color.id}
                 onPress={() => this.changeColor(color)}

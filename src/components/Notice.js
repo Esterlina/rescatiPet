@@ -114,9 +114,9 @@ _renderItem = ( {item, index} ) => {
             </View>
             <View style={{flexDirection:'row'}}>
             <Icon name="map-marker-alt" size={20} color='gray' style={{marginRight:4}} regular/>
-                <Text style={appStyle.textSemiBold} numberOfLines={1}>{notice.dir.length < 45
+                <Text style={appStyle.textSemiBold} numberOfLines={1}>{notice.dir.length < 40
                 ? `${notice.dir}`
-                : `${notice.dir.substring(0, 45)}...`}</Text>
+                : `${notice.dir.substring(0, 40)}...`}</Text>
             </View>
             <ScrollView style={{height:height*0.1,marginVertical:2,marginHorizontal:2}}>
               <Text style={[appStyle.textRegular,{textAlign:'justify'}]}>{notice.detalles}</Text>

@@ -42,15 +42,8 @@ async firebaseToken() {
     }
   }
 
-uploadImages = async (uri,name)=> {
-console.log("ESTOY SUBIENDO LA FOTO " + name);
-//const response = await fetch(uri);
-//const blob = await response.blob();
-firebase.storage().ref(this.state.story.img_dir + name).putFile(uri)
-.then(file => file.ref)
-.catch(error => console.log(error));
-//return ref.put(blob);
-}  
+uploadImages = (uri, name) => firebase.storage().ref(this.state.story.img_dir + name).putFile(uri)
+
 
 updateImages(images){
     this.setState({images:images})
@@ -94,18 +87,23 @@ sendStory(){
     .then((responseJson) => {
         console.log(responseJson);
         this.setState({story: responseJson},()=>{
-            this.state.images.map((item,i) => {
-                this.uploadImages(item.uri,"image_" + i + ".jpg")
-                if (i == this.state.images.length -1){
-                    this.setState({loading:false})
-                }
-            })
+            this.waitImages()
         });
     }).catch((error) =>{
         console.error(error);
     });
 }
-
+waitImages(){
+    this.state.images.map((item,i) => {
+      this.uploadImages(item.uri, "image_" + i + ".jpg").then(file => {
+        if (file.ref) {
+          if (i == this.state.images.length - 1) {
+            this.setState({loading:false})
+          }
+        }
+      })
+    })
+  }
 
 
   render(){ 

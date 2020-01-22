@@ -225,7 +225,7 @@ updateCampaign(value){
                     )
                 })
                 :null}
-                {donadores.length > 0? 
+                {donadores.length > 0 || donation_campaign.donacion.donadores_externos? 
                 <View>
                   <Text style={[appStyle.textSemiBold,{fontSize:16,color: Colors.violet}]}>Donaciones</Text> 
                   {donadores.length == 1?

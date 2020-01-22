@@ -176,9 +176,9 @@ async shareToSocial(){
                 <View style={[appStyle.textRegular,{flexDirection:'row'}]}>
                   <Text style={appStyle.textRegular}>{date_create} - </Text>
                   {adoption.estado == 'Abierto' ?
-                  <Text style={appStyle.textRegular}>{(adoption.comuna + ", " + adoption.provincia).length < 24
-                    ? `${(adoption.comuna + ", " + adoption.provincia)}`
-                    : `${(adoption.comuna + ", " + adoption.provincia).substring(0, 21)}...`}</Text>:
+                  <Text style={appStyle.textRegular} style={{flexWrap: 'wrap'}}>{(adoption.comuna + ", " + adoption.provincia).length < 24
+                    ? `${(adoption.comuna)}`
+                    : `${(adoption.comuna).substring(0, 21)}...`}</Text>:
                   <Text style={[appStyle.textSemiBold,{color: Colors.violet}]}>Adoptado</Text>
                 }
                 </View>

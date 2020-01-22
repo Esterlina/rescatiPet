@@ -99,6 +99,16 @@ class UserRequest extends React.Component {
                     )
                 })
                 }
+                <Text style={[appStyle.textSemiBold,{fontSize:16,color: Colors.primaryColor,marginVertical:5}]}>Afinidad</Text> 
+                {user_request.animales.map((animal,i) => {
+                    return(
+                    <View key={i} style={{flexDirection:'row',marginVertical:2}}>
+                        <Icon name="paw" size={18} color={Colors.primaryColor} style={{marginRight:8}} regular/>
+                        <Text style={appStyle.textRegular}>{animal.nombre}</Text>
+                    </View>
+                    )
+                })
+                }
                     <Text style={[appStyle.textSemiBold,{fontSize:16,color: Colors.primaryColor,marginVertical:5}]}>Contacto</Text> 
                     <View style={{flexDirection:'row',marginVertical:2}}>
                         <Icon name="envelope" size={18} color={Colors.gray} style={{marginRight:8}} regular/>
@@ -114,24 +124,28 @@ class UserRequest extends React.Component {
             </View>
           </View>
         </View>
-        {!this.state.loadingRequest && this.props.user.tipo == 'Admin'?
+        
+        {this.props.user.tipo == 'Admin'?
           user_request.estado == "Pendiente"?
-          <View style={{justifyContent: 'center',flexDirection:'row',marginBottom:20}}>
-              <TouchableOpacity style={[appStyle.buttonRequest,{backgroundColor:Colors.red}]}
-              onPress={() => this.updateRequest(false)}>
-                  <Text style={[appStyle.TextModalButton,{color:'white'}]}>Rechazar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[appStyle.buttonRequest]}
-                  onPress={() => this.updateRequest(true)}>
-                  <Text style={[appStyle.TextModalButton,{color:'white'}]}>Aceptar</Text>
-              </TouchableOpacity>
-          </View>
+            !this.state.loadingRequest?
+              <View style={{justifyContent: 'center',flexDirection:'row',marginBottom:20}}>
+                  <TouchableOpacity style={[appStyle.buttonRequest,{backgroundColor:Colors.red}]}
+                  onPress={() => this.updateRequest(false)}>
+                      <Text style={[appStyle.TextModalButton,{color:'white'}]}>Rechazar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[appStyle.buttonRequest]}
+                      onPress={() => this.updateRequest(true)}>
+                      <Text style={[appStyle.TextModalButton,{color:'white'}]}>Aceptar</Text>
+                  </TouchableOpacity>
+              </View>
+              :
+              <View style={{justifyContent: 'center',flexDirection:'row',marginBottom:20}}>
+                <ActivityIndicator size="large" color={Colors.primaryColor} />
+              </View>
           :null
-      :
-      <View style={{justifyContent: 'center',flexDirection:'row',marginBottom:20}}>
-          <ActivityIndicator size="large" color={Colors.primaryColor} />
-      </View>
-      }
+        :
+        null
+        }
         <View >
 
         </View> 

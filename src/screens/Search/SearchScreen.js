@@ -24,6 +24,28 @@ class SearchScreen extends React.Component {
                 </View>
               </TouchableOpacity>
             </View>
+            <View style={[appStyle.lineBottom,appStyle.lineTop]}>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate('RescuedSearch')}>
+                <View style={{flexDirection:'row',padding:10,alignItems:'center'}}>
+                  <Image
+                    source={require('../../icons/rescue/pelotas.png')}
+                    style= {{width:35,height:35,marginRight:10}}
+                  />
+                  <Text style={appStyle.textSemiBold}>Rescatados</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={[appStyle.lineBottom,appStyle.lineTop]}>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate('UserSearch')}>
+                <View style={{flexDirection:'row',padding:10,alignItems:'center'}}>
+                  <Image
+                    source={require('../../icons/rescue/user.png')}
+                    style= {{width:35,height:35,marginRight:10}}
+                  />
+                  <Text style={appStyle.textSemiBold}>Usuarios</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
             {this.props.user.tipo != "Normal"?
               <View style={[appStyle.lineBottom,appStyle.lineTop]}>
               <TouchableOpacity onPress={() => this.props.navigation.navigate('TemporaryHomes')}>
