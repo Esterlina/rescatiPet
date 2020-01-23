@@ -156,8 +156,10 @@ class ModalMatch extends Component{
                         return(
                         <View key={rescuer.id} style={{borderBottomColor: Colors.lightGray, borderBottomWidth:1, padding:5, flexDirection: 'row', alignItems:'center'}}>
                             <UserAvatar size="45" name={rescuer.nombre} colors={[ '#ccaabb']}/>
-                            <Text key={rescuer.id} style={[appStyle.textSemiBold,{marginLeft:10}]}>
+                            <View style={{width:width - 220}}>
+                            <Text key={rescuer.id} style={[appStyle.textSemiBold,{marginLeft:10,textAlign:'left'}]}>
                             {rescuer.nombre}</Text>
+                            </View>
                             <View style={{alignSelf: 'flex-end', position: "absolute", right:5, top:14 , backgroundColor: color, padding:4,width:90, alignItems:'center'}}>
                                 <Text style={[appStyle.textSemiBold,{color:'white'}]}>{estado}</Text>
                             </View>

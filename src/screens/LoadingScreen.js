@@ -55,6 +55,8 @@ class LoadingScreen extends React.Component {
     }
     //Obtener datos del usuario
     getUserData(idToken){
+      console.log("EL TOKEN ES")
+      console.log(idToken)
       console.log("AHORA OBTENDRE LA DATA DEL USUARIO")
       fetch(API + 'users/data_user', {
         method: 'PUT',
@@ -70,10 +72,13 @@ class LoadingScreen extends React.Component {
       })
       .then((response) => response.json())
       .then((responseJson) => {
+        console.log(responseJson)
         let user = responseJson['usuario']
+        console.log("EL USUARIO OBTENIDO CON EXITO")
         console.log(user)
         this.setState({user: user},() => {this.props.updateUser(this.state.user);this.sendHome();})
       }).catch((error) =>{
+        console.log("HUBO UN ERROR")
         console.error(error);
       });
     }

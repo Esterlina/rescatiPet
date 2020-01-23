@@ -27,7 +27,7 @@ class RescueScreen extends React.Component {
         console.log("VAMOS A DIRIGIR LA RESPUESTA")
         if(this.state.temporary_home.length == 0){
           console.log("EL LARGO ES CERO")
-          this.props.navigation.navigate('TemporaryHomeForm')
+          this.props.navigation.navigate('TemporaryHomeForm',{edit: false, editHome: {}})
         }
         else{
           console.log("TE ENVIAREMOS AL DETALLE")

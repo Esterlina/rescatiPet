@@ -39,7 +39,7 @@ class SelectProfile extends Component{
         .then( (response) => response.json() )
           .then( (responseJson ) => {
             this.setState({
-              list: responseJson,
+              list: responseJson['users'],
               loading:false,
             }, function() {
                 console.log("AHORA VAMOS A PONER EL ARRAY Y EL LIST ES .")
@@ -105,7 +105,7 @@ class SelectProfile extends Component{
                 this.setState({selectedItems:items},() => this.props.update(items))
             }
         }else{
-            this.setState({selectedItem: item},() => this.props.update(item))
+            this.setState({selectedItem: item,show:false},() => this.props.update(item))
         }
     }
     checkItem(id) {
@@ -179,7 +179,7 @@ class SelectProfile extends Component{
                         this.displayResult()
                     }             
                     {this.state.list.length != 0 && this.state.show && ((multiple) || (!multiple && this.state.selectedItem == ''))?
-                    <ScrollView >
+                    <ScrollView style={{height:this.props.type == 'user'? 70:null}}>
                     {this.state.list.map((item) => {
                         console.log("VOY A IMPRIMIR LOS ITEMS DE LA LISTA RESULTADOS")
                         console.log(item)
@@ -203,10 +203,17 @@ class SelectProfile extends Component{
                         <TouchableOpacity style={{height:30,backgroundColor: color,}} onPress={() => this.setState({show:false})}>
                             <Text style={[appStyle.buttonLargeText2,{alignSelf:'center'}]}>Listo</Text>
                         </TouchableOpacity>
-
-                    :null}
+                    :
+                    null
+                    }
+                    
                     </ScrollView>
                     :null}
+                    {!multiple && (this.state.show) ?
+                        <TouchableOpacity style={{height:25,backgroundColor: color,}} onPress={() => this.setState({show:false})}>
+                            <Text style={[appStyle.buttonLargeText2,{alignSelf:'center'}]}>Cerrar</Text>
+                        </TouchableOpacity>
+                :null}
                     {multiple && this.state.selectedItems.length != 0? 
                         <View style={{flexWrap:'wrap',flexDirection:'row'}}>
                             {this.state.selectedItems.map((item) => {

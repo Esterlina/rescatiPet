@@ -45,7 +45,7 @@ stateTemporaryHome(){
       <View style={styles.container}>
           {this.props.temporary_home == undefined? <Header {...this.props} stack='true' home='Home'/> :null}
         <ScrollView>
-        {temporary_home.usuario.id == this.props.user.id? 
+        {temporary_home.usuario.id == this.props.user.id && !this.props.index? 
         <View style={{margin:10}}>
           <Text style={[appStyle.textRegular,{textAlign:'justify',marginRight:10}]}>Usted ya completo el formulario para disponer de un hogar temporal.</Text>
           <Text style={[appStyle.textRegular,{textAlign:'justify',marginRight:10}]}>Actualmente su hogar temporal se encuentra {temporary_home.disponible? "Disponible, Puedes deshabilitar la publicación para que nadie vea tus datos o editar los datos." : "No disponible, puedes volver a habilitarlo para que los rescatistas y fundaciones vean tu publicación."} </Text>
@@ -77,9 +77,9 @@ stateTemporaryHome(){
                 </View>
                 <View style={[appStyle.textRegular,{flexDirection:'row'}]}>
                   <Text style={appStyle.textRegular}>
-                      {(temporary_home.tipo_hogar + " en " + temporary_home.comuna).length < 24
+                      {(temporary_home.tipo_hogar + " en " + temporary_home.comuna).length < 35
                     ? `${(temporary_home.tipo_hogar + " en " + temporary_home.comuna)}`
-                    : `${(temporary_home.tipo_hogar + " en " + temporary_home.comuna).substring(0, 21)}...`}
+                    : `${(temporary_home.tipo_hogar + " en " + temporary_home.comuna).substring(0, 32)}...`}
                   </Text>          
                 </View>
               </View>

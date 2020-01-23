@@ -144,7 +144,7 @@ renderMoreInformation() {
     <View style={styles.moreInformation}>
       <Text style={[appStyle.buttonLargeText2,{margin:5}]}>LISTA DE DONATIVOS</Text>
       <View style={{backgroundColor:'white',padding:5}}>
-        
+        <Text style={appStyle.textRegular}>Seleccione la cantidad y nombre del item que necesita. Si no requiere una cantidad exacta, deje la cantidad en 0.</Text>
         {Arr? Arr:null}
         <TouchableOpacity 
               style={[appStyle.buttonLarge2,{backgroundColor:'white',borderColor: Colors.gray,borderWidth:1.3}]}

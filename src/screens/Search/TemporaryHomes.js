@@ -240,7 +240,7 @@ getTemporaryHomes(){
                     {this.state.temporary_homes.map((temporary_home) => {
                     console.log(temporary_home)
                         return (
-                        <TemporaryHome key={temporary_home.id} temporary_home={temporary_home}
+                        <TemporaryHome key={temporary_home.id} temporary_home={temporary_home} index={true}
                             navigation={this.props.navigation}
                             /> 
                         )

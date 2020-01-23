@@ -43,7 +43,7 @@ export default class TemporaryHomeFormScreen extends React.Component {
           loading: false,
           temporary_home:{},
           token: '',
-          editHome: this.props.navigation.getParam('editHome')
+          editHome: this.props.navigation.getParam('editHome') != undefined? this.props.navigation.getParam('editHome') : {}
         };
     }
 
@@ -143,7 +143,7 @@ export default class TemporaryHomeFormScreen extends React.Component {
         }
       }
     validate(edit){
-        editHome = this.state.editHome
+        let editHome = edit? this.state.editHome : {}
         let phone = edit? editHome.telefono : this.state.phone
         let occupation = edit? editHome.ocupacion : this.state.occupation
         let comuna = edit? editHome.comuna : this.state.comuna
@@ -278,6 +278,7 @@ export default class TemporaryHomeFormScreen extends React.Component {
       console.log(this.props.navigation.getParam('edit'))
     let edit = this.props.navigation.getParam('edit')
     if(edit){
+        console.log("ENTRE AL IF PORQ SI HAY EDIT DEL HOME")
         editHome = this.state.editHome
     }
     return(
@@ -320,7 +321,7 @@ export default class TemporaryHomeFormScreen extends React.Component {
                             <View  style={{alignContent:'space-between',backgroundColor:'white',height:35,marginVertical:2,paddingHorizontal:5,justifyContent:'center',marginHorizontal:15,borderBottomWidth:0.8,borderColor: Colors.lightGray}}>
                             <View style={{flexDirection:'row',justifyContent: 'space-between'}}>
                                 <Text style={{fontFamily:Fonts.OpenSansSemiBold,fontSize:16,}}>{animal_type.name}</Text>
-                                <Icon name="check-square" size={24} color={animal_type.select || editHome.tipo_mascotas.includes(animal_type.name)? Colors.primaryColor: Colors.lightGray} style={{marginRight:15}} solid/> 
+                                <Icon name="check-square" size={24} color={animal_type.select || (edit && editHome.tipo_mascotas.includes(animal_type.name))? Colors.primaryColor: Colors.lightGray} style={{marginRight:15}} solid/> 
                             </View>
                             </View>
                         </TouchableOpacity>

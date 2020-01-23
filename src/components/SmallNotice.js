@@ -69,7 +69,7 @@ openDetail(){
                     style={[styles.imageDefault,{height: suggestion? height*0.11 : height*0.14}]}
                     source={this.state.image ? {uri: this.state.image } : null}
                 />
-                <View style={{marginHorizontal:5}}>
+                <View style={{marginHorizontal:5, width:width*0.45}}>
                     { notice.tipo === 'SOS' ?
                         <View style={{backgroundColor:'#ee1212', paddingHorizontal:5}}>
                             <Text style={{fontSize:16,color:'white',fontFamily: Fonts.OpenSansBold}}>Aviso Emergencia</Text>

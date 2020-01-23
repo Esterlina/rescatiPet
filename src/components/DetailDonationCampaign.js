@@ -73,6 +73,9 @@ updateModalMatch(modalMatch){
   this.setState({modalMatch:modalMatch})
 }
 
+updateDonationCampaign(donation_campaign){
+  this.setState({donation_campaign: donation_campaign})
+}
 
 urlToBase64(url) { 
   return new Promise(resolve => {
@@ -141,7 +144,7 @@ updateCampaign(value){
       Alert.alert(
           'Meta actualizada',
           responseJson['mensaje'],
-          [{text: 'OK', onPress: () => this.props.update(false)}],
+          [{text: 'OK', onPress: () => console.log("listo")}],
           {cancelable:false}
       )
   }).catch((error) =>{
@@ -168,16 +171,16 @@ updateCampaign(value){
       <View style={styles.container}>
           {this.props.donation_campaign == undefined? <Header {...this.props} stack='true' home='Home'/> :null}
         <ScrollView style={{marginVertical:10}}>
-        <Modal isVisible={this.state.modalMatch} style={{margin:20}}>
-          <Match update = {this.updateModalMatch.bind(this)} campaign = {donation_campaign}/>
-        </Modal>
+        {this.state.modalMatch?
+          <Match isVisible={this.state.modalMatch} update = {this.updateModalMatch.bind(this)} updateCampaign = {this.updateDonationCampaign.bind(this)} campaign = {donation_campaign}/>
+        :null}
         <View style={appStyle.containerPublication}>
             <View style={appStyle.header}>
                 <Text style={{fontFamily:Fonts.OpenSansBold,color:'white',fontSize:20}}>Campaña de donación</Text>
             </View>
           <View style={{paddingHorizontal:8}}>
             <View style={{flexDirection:'row',paddingTop:10,}}>
-            <TouchableOpacity style={{flexDirection:'row'}} onPress={() => {donation_campaign.usuario.id == this.props.user.id? this.props.navigation.navigate('Perfil'):this.props.navigation.navigate('User', { user_id: donation_campaign.usuario.id})}}>
+            <TouchableOpacity style={{flexDirection:'row'}} onPress={() => {  this.props.user.id? this.props.navigation.navigate('Perfil'):this.props.navigation.navigate('User', { user_id: donation_campaign.usuario.id})}}>
               {donation_campaign.usuario.perfil?
               <UserAvatar size="45" name={donation_campaign.usuario.nombre} src={donation_campaign.usuario.perfil}/>
               :
@@ -228,10 +231,15 @@ updateCampaign(value){
                 {donadores.length > 0 || donation_campaign.donacion.donadores_externos? 
                 <View>
                   <Text style={[appStyle.textSemiBold,{fontSize:16,color: Colors.violet}]}>Donaciones</Text> 
-                  {donadores.length == 1?
-                  <Text style={appStyle.textRegular}>{donadores.find(donador => donador.user_id == this.props.user.id) != undefined ? "Tú haz donado" : (donation_campaign.donacion.donadores_externos? "Externo(s) han donado: " : "1 Usuario ha donado:")}</Text>
-                  : <Text style={appStyle.textRegular}>{donadores.find(donador => donador.user_id == this.props.user.id) != undefined ? ("Tú y " + (donadores.length-1).toString() + (donadores.length-1 == 1? " Usuario":" Usuarios") ): donadores.length + " Usuarios"} {donation_campaign.donacion.donadores_externos? "y Persona(s) Externa(s)": ""} han donado: </Text>
-                  }
+                  {donadores.length == 0 && donation_campaign.donacion.donadores_externos? 
+                    <Text style={appStyle.textRegular}>{"Externo(s) han donado: "}</Text>
+                  :null}
+                  {donadores.length == 1 ?
+                  <Text style={appStyle.textRegular}>{(donadores.find(donador => donador.user_id == this.props.user.id) != undefined ? "Tú haz donado" : "1 Usuario") + (donation_campaign.donacion.donadores_externos? "y Externo(s) han donado: " : "ha donado:")}</Text>
+                  : null}
+                  {donadores.length > 1?
+                  <Text style={appStyle.textRegular}>{donadores.find(donador => donador.user_id == this.props.user.id) != undefined ? ("Tú y " + (donadores.length-1).toString() + (donadores.length-1 == 1? " Usuario":" Usuarios") ): donadores.length + " Usuarios"} {donation_campaign.donacion.donadores_externos? "y Persona(s) Externa(s)": ""} han donado: </Text>
+                  :null}
                   {donation_campaign.donacion.donaciones_totales.map((donacion,i) => {
                     if(donacion.total_donado > 0){
                       var item = donation_campaign.donation_items.find(item => item.item == donacion.item)
@@ -258,7 +266,7 @@ updateCampaign(value){
         </View>
         {this.props.user.id == donation_campaign.usuario.id && donation_campaign.meta_lograda && donation_campaign.estado == "Meta abierta"?
           <View style={[appStyle.containerPublication,{padding:5}]}>
-            <Text>Al parecer haz llegado a la meta de donación, ¿Deseas cambiar el estado de la meta a lograda?</Text>
+            <Text style={appStyle.textRegular}>Al parecer haz llegado a la meta de donación, ¿Deseas cambiar el estado de la meta a lograda?</Text>
             <View style={{justifyContent: 'center',flexDirection:'row', alignSelf: 'stretch'}}>
                 <TouchableOpacity style={[appStyle.buttonModal,appStyle.buttonsModal,{backgroundColor: Colors.violet,borderWidth: 0}]}
                     onPress={() => this.updateCampaign(true)}>

@@ -50,6 +50,8 @@ getPublications(){
   return fetch(API + 'publications')
   .then( (response) => response.json() )
   .then( (responseJson ) => {
+    console.log("LAS PUBLICACIONES SON")
+    console.log(responseJson['publicaciones'])
     this.setState({
       publications: responseJson['publicaciones'],
     },() => this.setState({loading: false,refreshing:false}))

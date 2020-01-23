@@ -184,7 +184,7 @@ sendNotice(){
     colors: this.state.colors,
     details: this.state.details,
     img_num: this.state.images.length,
-    situation_id: this.state.situation,
+    situation: this.state.situation,
     rescue_request:this.state.rescue_request,
   }), 
 }).then((response) => response.json())
@@ -557,7 +557,7 @@ renderMoreInformation() {
                     selectedValue={this.state.situation}
                     style={styles.picker}
                     onValueChange={(itemValue, itemIndex) =>
-                      this.setState({situation: itemIndex})
+                      this.setState({situation: itemValue})
                     }>
                     <Picker.Item color= "#a0a0a0" label="Situación" value="0" />
                     { this.state.situationList.map( situation => (<Picker.Item key={situation.id} color="gray" label={situation.name} value={situation.name} />) ) }

@@ -103,25 +103,26 @@ class Header extends Component{
                         />  
                     </View>
                 {this.props.inbox === 'true'?
-                    <View style={{position:'absolute',right:0,flexDirection:'row',height:40}}>
+                    <View style={{position:'absolute',right:0,}}>
                         <View style={{alignSelf:'center',justifyContent:'center'}}>
                         <TouchableWithoutFeedback
-                            
                             onPress={() => this.openInbox()}>
-                            <Icon
-                                style ={styles.icon}
-                                name="bell"
-                                color= "white"
-                                size={22}
-                                solid
-                            />
+                            <View style={{flexDirection:'row',alignSelf:'center',justifyContent:'center',height:40}}>
+                                <Icon
+                                    style ={styles.icon}
+                                    name="bell"
+                                    color= "white"
+                                    size={22}
+                                    solid
+                                />
+                                {this.state.notifications > 0? 
+                                <View style={[styles.circle,{backgroundColor: 'red',position:'absolute',right:2,top:1}]}>
+                                    <Text style={{color:'white'}}>{this.state.notifications}</Text>
+                                </View>
+                                :null}
+                            </View>
                         </TouchableWithoutFeedback>
                         </View>
-                        {this.state.notifications > 0? 
-                        <View style={[styles.circle,{backgroundColor: 'red',position:'absolute',right:2,top:1}]}>
-                            <Text style={{color:'white'}}>{this.state.notifications}</Text>
-                        </View>
-                        :null}
                     </View>
                     :   null
                 }
@@ -166,6 +167,7 @@ const styles = StyleSheet.create({
     },
     icon: {
         paddingHorizontal:15,
+        alignSelf:'center'
 
     },
     circle:{
