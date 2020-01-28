@@ -338,7 +338,7 @@ class PerfilUser extends React.Component {
               <View style={{alignItems:'center',marginHorizontal:10,paddingBottom:5}}>
               <View style={{flexDirection:'row'}}>
               {this.state.user.tipo != 'Admin' && this.state.user.tipo != 'Normal'?
-                <TouchableOpacity  style={{alignSelf:'center',flexDirection:'row'}}  onPress={() => {this.state.user.reputacion.rating != "0"? this.setState({modalReputation:true}):console.log("NO HAY NADA QUE MOSTRAR")}}>
+                <TouchableOpacity  style={{alignSelf:'center',flexDirection:'row'}}  onPress={() => {this.state.user.reputacion.rating != "0" || this.state.user.rating_activado? this.setState({modalReputation:true}):console.log("NO HAY NADA QUE MOSTRAR")}}>
                   <Text style={[appStyle.textSemiBold]}>{this.state.user.reputacion.rating}</Text>
                   <Icon name="star" size={18} color='#ffd21c' style={{marginHorizontal:4}} solid/>
                   <Text style={[appStyle.textRegular],{alignSelf:'center'}}>{this.state.user.reputacion.rating != "0"? "("+this.state.user.reputacion.comentarios.length.toString()+")" :"(0)"}</Text>
@@ -628,7 +628,9 @@ displayReputation(){
             <Text style={[appStyle.textSemiBold,{alignSelf:'center',fontSize:25,marginLeft:5}]}>{this.state.user.reputacion.rating}</Text>
           </View>
           <View style={{flexDirection:'row',alignSelf:'center'}}>
-            <Text style={[appStyle.textSemiBold,{alignSelf:'center'}]}>(Según {comments.length} personas)</Text>
+            {this.state.user.reputacion.rating != "0"? 
+              <Text style={[appStyle.textSemiBold,{alignSelf:'center'}]}>(Según {comments.length} personas)</Text>
+            :null}
             {this.state.user.rating_activado?
             <View>
               <Icon name="circle" size={6} color={Colors.gray} style={{alignSelf:'center',marginLeft:4}} regular/>
@@ -639,6 +641,7 @@ displayReputation(){
             :null}
           </View>
           <ScrollView style={{marginTop:0,height:height*0.35}}>
+          {this.state.user.reputacion.rating != "0"? 
           <View style={[appStyle.lineTop,{marginTop:5}]}>
             { comments.map( (comment) => {
               return(
@@ -663,6 +666,7 @@ displayReputation(){
               )}
             )}
           </View>  
+          :null}
           </ScrollView>
           <View style={{justifyContent:'flex-end',marginBottom: 10,flex:1}}>
             <View style={{justifyContent: 'center',flexDirection:'row', alignSelf: 'stretch'}}>
